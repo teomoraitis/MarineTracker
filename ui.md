@@ -9,7 +9,7 @@
 
 Για καθε τυπο-ρολο χρηστη η web σελιδα θα φαινεται καπως ετσι:
 ## Guest user
-
+  ![guest1](/UI_Wireframes/1.0 home page.png)
 
 
 ## Registered user
