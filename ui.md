@@ -23,7 +23,6 @@
 <img src="/UI_Wireframes/1.3%20login%20popup.png" alt="Guest User Home Page" width="400px">
 
 
-
 ## Registered user
 
 *Αρχικη σελιδα:*<br>
@@ -35,7 +34,7 @@
 *Επιλεγμένα settings:*<br>
 <img src="/UI_Wireframes/2.3.png" alt="User Home Page" width="400px">
 
-*Επιλεγμένο πλοίο με προβολη πορείας:<br>
+*Επιλεγμένο πλοίο με προβολη πορείας:*<br>
 <img src="/UI_Wireframes/2.4%20Show%20path.png" alt="User Home Page" width="400px">
 
 *Προβολή στόλου:*<br>
@@ -46,9 +45,6 @@
 
 *Ορισμός περιοχής ενδιαφεροντος:*<br>
 <img src="/UI_Wireframes/2.7%20Edit%20Area.png" alt="User Home Page" width="400px">
-
-
-
 
 
 ## Admin
