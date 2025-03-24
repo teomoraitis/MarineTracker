@@ -22,7 +22,7 @@
 
 ![registered1](/UI_Wireframes/2.0%20home%20page.png) 
 ![registered2](/UI_Wireframes/2.1%20home%20page.png) 
-![registered3](/UI_Wireframes/2.3%20clicked%20ship.png) 
+![registered3](/UI_Wireframes/2.3.png) 
 ![registered4](/UI_Wireframes/2.4%20Show%20path.png) 
 ![registered5](/UI_Wireframes/2.5%20Show%20fleet.png) 
 ![registered6](/UI_Wireframes/2.6%20Show%20Area.png) 
