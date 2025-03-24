@@ -52,7 +52,7 @@
 *Αρχική σελίδα:*<br>
 <img src="/UI_Wireframes/3.0%20home%20page.png" alt="User Home Page" width="400px">
 
-*Επιλεγμένο πλοίο με προβολή πορείας:<br>
+*Επιλεγμένο πλοίο με προβολή πορείας:*<br>
 <img src="/UI_Wireframes/3.1%20Show%20path.png" alt="User Home Page" width="400px">
 
 *Προβολή στόλου:*<br>
