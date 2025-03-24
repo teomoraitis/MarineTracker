@@ -1,31 +1,31 @@
 # UI Prototype Wireframes - MarineTracker
 
-Το front-end της web εφαρμογης MarineTracker θα ειναι τεχνολογιας SPA (Single Page Application). Ολες οι λειτουργιες της πλατφορμας θα ειναι προσβασιμες απο την αρχικη σελιδα (home page).
-Η διαφοροποιηση στην προσβαση των διαφορων λειτουργιων γινεται αναλογως τον ρολο του καθε χρηστη.
-Υποστηριζονται τριων ειδων χρηστες:
-1. Guest user: οποιοσδηποτε μπορει να εχει προσβαση στην σελιδα.
-2. Registered user: καποιος που εχει κανει register και login στην πλατφορμα.
-3. Admin: προκαθορισμενος χρηστης με δικαιωματα διαχειριστη.
+Το front-end της web εφαρμογής MarineTracker θα είναι τεχνολογίας SPA (Single Page Application). Όλες οι λειτουργίες της πλατφόρμας θα είναι προσβάσιμες από την αρχική σελίδα (home page).
+Η διαφοροποίηση στην πρόσβαση των διαφόρων λειτουργιών γίνεται αναλόγως τον ρόλο του κάθε χρηστη.
+Υποστηρίζονται τριών ειδών χρήστες:
+1. Guest user: οποιοσδήποτε μπορεί να έχει πρόσβαση στην σέλιδα.
+2. Registered user: κάποιος που έχει κάνει register και login στην πλατφορμα.
+3. Admin: προκαθορισμένος χρήστης με δικαιώματα διαχειριστή.
 
-Για καθε τυπο-ρολο χρηστη η web σελιδα θα φαινεται καπως ετσι:
+Για κάθε τύπο-ρόλο χρήστη η web σελίδα θα φαίνεται κάπως έτσι:
 ## Guest user
 
-*Αρχικη σελιδα:*<br>
+*Αρχική σελίδα:*<br>
 <img src="/UI_Wireframes/1.0%20home%20page.png" alt="Guest User Home Page" width="400px">
 
 *Επιλεγμένο πλοίο:*<br>
 <img src="/UI_Wireframes/1.1%20ckicked%20ship.png" alt="Guest User Home Page" width="400px">
 
-*Παραθυρο εγγραφης χρηστη:*<br>
+*Παράθυρο εγγραφής χρήστη:*<br>
 <img src="/UI_Wireframes/1.2%20popup%20register.png" alt="Guest User Home Page" width="400px">
 
-*Παραθυρο συνδεσης χρηστη:*<br>
+*Παράθυρο σύνδεσης χρήστη:*<br>
 <img src="/UI_Wireframes/1.3%20login%20popup.png" alt="Guest User Home Page" width="400px">
 
 
 ## Registered user
 
-*Αρχικη σελιδα:*<br>
+*Αρχική σελίδα:*<br>
 <img src="/UI_Wireframes/2.0%20home%20page.png" alt="User Home Page" width="400px">
 
 *Επιλεγμένο πλοίο:*<br>
@@ -34,7 +34,7 @@
 *Επιλεγμένα settings:*<br>
 <img src="/UI_Wireframes/2.3.png" alt="User Home Page" width="400px">
 
-*Επιλεγμένο πλοίο με προβολη πορείας:*<br>
+*Επιλεγμένο πλοίο με προβολή πορείας:*<br>
 <img src="/UI_Wireframes/2.4%20Show%20path.png" alt="User Home Page" width="400px">
 
 *Προβολή στόλου:*<br>
@@ -49,21 +49,21 @@
 
 ## Admin
 
-*Αρχικη σελιδα:*<br>
+*Αρχική σελίδα:*<br>
 <img src="/UI_Wireframes/3.0%20home%20page.png" alt="User Home Page" width="400px">
 
-*Επιλεγμένο πλοίο με προβολη πορείας:<br>
+*Επιλεγμένο πλοίο με προβολή πορείας:<br>
 <img src="/UI_Wireframes/3.1%20Show%20path.png" alt="User Home Page" width="400px">
 
 *Προβολή στόλου:*<br>
 <img src="/UI_Wireframes/3.2%20Show%20fleet.png" alt="User Home Page" width="400px">
 
-*Προβολή περιοχής ενδιαφεροντος:*<br>
+*Προβολή περιοχής ενδιαφέροντος:*<br>
 <img src="/UI_Wireframes/3.3%20Show%20Area.png" alt="User Home Page" width="400px">
 
-*Ορισμός περιοχής ενδιαφεροντος:*<br>
+*Ορισμός περιοχής ενδιαφέροντος:*<br>
 <img src="/UI_Wireframes/3.4%20Edit%20Area.png" alt="User Home Page" width="400px">
 
-*Admin επεξεργασια στατικων στοιχειων πλοιου:*<br>
+*Admin επεξεργασία στατικών στοιχείων πλοίου:*<br>
 <img src="/UI_Wireframes/3.5%20Modify%20data.png" alt="User Home Page" width="400px">
 
