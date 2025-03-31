@@ -1,4 +1,10 @@
 # This file is used to ignore files and directories in the Git repository.
+### NodeJS
+dist/*
+node_modules/*
+package-lock.json
+.env
+
 ### Maven ###
 target/
 !.mvn/wrapper/maven-wrapper.jar
