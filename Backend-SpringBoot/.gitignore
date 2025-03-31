@@ -1,5 +1,5 @@
 # This file is used to ignore files and directories in the Git repository.
-### NodeJS
+### NodeJS ###
 dist/*
 node_modules/*
 package-lock.json
