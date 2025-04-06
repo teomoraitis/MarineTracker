@@ -48,7 +48,7 @@ This creates the location_updates topic if it doesn't already exist (ignore the 
   python3 producer.py
 ```
 
-Make sure you have the required Python packages (python3 pip, pandas, confluent_kafka, ...).
+Make sure you have the required Python packages (python3 pip, pandas, confluent_kafka, ...). <br>
 Also, make sure you have locally the ai/ directory with all its contents (including a sorted version of ai data stream).
 
 ### 4. Run the Kafka Console Consumer (Optional)
