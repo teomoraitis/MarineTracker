@@ -12,3 +12,7 @@ Full-stack web platform featuring real-time vessel monitoring through AIS data s
 - sdi2000006 - Evgenios Paraskevas Mavroudakos (EugeneM02)
 - sdi1900048 - Theodoros Dimakopoulos (Theodore Alenas)
 - sdi1700058 - Panagiotis Kotsarinis (sdi1700058)
+
+## Project description
+
+## Technical details
