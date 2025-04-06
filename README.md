@@ -1,4 +1,6 @@
-# MarineTracker
+<h1>
+    <img src="https://github.com/sdi2000150/MarineTracker/favicon.png" alt="Favicon" width="30" style="vertical-align: middle;"/> MarineTracker
+</h1>
 Full-stack web platform featuring real-time vessel monitoring through AIS data stream processing. Built with Spring Boot and React. Using Apache Kafka and PostgreSQL.
 
 ## The Team 
