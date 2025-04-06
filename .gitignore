@@ -1,0 +1,53 @@
+# This file is used to ignore files and directories in the Git repository.
+### NodeJS ###
+*/dist/*
+*/node_modules/*
+*/package-lock.json
+*/.env
+
+### Maven ###
+*/target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+*/.apt_generated
+*/.classpath
+*/.factorypath
+*/.project
+*/.settings
+*/.springBeans
+*/.sts4-cache
+
+### Environment ###
+*/.env
+*/.env.local
+*/.env.development
+*/.env.production
+
+### IntelliJ IDEA ###
+*/.idea/
+*/*.iws
+*/*.iml
+*/*.ipr
+*/out/
+*/.idea_modules/
+
+### NetBeans ###
+*/nbproject/private/
+*/nbbuild/
+*/dist/
+*/nbdist/
+*/.nb-gradle/
+*/build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+*/.vscode/
+*/.settings/
+
+### MacOS ###
+*/.DS_Store
+
