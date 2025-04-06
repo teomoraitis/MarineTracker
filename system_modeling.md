@@ -1,4 +1,8 @@
-# System Modeling
-"HOW" the software requirements specified in `srs.md` will be implemented.
+# System Modeling - MarineTracker
+Μοντελοποιηση του "ΠΩΣ" θα υλοποιηθουν οι απαιτησεις που ειχαν προδιαγραφει στο software-requirements-specification (`srs.md`).
 
-## UML diagram of a
+## "ΤΙ" έχει γίνει specified να υλοποιηθεί - "ΠΩΣ" θα υλοποιηθεί - Wireframes που αντιστοιχούν σε κάθε λειτουργία
+
+
+
+## UML διάγραμμα μιας ενδιαφέρουσας λειτουργίας της εφαρμογής: πχ live update via websockets
