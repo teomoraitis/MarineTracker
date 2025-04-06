@@ -2,7 +2,6 @@
 
 This setup streams vessel location data from a CSV file (sorted) to a Kafka topic using a python producer.
 
-
 ## How It Works
 
 1. **Kafka Setup**  
@@ -20,8 +19,6 @@ This setup streams vessel location data from a CSV file (sorted) to a Kafka topi
 5. **Consumer Script**  
    A Kafka console consumer is available to read and display the messages being published to the topic.
    For the project, a "real" Spring Boot Java consumer will be used.
-
----
 
 ## How to Run
 
