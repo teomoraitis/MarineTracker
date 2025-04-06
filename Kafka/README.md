@@ -60,6 +60,6 @@ Also, make sure you have locally the ai/ directory with all its contents (includ
 
 This prints all messages from the location_updates topic (starting from beginning, but this can change).
 
-Notes
+#### Notes:
 - The CSV data directory (dataset/ais/) is not included in the repo due to its size.
 - Adjust the CSV path in producer.py if you use a different file.
