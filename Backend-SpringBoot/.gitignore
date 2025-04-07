@@ -51,5 +51,6 @@ build/
 ### MacOS ###
 .DS_Store
 
-target/
-
+### Kafka logs ###
+../Kafka/kafka_2.12-3.9.0/logs/
+../Kafka/kafka_2.12-3.9.0/logs/*
