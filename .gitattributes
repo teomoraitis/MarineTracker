@@ -1,0 +1,8 @@
+Kafka/kafka_2.12-3.9.0/bin/* linguist-vendored
+Kafka/kafka_2.12-3.9.0/config/*
+Kafka/kafka_2.12-3.9.0/libs/*
+Kafka/kafka_2.12-3.9.0/licenses/*
+Kafka/kafka_2.12-3.9.0/logs/*
+Kafka/kafka_2.12-3.9.0/site-docs/*
+Kafka/kafka_2.12-3.9.0/LICENSE
+Kafka/kafka_2.12-3.9.0/NOTICE
