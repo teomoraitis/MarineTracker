@@ -4,7 +4,7 @@
 The 1st deliverable of the project includes the following:
 
 - **SRS (Software Requirements Specification):**  
-  The first version of the project documentation, which contains the analysis of requirements (the "what" will be implemented).  
+  The first version of the project design, which contains the analysis of requirements (the "what" will be implemented).  
   This document is available in the `srs.md` file. You can view it [here](./srs.md).
 
 - **UI Wireframes:**  
