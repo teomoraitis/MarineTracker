@@ -1,5 +1,5 @@
 <h1>
-    <img src="https://github.com/sdi2000150/MarineTracker/blob/main/Logo.png" alt="Logo" width="35" style="vertical-align: middle;"/> MarineTracker
+    <img src="https://github.com/sdi2000150/MarineTracker/blob/main/1st%20Deliverable%20-%20SRS%20%26%20UI%20Wireframes/UI_Wireframes/Logo.png" alt="Logo" width="35" style="vertical-align: middle;"/> MarineTracker
 </h1>
 Full-stack web platform featuring real-time vessel monitoring through AIS data stream processing. Built with Spring Boot and React. Using Apache Kafka and PostgreSQL.
 
