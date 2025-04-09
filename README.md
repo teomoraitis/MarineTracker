@@ -13,6 +13,44 @@ Full-stack web platform featuring real-time vessel monitoring through AIS data s
 - sdi1900048 - Theodoros Dimakopoulos (Theodore Alenas)
 - sdi1700058 - Panagiotis Kotsarinis (sdi1700058)
 
-## Project description
-
 ## Technical details
+- **Backend**: RESTful API with Spring Boot.
+- **Frontend**: SPA using React.js and Leaflet.js.
+- **Data stream**: Apache Kafka simulates real-time AIS feeds.
+- **Database**: PostgreSQL for storing user and vessel data.
+- **Security**: HTTPS with self-signed certificate.
+- **Testing & automation**: Integrated build and test systems.
+
+## Project Description
+
+MarineTracker is a web-based platform for real-time vessel tracking using AIS (Automatic Identification System) data. 
+AIS data is replayed in real-time from a 6-month historical dataset sourced from Zenodo.
+
+Key features include:
+- **Real-time visualization of vessels** on a map with details like location, status, type, and course.
+- **Historical playback** of vessel trajectories for the past 12 hours.
+- **Fleet management**, allowing users to follow specific ships and apply filters (e.g., ship type or only their fleet).
+- **Zone of Interest** functionality, where users can define regions on the map and set movement restrictions (e.g., speed < 5).
+- **Admin privileges** to edit static ship data.
+
+## Project Deliverables
+
+The project was developed in three phases:
+
+1. **1st Deliverable – SRS & UI Wireframes**  
+   📁 [`1st Deliverable - SRS & UI Wireframes`](./1st%20Deliverable%20-%20SRS%20&%20UI%20Wireframes)  
+   Includes:  
+   - Software Requirements Specification (SRS)  
+   - UI mockup wireframes for the web application  
+
+2. **2nd Deliverable – System Modeling & UML**  
+   📁 [`2nd Deliverable - System Modeling & UML`](./2nd%20Deliverable%20-%20System%20Modeling%20&%20UML)  
+   Includes a presentation of:  
+   - System modeling of the implementation
+   - UML and architecture diagrams 
+
+3. **Final Deliverable – Full-Stack Implementation**  
+   📁 [`Backend-SpringBoot`](./Backend-SpringBoot)  
+   📁 [`Frontend-React`](./Frontend-React)  
+   📁 [`Kafka`](./Kafka)  
+   Complete implementation of the full-stack platform, integrating frontend, backend, and real-time Kafka-based data ingestion.
