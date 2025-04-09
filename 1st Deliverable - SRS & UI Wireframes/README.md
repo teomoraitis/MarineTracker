@@ -10,7 +10,6 @@ The 1st deliverable of the project includes the following:
 - **UI Wireframes:**  
   The first version of the front-end user interface, presented as prototypes.  
   The wireframes were created using **Figma** and are presented in the `ui.md` file. You can view it [here](./ui.md).  
-  Additionally, the wireframe images themselves are stored in the `UI_Wireframes/` directory. You can view them [here](./UI_Wireframes/).
 
 ### Notes
 - `srs.md`: Contains the SRS document (written in Greek).
