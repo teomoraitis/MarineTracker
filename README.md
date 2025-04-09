@@ -45,8 +45,8 @@ The project was developed in three phases:
 
 <table>
   <tr>
-    <th align="left">🍃 Backend</th>
-    <th align="left">🌀 Frontend</th>
+    <th align="left">🌱 Backend</th>
+    <th align="left">⚛️ Frontend</th>
     <th align="left">🦑 Data Stream</th>
   </tr>
   <tr>
