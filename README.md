@@ -41,31 +41,51 @@ The project was developed in three phases:
 
 ---
 
-## Technical details
-- **Backend**:
-    - Spring Boot version ...
-    - Java version 17 (JDK ...
-    - Maven version ...
-    - WebSockets ...
-    - RESTful API ...
-    - SSL/TLS via Self-Signed Certificate
-    - JWT for Authentication/Authorization
-    - PostgreSQL ...
-    - Testing & automation
-    - ...
-- **Frontend**:
-    - React version ...
-    - Javascript version ...
-    - HTML...
-    - CSS...
-    - LeafLet.js...
-    - OpenStreetMaps API(?)...
-    - Testing & automation
-    - ...
-- **Data stream**:
-    - Apache Kafka version...
-    - Python...
-    - AIS data from Zenodo...
+## Technical Details
+
+<table>
+  <tr>
+    <th align="left">🍃 Backend</th>
+    <th align="left">🌀 Frontend</th>
+    <th align="left">🦑 Data Stream</th>
+  </tr>
+  <tr>
+    <td>
+      <ul>
+        <li>Spring Boot v...</li>
+        <li>Java 17 (JDK ...)</li>
+        <li>Maven v...</li>
+        <li>RESTful API</li>
+        <li>WebSockets</li>
+        <li>SSL/TLS (Self-Signed Certificate)</li>
+        <li>JWT Auth</li>
+        <li>PostgreSQL v...</li>
+        <li>Testing & Automation ...</li>
+        <li>...</li>
+      </ul>
+    </td>
+    <td>
+      <ul>
+        <li>React v...</li>
+        <li>JavaScript v...</li>
+        <li>HTML... / CSS...</li>
+        <li>Leaflet.js ...</li>
+        <li>OpenStreetMap API (?) ...</li>
+        <li>SPA Architecture</li>
+        <li>Testing & Automation ...</li>
+        <li>...</li>
+      </ul>
+    </td>
+    <td>
+      <ul>
+        <li>Apache Kafka v...</li>
+        <li>AIS Dataset from Zenodo (6-month period)</li>
+        <li>Python ... producer</li>
+        <li>...</li>
+      </ul>
+    </td>
+  </tr>
+</table>
 
 ---
 
