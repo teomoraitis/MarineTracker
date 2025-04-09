@@ -1,3 +1,4 @@
+# Mark Kafka binaries and files as vendored to exclude them from language repo stats
 Kafka/kafka_2.12-3.9.0/bin/** linguist-vendored
 Kafka/kafka_2.12-3.9.0/config/** linguist-vendored
 Kafka/kafka_2.12-3.9.0/libs/** linguist-vendored
