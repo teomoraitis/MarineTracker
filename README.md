@@ -25,8 +25,8 @@ AIS data is replayed in real-time from a 6-month historical dataset sourced from
 Key features include:
 - **Real-time visualization of vessels** on a map with details like location, status, type, and course.
 - **Historical playback** of vessel trajectories for the past 12 hours.
-- **Fleet management**, allowing users to follow specific ships and apply filters (e.g., ship type or only their fleet).
-- **Zone of Interest** functionality, where users can define regions on the map and set movement restrictions (e.g., speed < 5).
+- **Fleet management**, allowing users to follow specific ships and apply filters.
+- **Zone of Interest** functionality, where users can define regions on the map and set movement restrictions.
 - **Admin privileges** to edit static ship data.
 
 ---
