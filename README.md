@@ -6,8 +6,8 @@ Full-stack web platform featuring real-time vessel monitoring through AIS data s
 ---
 
 ## The Team 
-**Όνομα ομάδας:** "Ομάδα Χρηστών 4" <br>
-**Πλήθος ατόμων:** 6
+**Team name:** "Ομάδα Χρηστών 4" <br>
+**Number of contributors:** 6
 - sdi2000150 - Theodoros Moraitis (sdi2000150)
 - sdi1700254 - Pierro Zachareas (plerros)
 - sdi2000105 - Christos Kypraios (ChristosKypraios)
