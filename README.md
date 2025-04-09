@@ -20,7 +20,6 @@ Full-stack web platform featuring real-time vessel monitoring through AIS data s
 ## Project Description
 
 MarineTracker is a web-based platform for real-time vessel tracking using AIS (Automatic Identification System) data. 
-AIS data is replayed in real-time from a 6-month historical dataset sourced from Zenodo.
 
 Key features include:
 - **Real-time visualization of vessels** on a map with details like location, status, type, and course.
@@ -79,5 +78,5 @@ The project was developed in three phases:
 - **Data stream**:
     - Apache Kafka version...
     - Python...
-    - AIS data...
+    - AIS data from Zenodo...
 
