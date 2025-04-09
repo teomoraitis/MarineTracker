@@ -17,19 +17,6 @@ Full-stack web platform featuring real-time vessel monitoring through AIS data s
 
 ---
 
-## Project Description
-
-MarineTracker is a web-based platform for real-time vessel tracking using AIS (Automatic Identification System) data. 
-
-Key features include:
-- **Real-time visualization of vessels** on a map with details like location, status, type, and course.
-- **Historical playback** of vessel trajectories for the past 12 hours.
-- **Fleet management**, allowing users to follow specific ships and apply filters.
-- **Zone of Interest** functionality, where users can define regions on the map and set movement restrictions.
-- **Admin privileges** to edit static ship data.
-
----
-
 ## Project Deliverables
 
 The project was developed in three phases:
@@ -80,3 +67,21 @@ The project was developed in three phases:
     - Python...
     - AIS data from Zenodo...
 
+---
+
+## The Platform
+MarineTracker is a web-based platform for real-time vessel tracking using AIS (Automatic Identification System) data. 
+
+Key features include:
+- **Real-time visualization of vessels** on a map with details like location, status, type, and course.
+- **Historical playback** of vessel trajectories for the past 12 hours.
+- **Fleet management**, allowing users to follow specific ships and apply filters.
+- **Zone of Interest** functionality, where users can define regions on the map and set movement restrictions.
+- **Admin privileges** to edit static ship data.
+...
+
+### Home Page - Guest
+
+### Home Page - Registered User
+
+### Home Page - Admin
