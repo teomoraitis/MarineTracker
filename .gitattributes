@@ -1,8 +1,8 @@
-Kafka/kafka_2.12-3.9.0/bin/* linguist-vendored
-Kafka/kafka_2.12-3.9.0/config/* linguist-vendored
-Kafka/kafka_2.12-3.9.0/libs/* linguist-vendored
-Kafka/kafka_2.12-3.9.0/licenses/* linguist-vendored
-Kafka/kafka_2.12-3.9.0/logs/* linguist-vendored
-Kafka/kafka_2.12-3.9.0/site-docs/* linguist-vendored
+Kafka/kafka_2.12-3.9.0/bin/** linguist-vendored
+Kafka/kafka_2.12-3.9.0/config/** linguist-vendored
+Kafka/kafka_2.12-3.9.0/libs/** linguist-vendored
+Kafka/kafka_2.12-3.9.0/licenses/** linguist-vendored
+Kafka/kafka_2.12-3.9.0/logs/** linguist-vendored
+Kafka/kafka_2.12-3.9.0/site-docs/** linguist-vendored
 Kafka/kafka_2.12-3.9.0/LICENSE linguist-vendored
 Kafka/kafka_2.12-3.9.0/NOTICE linguist-vendored
