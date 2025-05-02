@@ -61,5 +61,5 @@ Also, make sure you have locally the `ais/` directory with all its contents (inc
 This prints all messages from the location_updates topic (starting from beginning, but this can change).
 
 #### Notes:
-- The CSV data files (dataset/ais/*) are not included in the repo due to its size.
+- The CSV data files (dataset/ais/*) are not included in the repo due to their size.
 - Adjust the CSV path in producer.py if you use a different file.
