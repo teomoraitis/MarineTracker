@@ -17,8 +17,8 @@ This setup streams vessel location data from a CSV file (sorted) to a Kafka topi
    `producer.py` reads the CSV and sends each row as a JSON message to the Kafka topic. It simulates real-time streaming by sleeping between messages based on their timestamp.
 
 5. **Consumer Script**  
-   A Kafka console consumer is available to read and display the messages being published to the topic.
-   For the project, a "real" Spring Boot Java consumer will be used.
+   A Kafka console consumer is available to read and display the messages being published to the topic.<br>
+   For the project, a real Spring Boot Java consumer will be used.
 
 ## How to Run
 
