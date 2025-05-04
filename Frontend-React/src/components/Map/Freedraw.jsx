@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useMap } from "react-leaflet";
 import L from "leaflet";
 import FreeDraw from "leaflet-freedraw";
@@ -9,12 +9,11 @@ const FreeDrawComponent = ({ setPolygon }) => {
   useEffect(() => {
     if (!map) return;
 
-    const freeDraw = new FreeDraw({ mode: FreeDraw.ALL });
+    const freeDraw = new FreeDraw({ mode: FreeDraw.CREATE });
     map.addLayer(freeDraw);
 
     const handleMarkers = (event) => {
-      console.log("New Polygon Drawn:", event.latLngs);
-
+      console.log(event.latLngs)
       // create polygon
       const newPolygon = L.polygon(event.latLngs, { color: "rgba(200, 0, 0, 0.5)" });
       newPolygon.addTo(map);
