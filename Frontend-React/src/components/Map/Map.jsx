@@ -1,12 +1,8 @@
-import React, { useRef, useState, useEffect, useContext, createContext } from 'react';
-import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
+import React, { useRef, useState, useContext } from 'react';
+import { MapContainer, TileLayer, ZoomControl, useMapEvents } from 'react-leaflet';
 import Marker from '../MapMarker/MapMarker.jsx';
 import FreeDrawComponent from './Freedraw.jsx'
-
-export const MapContext = createContext({
-  error: undefined,
-  setError: () => {},
-});
+import { MapContext, FreeDrawContext } from '../../contexts/contexts.js';
 
 
 const Map = ({ center }) => {
@@ -14,7 +10,6 @@ const Map = ({ center }) => {
   const mapContext = useContext(MapContext);
 
   const handlePolygonChange = (newPolygon) => {
-    console.log("Polygon Updated:", newPolygon);
 
     if (polygonRef.current) {
       polygonRef.current.remove(); // remove the old polygon from the map
@@ -22,7 +17,7 @@ const Map = ({ center }) => {
 
     polygonRef.current = newPolygon; // store the new polygon reference
     if (newPolygon?.getLatLngs()?.length > 1) {
-      mapContext.setError('Μπορείτε να έχετε μόνο μια και συνεχόμενη ζώνη ενδιαφέροντος.');
+      mapContext.setError('You can only have one Zone of Interest.');
     } else {
       mapContext.setError(undefined);
     }
@@ -40,6 +35,7 @@ const Map = ({ center }) => {
       />
       <Marker position={center} label={center?.label}/>
       <FreeDrawComponent setPolygon={handlePolygonChange} />
+      <ZoomControl position='bottomright'/>
     </>
   );
 };
@@ -62,7 +58,8 @@ const MapWrapper = ({}) => {
         center={center}
         zoom={11}
         scrollWheelZoom={true}
-      style={{height: "500px", width: "1000px"}}
+        zoomControl={false}
+        className='w-full h-[85vh] z-10'
       >
         <Map center={center}/>
       </MapContainer>

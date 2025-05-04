@@ -1,15 +1,17 @@
-import { useEffect } from "react";
+import { useEffect, useContext } from "react";
 import { useMap } from "react-leaflet";
 import L from "leaflet";
 import FreeDraw from "leaflet-freedraw";
+import { FreeDrawContext } from "../../contexts/contexts";
 
 const FreeDrawComponent = ({ setPolygon }) => {
   const map = useMap();
+  const freeDrawContext = useContext(FreeDrawContext);
 
   useEffect(() => {
     if (!map) return;
 
-    const freeDraw = new FreeDraw({ mode: FreeDraw.CREATE });
+    const freeDraw = new FreeDraw({ mode: freeDrawContext.freeDrawOn ? FreeDraw.CREATE : FreeDraw.NONE });
     map.addLayer(freeDraw);
 
     const handleMarkers = (event) => {
@@ -27,7 +29,7 @@ const FreeDrawComponent = ({ setPolygon }) => {
     const handleKeyDown = (event) => {
       if (event.key === "Escape") {
         freeDraw.cancel();
-      } else if (event.key === "z") {
+      } else if (event.key === "z" && freeDrawContext.freeDrawOn) {
         freeDraw.clear();
 
         map.eachLayer((layer) => {
