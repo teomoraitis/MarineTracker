@@ -29,7 +29,7 @@ const FreeDrawComponent = ({ setPolygon }) => {
     const handleKeyDown = (event) => {
       if (event.key === "Escape") {
         freeDraw.cancel();
-      } else if (event.key === "z" && freeDrawContext.freeDrawOn) {
+      } else if (event.key === "z" && event.ctrlKey === true && freeDrawContext.freeDrawOn) {
         freeDraw.clear();
 
         map.eachLayer((layer) => {
