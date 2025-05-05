@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Map from './components/Map/Map.jsx';
 import Navbar from './components/Navbar/Navbar.jsx';
 import { FreeDrawContext, AuthContext } from './contexts/contexts.js';
+import SockJS from 'sockjs-client';
+import { Client } from '@stomp/stompjs';
 import './App.css';
 import Filters from './components/Filters/Filters.jsx';
 import ShipPopUp from './components/ShipPopUp/ShipPopUp.jsx';
@@ -20,6 +22,38 @@ const App = () => {
   const logout = () => {
     setUser(null);
   };
+
+  useEffect(() => {
+    const socket = new SockJS("https://localhost:8443/ws");
+    const stompClient = new Client({
+      webSocketFactory: () => socket,
+      reconnectDelay: 5000,
+      onConnect: () => {
+        console.log("Connected to WebSocket (SockJS)");
+
+        stompClient.subscribe("/topic/locations", (message) => {
+          try {
+            const newShip = JSON.parse(message.body);
+            console.log("Received WebSocket Data:", newShip);
+
+            setShips((prevShips) => ({
+              ...prevShips,
+              [newShip.mmsi]: newShip,
+            }));
+          } catch (error) {
+            console.error("Error parsing WebSocket message:", error);
+          }
+        });
+      },
+      onStompError: (frame) => {
+        console.error("STOMP Error:", frame.headers["message"]);
+      },
+    });
+
+    stompClient.activate();
+
+    return () => stompClient.deactivate();
+  }, []);
 
 
   return (
