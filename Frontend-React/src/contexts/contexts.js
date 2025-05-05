@@ -9,3 +9,9 @@ export const FreeDrawContext = createContext({
   freeDrawOn: false,
   setFreeDraw: () => {},
 });
+
+export const AuthContext = createContext({
+  user: null,
+  login: () => {},
+  logout: () => {},
+});
