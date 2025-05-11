@@ -15,3 +15,36 @@ export const AuthContext = createContext({
   login: () => {},
   logout: () => {},
 });
+
+export const FilterContext = createContext({
+  filters: {
+    types: [],
+    fleetOnly: false,
+    zoi: {
+      show: false,
+      area: [],
+      restrictions: {
+        speed: 0,
+        types: [],
+      },
+    },
+    bounds: null,
+  },
+  onFilterChange: () => {},
+});
+
+export const SelectedShipContext = createContext({
+  ship: {
+    mmsi: null,
+    inFleet: false,
+    coordinates: {
+      lat: null,
+      lng: null,
+    },
+    path: [],
+    // ...
+  },
+  showPath: false,
+  setShowPath: () => {},
+  setSelectedShipInfo: () => {},
+});

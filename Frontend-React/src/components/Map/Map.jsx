@@ -1,13 +1,15 @@
-import React, { useRef, useState, useContext } from 'react';
-import { MapContainer, TileLayer, ZoomControl, useMapEvents } from 'react-leaflet';
+import React, { useRef, useState, useContext, useEffect } from 'react';
+import { MapContainer, TileLayer, ZoomControl, useMap, useMapEvents } from 'react-leaflet';
 import Marker from '../MapMarker/MapMarker.jsx';
 import FreeDrawComponent from './Freedraw.jsx'
-import { MapContext, FreeDrawContext } from '../../contexts/contexts.js';
+import { FilterContext, MapContext, SelectedShipContext } from '../../contexts/contexts.js';
 
 
 const Map = ({ center }) => {
   const polygonRef = useRef(null); // store polygon reference
   const mapContext = useContext(MapContext);
+  const { filters, onFilterChange } = useContext(FilterContext);
+  const map = useMap();
 
   const handlePolygonChange = (newPolygon) => {
 
@@ -19,13 +21,45 @@ const Map = ({ center }) => {
     if (newPolygon?.getLatLngs()?.length > 1) {
       mapContext.setError('You can only have one Zone of Interest.');
     } else {
+      onFilterChange({
+        ...filters,
+        zoi: {
+          ...filters.zoi,
+          area: polygonRef.current?.getLatLngs() ?? [],
+        },
+      });
       mapContext.setError(undefined);
     }
   };
 
   useMapEvents({
     click: () => {}, // add event handlers like so
+    moveend: () => {
+      const bounds = map.getBounds();
+      onFilterChange({
+        ...filters,
+        bounds: [
+          bounds.getNorthEast(),
+          bounds.getSouthEast(),
+          bounds.getSouthWest(),
+          bounds.getNorthWest(),
+        ],
+      });
+    },
   });
+
+  useEffect(() => {
+    const bounds = map.getBounds();
+    onFilterChange({
+      ...filters,
+      bounds: [
+        bounds.getNorthEast(),
+        bounds.getSouthEast(),
+        bounds.getSouthWest(),
+        bounds.getNorthWest(),
+      ],
+    });
+  }, []);
 
   return (
     <>
@@ -42,12 +76,17 @@ const Map = ({ center }) => {
 
 const MapWrapper = ({}) => {
   const [error, setError] = useState(undefined);
+  const selectedShipContext = useContext(SelectedShipContext);
   // test point to show MapMarker functionality
-  const center = {
+  const [center, setCenter] = useState(selectedShipContext.ship?.coordinates ?? {
     lat: 37.97539455379486,
     lng: 23.736047744750977,
     label: 'Syntagma'
-  };
+  });
+
+  useEffect(() => {
+    setCenter(selectedShipContext.ship?.coordinates ?? center);
+  }, [selectedShipContext.ship?.mmsi]);
 
   return (
     <MapContext.Provider value={{
