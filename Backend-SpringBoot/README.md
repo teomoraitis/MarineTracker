@@ -19,11 +19,11 @@ by following the instructions in the [Kafka Setup README](../Kafka/README.md).
 ### 2. Set Up and Start PostgreSQL Database via Docker
 
 ```bash
-# Pull PostgreSQL Docker image
-docker pull postgres
+# Pull PostgreSQL+PostGIS Docker image
+docker pull postgis/postgis:17-3.4
 
 # Run PostgreSQL container
-docker run --name postgres_container -e POSTGRES_PASSWORD=mysecretpassword -d -p 5432:5432 postgres
+docker run --name postgres_container -e POSTGRES_PASSWORD=mysecretpassword -e POSTGRES_USER=postgres -e POSTGRES_DB=postgres -d -p 5432:5432 postgis/postgis:17-3.4
 
 # If container exists but is stopped, start it
 docker start postgres_container
