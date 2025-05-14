@@ -1,11 +1,12 @@
 import React, { useContext, useState } from 'react';
 import Toggle from '../Toggle/Toggle.jsx';
 import NameSearch from '../NameSearch/NameSearch.jsx';
-import { FreeDrawContext } from '../../contexts/contexts.js';
+import { FreeDrawContext, FilterContext } from '../../contexts/contexts.js';
 import HoverInfo from '../HoverInfo/HoverInfo.jsx';
 
 const Filters = ({}) => {
-  const freeDrawContext = useContext(FreeDrawContext);
+  const { freeDrawOn, setFreeDraw } = useContext(FreeDrawContext);
+  const { filters, onFilterChange } = useContext(FilterContext);
 
   const [showTypesDropdown1, setShowTypesDropdown1] = useState(false);
   const [showTypesDropdown2, setShowTypesDropdown2] = useState(false);
@@ -81,7 +82,13 @@ const Filters = ({}) => {
 
         <div className='flex flex-row gap-5 items-center'>
           <h6 className='text-sm font-regular p-0'>🚢 MyFleet</h6>
-          <Toggle />
+          <Toggle
+            value={filters.fleetOnly}
+            onChange={(val) => onFilterChange({
+              ...filters,
+              fleetOnly: val
+            })}
+          />
         </div>
       </div>
 
@@ -90,74 +97,96 @@ const Filters = ({}) => {
         <div>
           <div className='flex flex-row gap-5 items-center'>
             <h6 className='text-lg font-bold'>Zone of Interest</h6>
-            <Toggle />
+            <Toggle
+              value={filters.zoi.show}
+              onChange={(val) => onFilterChange({
+                ...filters,
+                zoi: { ...filters.zoi, show: val }
+              })}
+            />
           </div>
-          <button
-            className='w-fit p-1'
-            onClick={() => freeDrawContext.setFreeDraw(!freeDrawContext.freeDrawOn)}
-          >
-            <h6 className='text-sm font-light text-left'>
-              {freeDrawContext.freeDrawOn ? "✅ Save" : "🗺️ Edit"}
-            </h6>
-          </button>
+          {
+            filters.zoi.show && (
+              <button
+                className='w-fit p-1'
+                onClick={() => setFreeDraw(!freeDrawOn)}
+              >
+                <h6 className='text-sm font-light text-left'>{freeDrawOn ? "✅ Save" : "🗺️ Edit"}</h6>
+              </button>
+            )
+          }
         </div>
 
-        <h6 className='text-sm font-light italic'>Restrictions:</h6>
-        <div className='flex flex-row gap-5 items-center'>
-          <h6 className='text-sm font-light'>
-            🚤 Speed: <HoverInfo tooltip="Max speed in knots">🛈</HoverInfo>
-          </h6>
-          <input
-            className="w-16 px-1 py-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none appearance-none"
-            min='1'
-            max='20'
-            type='number'
-          />
-        </div>
+        {
+          filters.zoi.show && (
+            <>
+              <h6 className='text-sm font-light italic'>Restrictions:</h6>
+              <div className='flex flex-row gap-5 items-center'>
+                <h6 className='text-sm font-light'>Speed:
+                  🚤 Speed: <HoverInfo tooltip="Max speed in knots">🛈</HoverInfo>
+                </h6>
+                <input
+                  className="w-16 px-1 py-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none appearance-none"
+                  min='0'
+                  max='20'
+                  type='number'
+                  value={filters.zoi.restrictions.speed}
+                  onChange={(e) => onFilterChange({
+                    ...filters,
+                    zoi: {
+                      ...filters.zoi,
+                      restrictions: { ...filters.zoi.restrictions, speed: e.target.value }
+                    }
+                  })}
+                />
+              </div>
 
-        {/* Second Type Dropdown */}
-        <div className='flex flex-col gap-2'>
-          <div
-            className='flex flex-row gap-3 items-center cursor-pointer'
-            onClick={() => setShowTypesDropdown2(!showTypesDropdown2)}
-          >
-            <h6 className='text-sm font-light text-left'>📋 Type:</h6>
-            <HoverInfo tooltip="Types to look out for">🛈</HoverInfo>
-            <span className='text-xs text-gray-500'>{showTypesDropdown2 ? '▲' : '▼'}</span>
-          </div>
-
-          {showTypesDropdown2 && (
-            <div className="flex flex-col border border-gray-300 rounded-lg px-2 py-1 shadow-sm max-h-40 overflow-y-auto">
-              {shipTypes.map((type, index) => (
+              {/* Second Type Dropdown */}
+              <div className='flex flex-col gap-2'>
                 <div
-                  key={index}
-                  onClick={() => toggleType(type, selectedTypes2, setSelectedTypes2)}
-                  className={`text-sm px-2 py-1 rounded cursor-pointer ${
-                    selectedTypes2.includes(type)
-                      ? 'bg-green-200 text-green-800'
-                      : 'hover:bg-gray-100'
-                  }`}
+                  className='flex flex-row gap-3 items-center cursor-pointer'
+                  onClick={() => setShowTypesDropdown2(!showTypesDropdown2)}
                 >
-                  {type}
+                  <h6 className='text-sm font-light text-left'>📋 Type:</h6>
+                  <HoverInfo tooltip="Types to look out for">🛈</HoverInfo>
+                  <span className='text-xs text-gray-500'>{showTypesDropdown2 ? '▲' : '▼'}</span>
                 </div>
-              ))}
-            </div>
-          )}
 
-          {/* Selected tags for Type 2 */}
-          {selectedTypes2.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-2">
-              {selectedTypes2.map((type, index) => (
-                <span
-                  key={index}
-                  className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full border border-green-300"
-                >
-                  {type}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
+                {showTypesDropdown2 && (
+                  <div className="flex flex-col border border-gray-300 rounded-lg px-2 py-1 shadow-sm max-h-40 overflow-y-auto">
+                    {shipTypes.map((type, index) => (
+                      <div
+                        key={index}
+                        onClick={() => toggleType(type, selectedTypes2, setSelectedTypes2)}
+                        className={`text-sm px-2 py-1 rounded cursor-pointer ${
+                          selectedTypes2.includes(type)
+                            ? 'bg-green-200 text-green-800'
+                            : 'hover:bg-gray-100'
+                        }`}
+                      >
+                        {type}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Selected tags for Type 2 */}
+                {selectedTypes2.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {selectedTypes2.map((type, index) => (
+                      <span
+                        key={index}
+                        className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full border border-green-300"
+                      >
+                        {type}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </>
+          )
+        }
       </div>
     </section>
   );
