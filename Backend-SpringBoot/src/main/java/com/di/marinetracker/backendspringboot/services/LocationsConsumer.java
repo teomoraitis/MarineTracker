@@ -1,5 +1,6 @@
 package com.di.marinetracker.backendspringboot.services;
 
+import com.di.marinetracker.backendspringboot.vessels.VesselRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class LocationsConsumer {
+    private final VesselRepository repository;
+    LocationsConsumer(VesselRepository repository) {
+        this.repository = repository;
+    }
 
     @Autowired
     SimpMessagingTemplate template;
