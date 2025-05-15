@@ -54,3 +54,7 @@ build/
 ### Kafka logs ###
 ../Kafka/kafka_2.12-3.9.0/logs/
 ../Kafka/kafka_2.12-3.9.0/logs/*
+../Kafka/kafka_2.12-3.9.0/logs/controller.log
+../Kafka/kafka_2.12-3.9.0/logs/server.log
+Kafka/kafka_2.12-3.9.0/logs/controller.log
+Kafka/kafka_2.12-3.9.0/logs/server.log
