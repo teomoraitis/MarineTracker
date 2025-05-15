@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class VesselPositionsConsumer {
@@ -37,6 +38,16 @@ public class VesselPositionsConsumer {
             
             // Convert MMSI to String (it comes as Integer from Kafka)
             String mmsi = String.valueOf(positionData.get("mmsi"));
+            
+            // Check if vessel exists in our database (it should, via static load of name+mmsi+type)
+            Optional<Vessel> existingVessel = vesselRepository.findById(mmsi);
+            
+            if (!existingVessel.isPresent()) {
+                logger.warn("Received position for unknown vessel MMSI: {}. Ignoring position update.", mmsi);
+                return;
+            }
+
+            // Get position data
             Double latitude = Double.valueOf(positionData.get("lat").toString());
             Double longitude = Double.valueOf(positionData.get("lon").toString());
             Double speed = Double.valueOf(positionData.get("speed").toString());
@@ -49,18 +60,8 @@ public class VesselPositionsConsumer {
             Long timestampLong = Long.valueOf(positionData.get("timestamp").toString());
             Instant timestamp = Instant.ofEpochSecond(timestampLong);
             
-            String type = positionData.get("type") != null ? String.valueOf(positionData.get("type")) : "Unknown";
+            Vessel vessel = existingVessel.get();
             
-            // Get or create vessel
-            Vessel vessel = vesselRepository.findById(mmsi)
-                    .orElseGet(() -> {
-                        String vesselName = positionData.get("name") != null ? 
-                            String.valueOf(positionData.get("name")) : 
-                            "Unknown Vessel " + mmsi;
-                        Vessel newVessel = new Vessel(mmsi, type, vesselName);
-                        return vesselRepository.save(newVessel);
-                    });
-
             // Create new position with all fields
             VesselPosition position = new VesselPosition(
                     vessel,
@@ -78,7 +79,10 @@ public class VesselPositionsConsumer {
             vessel.addPosition(position);
             vesselPositionRepository.save(position);
             
-            logger.info("Processed position update for vessel MMSI: {}", mmsi);
+            // Log the update with details
+            logger.info("Position updated - Vessel: {} (MMSI: {}), Position: lat={}, lon={}, speed={}, course={}, timestamp={}", 
+                      vessel.getName(), vessel.getMmsi(), latitude, longitude, speed, course, timestamp);
+            
         } catch (Exception e) {
             logger.error("Error processing vessel position: {}", e.getMessage(), e);
         }
