@@ -23,12 +23,15 @@ class LoadDatabase {
     CommandLineRunner initDatabase(VesselRepository repository) {
 
         return args -> {
-            try (Stream<String> lines = Files.lines(Paths.get("src/main/resources/csv/vessel_types.csv"))) {
+            try (Stream<String> lines = Files.lines(Paths.get("src/main/resources/csv/vessel_types_names.csv"))) {
                 List<List<String>> records = lines.map(line -> Arrays.asList(line.split(",")))
                         .toList();
 
                 for (List<String> record : records) {
-                    log.info("Preloading " + repository.save(new Vessel(record.get(0), record.get(1))));
+                    String mmsi = (record.size() >= 1) ? record.get(0) : "";
+                    String type = (record.size() >= 2) ? record.get(1) : "";
+                    String name = (record.size() >= 3) ? record.get(2) : "";
+                    log.info("Preloading " + repository.save(new Vessel(mmsi, type, name)));
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
