@@ -1,7 +1,7 @@
 package com.di.marinetracker.backendspringboot.config;
 
-import com.di.marinetracker.backendspringboot.vessels.Vessel;
-import com.di.marinetracker.backendspringboot.vessels.VesselRepository;
+import com.di.marinetracker.backendspringboot.entities.Vessel;
+import com.di.marinetracker.backendspringboot.repositories.VesselRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
