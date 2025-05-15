@@ -1,4 +1,4 @@
-package com.di.marinetracker.backendspringboot.config;
+package com.di.marinetracker.backendspringboot.configurations;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

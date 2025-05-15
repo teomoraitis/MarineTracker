@@ -1,4 +1,4 @@
-package com.di.marinetracker.backendspringboot.config;
+package com.di.marinetracker.backendspringboot.configurations;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -10,7 +10,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebMvc
-public class CorsConfigurer implements WebMvcConfigurer {
+public class CorsConfig implements WebMvcConfigurer {
 
     @Autowired
     private Environment env;

@@ -1,4 +1,4 @@
-package com.di.marinetracker.backendspringboot.config;
+package com.di.marinetracker.backendspringboot.configurations;
 
 import com.di.marinetracker.backendspringboot.entities.Vessel;
 import com.di.marinetracker.backendspringboot.repositories.VesselRepository;
@@ -15,9 +15,9 @@ import java.util.List;
 import java.util.stream.Stream;
 
 @Configuration
-class LoadDatabase {
+class LoadDatabaseConfig {
 
-    private static final Logger log = LoggerFactory.getLogger(LoadDatabase.class);
+    private static final Logger log = LoggerFactory.getLogger(LoadDatabaseConfig.class);
 
     @Bean
     CommandLineRunner initDatabase(VesselRepository repository) {
