@@ -51,7 +51,7 @@ This creates the location_updates topic if it doesn't already exist (ignore the 
 Make sure you have the required Python packages (python3 pip, pandas, confluent_kafka, ...). <br>
 Also, make sure you have locally the `ais/` directory with all its contents (including a sorted version of ais data stream).
 
-### 4. Run the Kafka Console Consumer (Optional)
+### 4. Run the Kafka Console Consumer (Optional for Testing)
 
 ```bash
   cd ../kafka_2.12-3.9.0
@@ -59,6 +59,10 @@ Also, make sure you have locally the `ais/` directory with all its contents (inc
 ```
 
 This prints all messages from the location_updates topic (starting from beginning, but this can change).
+
+### 5. Proceed to Spring Boot execution
+
+Check [Backend Setup for MarineTracker README](../Backend-SpringBoot/README.md).
 
 #### Notes:
 - The CSV data files (dataset/ais/*) are not included in the repo due to their size.
