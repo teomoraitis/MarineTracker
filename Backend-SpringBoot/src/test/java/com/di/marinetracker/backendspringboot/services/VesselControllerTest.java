@@ -34,8 +34,8 @@ public class VesselControllerTest {
 
     @Test
     void getVessels() throws Exception {
-        Vessel vessel1 = new Vessel("1133435535", "cargo");
-        Vessel vessel2 = new Vessel("1133435536", "fishing");
+        Vessel vessel1 = new Vessel("1133435535", "cargo", "BOB");
+        Vessel vessel2 = new Vessel("1133435536", "fishing", "ALICE");
 
         Mockito.when(vesselRepository.findAll()).thenReturn(List.of(vessel1, vessel2));
         mockMvc.perform(get("/vessels"))
@@ -43,24 +43,27 @@ public class VesselControllerTest {
                 .andExpect(jsonPath("$.length()", is(2)))
                 .andExpect(jsonPath("$[0].mmsi", is("1133435535")))
                 .andExpect(jsonPath("$[0].type", is("cargo")))
+                .andExpect(jsonPath("$[0].name", is("BOB")))
                 .andExpect(jsonPath("$[1].mmsi", is("1133435536")))
-                .andExpect(jsonPath("$[1].type", is("fishing")));
+                .andExpect(jsonPath("$[1].type", is("fishing")))
+                .andExpect(jsonPath("$[1].name", is("ALICE")));
     }
 
     @Test
     void getVessel() throws Exception {
-        Vessel vessel1 = new Vessel("1133435535", "cargo");
+        Vessel vessel1 = new Vessel("1133435535", "cargo", "JACK SPARROW");
 
         Mockito.when(vesselRepository.findById("1133435535")).thenReturn(Optional.of(vessel1));
         mockMvc.perform(get("/vessels/1133435535"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.mmsi", is("1133435535")))
-                .andExpect(jsonPath("$.type", is("cargo")));
+                .andExpect(jsonPath("$.type", is("cargo")))
+                .andExpect(jsonPath("$.name", is("JACK SPARROW")));
     }
 
     @Test
     void createVessel() throws Exception {
-        Vessel vessel = new Vessel("1133435537", "tanker");
+        Vessel vessel = new Vessel("1133435537", "tanker", "HEAVY");
 
         Mockito.when(vesselRepository.save(Mockito.any(Vessel.class))).thenReturn(vessel);
 
@@ -70,13 +73,15 @@ public class VesselControllerTest {
                                 .content("""
                             {
                                 "mmsi": "1133435537",
-                                "type": "tanker"
+                                "type": "tanker",
+                                "name": "HEAVY"
                             }
                             """)
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.mmsi", is("1133435537")))
-                .andExpect(jsonPath("$.type", is("tanker")));
+                .andExpect(jsonPath("$.type", is("tanker")))
+                .andExpect(jsonPath("$.name", is("HEAVY")));
     }
 
 }
