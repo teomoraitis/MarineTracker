@@ -4,10 +4,15 @@ import com.di.marinetracker.backendspringboot.entities.Vessel;
 import com.di.marinetracker.backendspringboot.entities.VesselPosition;
 import com.di.marinetracker.backendspringboot.repositories.VesselRepository;
 import com.di.marinetracker.backendspringboot.repositories.VesselPositionRepository;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +33,9 @@ public class VesselPositionsConsumer {
         this.vesselRepository = vesselRepository;
         this.vesselPositionRepository = vesselPositionRepository;
     }
+
+    @Autowired
+    SimpMessagingTemplate template;
 
     @Transactional
     @KafkaListener(topics = "${kafka.topic}", groupId = "ships-consumer")
@@ -83,6 +91,15 @@ public class VesselPositionsConsumer {
             logger.info("Position updated - Vessel: {} (MMSI: {}), Position: lat={}, lon={}, speed={}, course={}, timestamp={}", 
                       vessel.getName(), vessel.getMmsi(), latitude, longitude, speed, course, timestamp);
             
+            // Send the packet over websocket
+            JsonNode shipData = objectMapper.readTree(message);
+            ArrayNode arrayNode = objectMapper.createArrayNode();
+            arrayNode.add(shipData);
+
+            JsonNode jsonNode = objectMapper.createObjectNode();
+            ((ObjectNode) jsonNode).put("setShips", arrayNode);
+            template.convertAndSend("/topic/locations", jsonNode.toPrettyString());
+            //System.out.println("Sent message: " + jsonNode.toPrettyString()); //debugging
         } catch (Exception e) {
             logger.error("Error processing vessel position: {}", e.getMessage(), e);
         }
