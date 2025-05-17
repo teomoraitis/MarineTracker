@@ -102,7 +102,7 @@ public class VesselPositionsConsumer {
                     // If the timestamp we just received and the timestampPrev differ by less than 10 minutes,
                     // overwrite timestampPrev with the new one.
                     if (timestamp.isBefore(timestampPrev.plusSeconds(600))) {
-                        vesselPositionRepository.delete(historyPositions[0]);
+                        vesselPositionRepository.delete(latest);
                     }
                 }
             }
