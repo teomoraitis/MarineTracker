@@ -92,12 +92,20 @@ public class VesselPositionsConsumer {
                       vessel.getName(), vessel.getMmsi(), latitude, longitude, speed, course, timestamp);
             
             // Send the packet over websocket
+            // TODO send conditionally based on viewport & filters
             JsonNode shipData = objectMapper.readTree(message);
-            ArrayNode arrayNode = objectMapper.createArrayNode();
-            arrayNode.add(shipData);
+            ArrayNode setShips = objectMapper.createArrayNode();
+            setShips.add(shipData);
+
+            ArrayNode hideShips = objectMapper.createArrayNode();
+            ArrayNode notifications = objectMapper.createArrayNode();
+            // TODO set zone of interest notifications here.
 
             JsonNode jsonNode = objectMapper.createObjectNode();
-            ((ObjectNode) jsonNode).put("setShips", arrayNode);
+            ((ObjectNode) jsonNode).put("setShips", setShips);
+            ((ObjectNode) jsonNode).put("hideShips", hideShips);
+            ((ObjectNode) jsonNode).put("hideAllShips", false);
+            ((ObjectNode) jsonNode).put("notifications", notifications);
             template.convertAndSend("/topic/locations", jsonNode.toPrettyString());
             //System.out.println("Sent message: " + jsonNode.toPrettyString()); //debugging
         } catch (Exception e) {
