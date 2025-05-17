@@ -13,4 +13,7 @@ public interface VesselPositionRepository extends JpaRepository<VesselPosition, 
     
     @Query("SELECT vp FROM VesselPosition vp WHERE vp.vessel.mmsi = :mmsi ORDER BY vp.timestamp DESC LIMIT 1")
     Optional<VesselPosition> findLatestByVesselMmsi(String mmsi);
+
+    @Query("SELECT vp FROM VesselPosition vp WHERE vp.vessel.mmsi = :mmsi ORDER BY vp.timestamp DESC LIMIT 2")
+    Optional<VesselPosition[]> find2LatestByVesselMmsi(String mmsi);
 }

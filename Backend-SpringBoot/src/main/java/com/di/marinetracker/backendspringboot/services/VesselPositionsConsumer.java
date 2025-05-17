@@ -20,6 +20,8 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.Optional;
 
+import static java.lang.Long.parseLong;
+
 @Service
 public class VesselPositionsConsumer {
     private static final Logger logger = LoggerFactory.getLogger(VesselPositionsConsumer.class);
@@ -85,6 +87,25 @@ public class VesselPositionsConsumer {
 
             // Save position and update vessel
             vessel.addPosition(position);
+            Optional<VesselPosition[]> history = vesselPositionRepository.find2LatestByVesselMmsi(mmsi);
+            if (history.isPresent()) {
+                VesselPosition[] historyPositions = history.get();
+                if (historyPositions.length > 2) {
+                    VesselPosition latest = historyPositions[0];
+                    VesselPosition prev   = historyPositions[1];
+                    Long timeStampLongLatest = Long.valueOf(latest.getTimestamp().toString());
+                    Long timeStampLongPrev   = Long.valueOf(  prev.getTimestamp().toString());
+
+                    Instant timestampLatest = Instant.ofEpochSecond(timeStampLongLatest);
+                    Instant timestampPrev   = Instant.ofEpochSecond(timeStampLongPrev);
+
+                    // If the timestamp we just received and the timestampPrev differ by less than 10 minutes,
+                    // overwrite timestampPrev with the new one.
+                    if (timestamp.isBefore(timestampPrev.plusSeconds(600))) {
+                        vesselPositionRepository.delete(historyPositions[0]);
+                    }
+                }
+            }
             vesselPositionRepository.save(position);
             
             // Log the update with details
