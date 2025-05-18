@@ -15,6 +15,8 @@ const App = () => {
   const [freeDrawOn, setFreeDraw] = useState(false);
   const [selectedShip, setSelectedShip] = useState({});
   const [showPath, setShowPath] = useState(false);
+  const [path, setPath] = useState([]);
+  const [ships, setShips] = useState([]);
   const [filters, setFilters] = useState({
     types: [],
     fleetOnly: false,
@@ -48,12 +50,18 @@ const App = () => {
 
         stompClient.subscribe("/topic/locations", (message) => {
           try {
-            const newShip = JSON.parse(message.body);
-            console.log("Received WebSocket Data:", newShip);
+            const update = JSON.parse(message.body);
+
+            const updateObject = update.setShips.reduce((agg, shipUpdate) => {
+              return {
+                ...agg,
+                [shipUpdate.mmsi]: shipUpdate,
+              };
+            }, {});
 
             setShips((prevShips) => ({
               ...prevShips,
-              [newShip.mmsi]: newShip,
+              ...updateObject,
             }));
           } catch (error) {
             console.error("Error parsing WebSocket message:", error);
@@ -74,6 +82,7 @@ const App = () => {
     setShowPath(!showPath);
     console.log("showPath: ", showPath);
     // fetch path for selected ship
+    setPath([]);
   };
 
   useEffect(() => {
@@ -87,7 +96,15 @@ const App = () => {
   return (
     <AuthContext.Provider value={{ user, login, logout }}>
       <FreeDrawContext.Provider value={{freeDrawOn: freeDrawOn, setFreeDraw: setFreeDraw}}>
-        <SelectedShipContext.Provider value={{ ship: selectedShip, setSelectedShipInfo: setSelectedShip, showPath, toggleShowPath }}>
+        <SelectedShipContext.Provider
+          value={{
+            ship: selectedShip,
+            setSelectedShipInfo: setSelectedShip,
+            showPath: true,
+            toggleShowPath,
+            path: path
+          }}
+        >
           <FilterContext.Provider
             value={{
               filters: filters,
@@ -99,7 +116,7 @@ const App = () => {
               <div className='relative w-full flex flex-row'>
                 { user && <Filters /> }
                 <div className='relative w-full flex flex-row'>
-                  <Map />
+                  <Map ships={ships}/>
                   { selectedShip?.mmsi && <ShipPopUp />}
                   <FreedrawTooltip />
                 </div>
