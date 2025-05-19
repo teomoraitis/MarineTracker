@@ -1,8 +1,8 @@
 import { createContext } from "react";
 
 export const MapContext = createContext({
-  error: undefined,
-  setError: () => {},
+  ships: {},
+  setShips: () => {},
 });
 
 export const FreeDrawContext = createContext({
@@ -47,4 +47,5 @@ export const SelectedShipContext = createContext({
   showPath: false,
   setShowPath: () => {},
   setSelectedShipInfo: () => {},
+  setPath: () => {},
 });

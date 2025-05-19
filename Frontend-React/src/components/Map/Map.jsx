@@ -1,13 +1,14 @@
 import React, { useRef, useState, useContext, useEffect } from 'react';
-import { MapContainer, TileLayer, ZoomControl, useMap, useMapEvents } from 'react-leaflet';
+import { MapContainer, Polyline, TileLayer, ZoomControl, useMap, useMapEvents } from 'react-leaflet';
 import Marker from '../MapMarker/MapMarker.jsx';
 import FreeDrawComponent from './Freedraw.jsx'
 import { FilterContext, MapContext, SelectedShipContext } from '../../contexts/contexts.js';
 
 
-const Map = ({ center }) => {
+const Map = ({}) => {
   const polygonRef = useRef(null); // store polygon reference
-  const mapContext = useContext(MapContext);
+  const { ships } = useContext(MapContext);
+  const selectedShipContext = useContext(SelectedShipContext);
   const { filters, onFilterChange } = useContext(FilterContext);
   const map = useMap();
 
@@ -18,9 +19,7 @@ const Map = ({ center }) => {
     }
 
     polygonRef.current = newPolygon; // store the new polygon reference
-    if (newPolygon?.getLatLngs()?.length > 1) {
-      mapContext.setError('You can only have one Zone of Interest.');
-    } else {
+    if (newPolygon?.getLatLngs()?.length <= 1) {
       onFilterChange({
         ...filters,
         zoi: {
@@ -28,10 +27,9 @@ const Map = ({ center }) => {
           area: polygonRef.current?.getLatLngs() ?? [],
         },
       });
-      mapContext.setError(undefined);
     }
   };
-
+console.log(ships);
   useMapEvents({
     click: () => {}, // add event handlers like so
     moveend: () => {
@@ -67,42 +65,52 @@ const Map = ({ center }) => {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <Marker position={center} label={center?.label}/>
+      {
+        selectedShipContext.showPath && selectedShipContext.path.length > 0 && (
+          <Polyline
+            pathOptions={{ color: '#FF0000', weight: 2 }}
+            positions={selectedShipContext.path}
+          />
+        )
+      }
+      {
+        Object.values(ships).map(ship => {
+          return (
+            <Marker
+              key={ship.mmsi}
+              position={{
+                lat: ship.lat,
+                lng: ship.lon
+              }}
+              label={ship.mmsi}
+            />
+          )
+        })
+      }
       <FreeDrawComponent setPolygon={handlePolygonChange} />
       <ZoomControl position='bottomright'/>
     </>
   );
 };
 
-const MapWrapper = ({}) => {
-  const [error, setError] = useState(undefined);
+const MapWrapper = ({ ships }) => {
   const selectedShipContext = useContext(SelectedShipContext);
-  // test point to show MapMarker functionality
-  const [center, setCenter] = useState(selectedShipContext.ship?.coordinates ?? {
-    lat: 37.97539455379486,
-    lng: 23.736047744750977,
-    label: 'Syntagma'
-  });
+  const [center, setCenter] = useState(selectedShipContext.ship?.coordinates ?? { lat: 38, lng: 24 });
 
   useEffect(() => {
     setCenter(selectedShipContext.ship?.coordinates ?? center);
   }, [selectedShipContext.ship?.mmsi]);
 
   return (
-    <MapContext.Provider value={{
-      error: error,
-      setError: setError
-    }}>
-      <MapContainer
-        center={center}
-        zoom={11}
-        scrollWheelZoom={true}
-        zoomControl={false}
-        className='w-full h-[85vh] z-10'
-      >
-        <Map center={center}/>
-      </MapContainer>
-    </MapContext.Provider>
+    <MapContainer
+      center={center}
+      zoom={9}
+      scrollWheelZoom={true}
+      zoomControl={false}
+      className='w-full h-[85vh] z-10'
+    >
+      <Map ships={ships} />
+    </MapContainer>
   );
 }
  

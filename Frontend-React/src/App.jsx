@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Map from './components/Map/Map.jsx';
 import Navbar from './components/Navbar/Navbar.jsx';
-import { FreeDrawContext, AuthContext, SelectedShipContext, FilterContext } from './contexts/contexts.js';
+import { MapContext, FreeDrawContext, AuthContext, SelectedShipContext, FilterContext } from './contexts/contexts.js';
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 import './App.css';
@@ -15,6 +15,8 @@ const App = () => {
   const [freeDrawOn, setFreeDraw] = useState(false);
   const [selectedShip, setSelectedShip] = useState({});
   const [showPath, setShowPath] = useState(false);
+  const [path, setPath] = useState([]);
+  const [ships, setShips] = useState([]);
   const [filters, setFilters] = useState({
     types: [],
     fleetOnly: false,
@@ -48,12 +50,18 @@ const App = () => {
 
         stompClient.subscribe("/topic/locations", (message) => {
           try {
-            const newShip = JSON.parse(message.body);
-            console.log("Received WebSocket Data:", newShip);
+            const update = JSON.parse(message.body);
+
+            const updateObject = update.setShips.reduce((agg, shipUpdate) => {
+              return {
+                ...agg,
+                [shipUpdate.mmsi]: shipUpdate,
+              };
+            }, {});
 
             setShips((prevShips) => ({
               ...prevShips,
-              [newShip.mmsi]: newShip,
+              ...updateObject,
             }));
           } catch (error) {
             console.error("Error parsing WebSocket message:", error);
@@ -74,6 +82,7 @@ const App = () => {
     setShowPath(!showPath);
     console.log("showPath: ", showPath);
     // fetch path for selected ship
+    setPath([]);
   };
 
   useEffect(() => {
@@ -86,29 +95,39 @@ const App = () => {
 
   return (
     <AuthContext.Provider value={{ user, login, logout }}>
-      <FreeDrawContext.Provider value={{freeDrawOn: freeDrawOn, setFreeDraw: setFreeDraw}}>
-        <SelectedShipContext.Provider value={{ ship: selectedShip, setSelectedShipInfo: setSelectedShip, showPath, toggleShowPath }}>
-          <FilterContext.Provider
+      <MapContext.Provider value={{ ships, setShips }}>
+        <FreeDrawContext.Provider value={{freeDrawOn: freeDrawOn, setFreeDraw: setFreeDraw}}>
+          <SelectedShipContext.Provider
             value={{
-              filters: filters,
-              onFilterChange: setFilters
+              ship: selectedShip,
+              setSelectedShipInfo: setSelectedShip,
+              showPath: true,
+              toggleShowPath,
+              path: path
             }}
           >
-            <div className='h-dvh'>
-              <Navbar />
-              <div className='relative w-full flex flex-row'>
-                { user && <Filters /> }
+            <FilterContext.Provider
+              value={{
+                filters: filters,
+                onFilterChange: setFilters
+              }}
+            >
+              <div className='h-dvh'>
+                <Navbar />
                 <div className='relative w-full flex flex-row'>
-                  <Map />
-                  { selectedShip?.mmsi && <ShipPopUp />}
-                  <FreedrawTooltip />
+                  { user && <Filters /> }
+                  <div className='relative w-full flex flex-row'>
+                    <Map ships={ships}/>
+                    { selectedShip?.mmsi && <ShipPopUp />}
+                    <FreedrawTooltip />
+                  </div>
                 </div>
+                <Footer />
               </div>
-              <Footer />
-            </div>
-          </FilterContext.Provider>
-        </SelectedShipContext.Provider>
-      </FreeDrawContext.Provider>
+            </FilterContext.Provider>
+          </SelectedShipContext.Provider>
+        </FreeDrawContext.Provider>
+      </MapContext.Provider>
     </AuthContext.Provider>
   );
 };

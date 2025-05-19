@@ -42,8 +42,10 @@ const Filters = ({}) => {
             className='flex flex-row gap-3 items-center cursor-pointer'
             onClick={() => setShowTypesDropdown1(!showTypesDropdown1)}
           >
-            <h6 className='text-sm font-light text-left'>📋 Type:</h6>
-            <HoverInfo tooltip="Types to look out for">🛈</HoverInfo>
+            <div className='flex flex-row items-center'>
+              <h6 className='text-sm font-light text-left'>📋 Type:</h6>
+              <HoverInfo tooltip="Types to look out for">🛈</HoverInfo>
+            </div>
             <span className='text-xs text-gray-500'>{showTypesDropdown1 ? '▲' : '▼'}</span>
           </div>
 
@@ -122,8 +124,8 @@ const Filters = ({}) => {
             <>
               <h6 className='text-sm font-light italic'>Restrictions:</h6>
               <div className='flex flex-row gap-5 items-center'>
-                <h6 className='text-sm font-light'>Speed:
-                  🚤 Speed: <HoverInfo tooltip="Max speed in knots">🛈</HoverInfo>
+                <h6 className='text-sm font-light'>🚤 Speed:
+                <HoverInfo tooltip="Max speed in knots">🛈</HoverInfo>
                 </h6>
                 <input
                   className="w-16 px-1 py-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none appearance-none"
@@ -147,8 +149,10 @@ const Filters = ({}) => {
                   className='flex flex-row gap-3 items-center cursor-pointer'
                   onClick={() => setShowTypesDropdown2(!showTypesDropdown2)}
                 >
-                  <h6 className='text-sm font-light text-left'>📋 Type:</h6>
-                  <HoverInfo tooltip="Types to look out for">🛈</HoverInfo>
+                  <div className='flex flex-row items-center'>
+                    <h6 className='text-sm font-light text-left'>📋 Type:</h6>
+                    <HoverInfo tooltip="Types to look out for">🛈</HoverInfo>
+                  </div>
                   <span className='text-xs text-gray-500'>{showTypesDropdown2 ? '▲' : '▼'}</span>
                 </div>
 
