@@ -5,9 +5,9 @@ import FreeDrawComponent from './Freedraw.jsx'
 import { FilterContext, MapContext, SelectedShipContext } from '../../contexts/contexts.js';
 
 
-const Map = ({ ships={} }) => {
+const Map = ({}) => {
   const polygonRef = useRef(null); // store polygon reference
-  const mapContext = useContext(MapContext);
+  const { ships } = useContext(MapContext);
   const selectedShipContext = useContext(SelectedShipContext);
   const { filters, onFilterChange } = useContext(FilterContext);
   const map = useMap();
@@ -19,9 +19,7 @@ const Map = ({ ships={} }) => {
     }
 
     polygonRef.current = newPolygon; // store the new polygon reference
-    if (newPolygon?.getLatLngs()?.length > 1) {
-      mapContext.setError('You can only have one Zone of Interest.');
-    } else {
+    if (newPolygon?.getLatLngs()?.length <= 1) {
       onFilterChange({
         ...filters,
         zoi: {
@@ -29,10 +27,9 @@ const Map = ({ ships={} }) => {
           area: polygonRef.current?.getLatLngs() ?? [],
         },
       });
-      mapContext.setError(undefined);
     }
   };
-
+console.log(ships);
   useMapEvents({
     click: () => {}, // add event handlers like so
     moveend: () => {
@@ -97,7 +94,6 @@ const Map = ({ ships={} }) => {
 };
 
 const MapWrapper = ({ ships }) => {
-  const [error, setError] = useState(undefined);
   const selectedShipContext = useContext(SelectedShipContext);
   const [center, setCenter] = useState(selectedShipContext.ship?.coordinates ?? { lat: 38, lng: 24 });
 
@@ -106,20 +102,15 @@ const MapWrapper = ({ ships }) => {
   }, [selectedShipContext.ship?.mmsi]);
 
   return (
-    <MapContext.Provider value={{
-      error: error,
-      setError: setError
-    }}>
-      <MapContainer
-        center={center}
-        zoom={9}
-        scrollWheelZoom={true}
-        zoomControl={false}
-        className='w-full h-[85vh] z-10'
-      >
-        <Map ships={ships} />
-      </MapContainer>
-    </MapContext.Provider>
+    <MapContainer
+      center={center}
+      zoom={9}
+      scrollWheelZoom={true}
+      zoomControl={false}
+      className='w-full h-[85vh] z-10'
+    >
+      <Map ships={ships} />
+    </MapContainer>
   );
 }
  

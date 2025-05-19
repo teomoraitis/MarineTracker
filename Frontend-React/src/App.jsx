@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Map from './components/Map/Map.jsx';
 import Navbar from './components/Navbar/Navbar.jsx';
-import { FreeDrawContext, AuthContext, SelectedShipContext, FilterContext } from './contexts/contexts.js';
+import { MapContext, FreeDrawContext, AuthContext, SelectedShipContext, FilterContext } from './contexts/contexts.js';
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 import './App.css';
@@ -95,37 +95,39 @@ const App = () => {
 
   return (
     <AuthContext.Provider value={{ user, login, logout }}>
-      <FreeDrawContext.Provider value={{freeDrawOn: freeDrawOn, setFreeDraw: setFreeDraw}}>
-        <SelectedShipContext.Provider
-          value={{
-            ship: selectedShip,
-            setSelectedShipInfo: setSelectedShip,
-            showPath: true,
-            toggleShowPath,
-            path: path
-          }}
-        >
-          <FilterContext.Provider
+      <MapContext.Provider value={{ ships, setShips }}>
+        <FreeDrawContext.Provider value={{freeDrawOn: freeDrawOn, setFreeDraw: setFreeDraw}}>
+          <SelectedShipContext.Provider
             value={{
-              filters: filters,
-              onFilterChange: setFilters
+              ship: selectedShip,
+              setSelectedShipInfo: setSelectedShip,
+              showPath: true,
+              toggleShowPath,
+              path: path
             }}
           >
-            <div className='h-dvh'>
-              <Navbar />
-              <div className='relative w-full flex flex-row'>
-                { user && <Filters /> }
+            <FilterContext.Provider
+              value={{
+                filters: filters,
+                onFilterChange: setFilters
+              }}
+            >
+              <div className='h-dvh'>
+                <Navbar />
                 <div className='relative w-full flex flex-row'>
-                  <Map ships={ships}/>
-                  { selectedShip?.mmsi && <ShipPopUp />}
-                  <FreedrawTooltip />
+                  { user && <Filters /> }
+                  <div className='relative w-full flex flex-row'>
+                    <Map ships={ships}/>
+                    { selectedShip?.mmsi && <ShipPopUp />}
+                    <FreedrawTooltip />
+                  </div>
                 </div>
+                <Footer />
               </div>
-              <Footer />
-            </div>
-          </FilterContext.Provider>
-        </SelectedShipContext.Provider>
-      </FreeDrawContext.Provider>
+            </FilterContext.Provider>
+          </SelectedShipContext.Provider>
+        </FreeDrawContext.Provider>
+      </MapContext.Provider>
     </AuthContext.Provider>
   );
 };
