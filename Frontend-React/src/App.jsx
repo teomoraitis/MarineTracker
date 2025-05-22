@@ -6,7 +6,8 @@ import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 import './App.css';
 import Filters from './components/Filters/Filters.jsx';
-import ShipPopUp from './components/ShipPopUp/ShipPopUp.jsx';
+//import ShipPopUp from './components/ShipPopUp/ShipPopUp.jsx';
+import ShipInfoPanel from './components/ShipPopUp/ShipInfoPanel.jsx';
 import Footer from './components/Footer/Footer.jsx';
 import FreedrawTooltip from './components/FreedrawTooltip/FreedrawTooltip.jsx';
 
@@ -78,6 +79,26 @@ const App = () => {
     return () => stompClient.deactivate();
   }, []);
 
+  useEffect(() => {
+  const dummyShip = {
+    mmsi: 999999999,
+    status: 0,
+    turn: 0,
+    speed: 12.5,
+    course: 90,
+    heading: 25,
+    lon: 23.7365,
+    lat: 37.9756,
+    timestamp: Date.now(),
+  };
+
+  setShips((prevShips) => ({
+    ...prevShips,
+    [dummyShip.mmsi]: dummyShip,
+  }));
+}, []);
+
+
   const toggleShowPath = () => {
     setShowPath(!showPath);
     console.log("showPath: ", showPath);
@@ -118,7 +139,7 @@ const App = () => {
                   { user && <Filters /> }
                   <div className='relative w-full flex flex-row'>
                     <Map ships={ships}/>
-                    { selectedShip?.mmsi && <ShipPopUp />}
+                    <ShipInfoPanel />
                     <FreedrawTooltip />
                   </div>
                 </div>

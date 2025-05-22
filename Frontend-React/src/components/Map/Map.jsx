@@ -83,6 +83,7 @@ console.log(ships);
                 lng: ship.lon
               }}
               label={ship.mmsi}
+              heading={ship.heading || 0}
             />
           )
         })
