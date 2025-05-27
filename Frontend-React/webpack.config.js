@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 
@@ -19,6 +20,13 @@ module.exports = {
   devServer: {
     static: {
       directory: path.resolve(__dirname, 'dist/'),
+    },
+    server: {
+      type: 'https',
+      options: {
+        key: fs.readFileSync(path.resolve(__dirname, 'ssl/key.pem')),
+        cert: fs.readFileSync(path.resolve(__dirname, 'ssl/cert.pem')),
+      },
     },
     port: 3000,
     compress: true,
