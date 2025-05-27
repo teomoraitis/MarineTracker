@@ -1,6 +1,7 @@
 package com.di.marinetracker.backendspringboot.entities;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.UuidGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,7 +13,7 @@ import java.util.List;
 @Table(name = "users")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @UuidGenerator
     private String id;
     private String userName;
     private String hashedPassword;
