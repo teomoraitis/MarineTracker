@@ -18,6 +18,9 @@ public class Vessel {
     @OrderBy("timestamp DESC")
     private List<VesselPosition> positions = new ArrayList<>();
 
+    @ManyToMany(mappedBy = "fleet")
+    private List<User> users = new ArrayList<>();
+
     public Vessel(String mmsi, String type) {
         this.mmsi = mmsi;
         this.type = type;

@@ -1,10 +1,10 @@
 package com.di.marinetracker.backendspringboot.entities;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.UuidGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.locationtech.jts.geom.Polygon;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,14 +13,21 @@ import java.util.List;
 @Table(name = "users")
 public class User {
     @Id
-    @UuidGenerator
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private String id;
     private String userName;
     private String hashedPassword;
     private String role;
+    @Column(columnDefinition = "geometry(Polygon, 4326)")
+    private Polygon zoneOfInterest;
 
 
-    @OneToMany(mappedBy = "mmsi", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany
+    @JoinTable(
+            name = "fleets",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "vessel_id")
+    )
     @OrderBy("timestamp DESC")
     private List<Vessel> fleet = new ArrayList<>();
 
@@ -55,6 +62,14 @@ public class User {
                 "id=" + id + '\'' +
                 "userName=" + userName + '\'' +
                 "role=" + role + '\'' +
-            '}';
+                '}';
+    }
+
+    public Polygon getZoneOfInterest() {
+        return zoneOfInterest;
+    }
+
+    public void setZoneOfInterest(Polygon zoneOfInterest) {
+        this.zoneOfInterest = zoneOfInterest;
     }
 }
