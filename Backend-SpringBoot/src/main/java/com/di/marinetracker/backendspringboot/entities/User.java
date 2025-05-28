@@ -1,10 +1,10 @@
 package com.di.marinetracker.backendspringboot.entities;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.UuidGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.locationtech.jts.geom.Polygon;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,14 +13,21 @@ import java.util.List;
 @Table(name = "users")
 public class User {
     @Id
-    @UuidGenerator
     private String id;
     private String userName;
     private String hashedPassword;
     private String role;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "zone_id", referencedColumnName = "id")
+    private ZoneOfInterest zoneOfInterest;
 
-    @OneToMany(mappedBy = "mmsi", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany
+    @JoinTable(
+            name = "fleets",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "vessel_id")
+    )
     @OrderBy("timestamp DESC")
     private List<Vessel> fleet = new ArrayList<>();
 
@@ -36,6 +43,13 @@ public class User {
     }
 
     public User() {
+    }
+
+    @PrePersist
+    public void generateId() {
+        if (this.id == null) {
+            this.id = java.util.UUID.randomUUID().toString();
+        }
     }
 
     public String getId() {return id;}
@@ -55,6 +69,30 @@ public class User {
                 "id=" + id + '\'' +
                 "userName=" + userName + '\'' +
                 "role=" + role + '\'' +
-            '}';
+                '}';
+    }
+
+    public ZoneOfInterest getZoneOfInterest() {
+        return this.zoneOfInterest;
+    }
+
+    public void setZoneOfInterest(ZoneOfInterest zoneOfInterest) {
+        this.zoneOfInterest = zoneOfInterest;
+    }
+
+    public List<Vessel> getFleet() {
+        return fleet;
+    }
+
+    public void addToFleet(Vessel newVessel) {
+        if (!fleet.contains(newVessel)) {
+            fleet.add(newVessel);
+            newVessel.getUsers().add(this);
+        }
+    }
+
+    public void removeFromFleet(Vessel vessel) {
+        this.fleet.remove(vessel);
+        vessel.getUsers().remove(this);
     }
 }
