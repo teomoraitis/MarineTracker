@@ -97,4 +97,9 @@ public class Vessel {
                 ", name='" + name + '\'' +
                 '}';
     }
+
+    public List<User> getUsers() {
+        return users;
+    }
+
 }

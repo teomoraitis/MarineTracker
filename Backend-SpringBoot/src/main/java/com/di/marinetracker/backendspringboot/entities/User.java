@@ -13,14 +13,14 @@ import java.util.List;
 @Table(name = "users")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private String id;
     private String userName;
     private String hashedPassword;
     private String role;
-    @Column(columnDefinition = "geometry(Polygon, 4326)")
-    private Polygon zoneOfInterest;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "zone_id", referencedColumnName = "id")
+    private ZoneOfInterest zoneOfInterest;
 
     @ManyToMany
     @JoinTable(
@@ -45,6 +45,13 @@ public class User {
     public User() {
     }
 
+    @PrePersist
+    public void generateId() {
+        if (this.id == null) {
+            this.id = java.util.UUID.randomUUID().toString();
+        }
+    }
+
     public String getId() {return id;}
 
     public String getUserName() {return userName;}
@@ -65,11 +72,27 @@ public class User {
                 '}';
     }
 
-    public Polygon getZoneOfInterest() {
-        return zoneOfInterest;
+    public ZoneOfInterest getZoneOfInterest() {
+        return this.zoneOfInterest;
     }
 
-    public void setZoneOfInterest(Polygon zoneOfInterest) {
+    public void setZoneOfInterest(ZoneOfInterest zoneOfInterest) {
         this.zoneOfInterest = zoneOfInterest;
+    }
+
+    public List<Vessel> getFleet() {
+        return fleet;
+    }
+
+    public void addToFleet(Vessel newVessel) {
+        if (!fleet.contains(newVessel)) {
+            fleet.add(newVessel);
+            newVessel.getUsers().add(this);
+        }
+    }
+
+    public void removeFromFleet(Vessel vessel) {
+        this.fleet.remove(vessel);
+        vessel.getUsers().remove(this);
     }
 }

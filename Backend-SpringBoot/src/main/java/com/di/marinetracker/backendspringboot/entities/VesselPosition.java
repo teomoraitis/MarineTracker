@@ -2,6 +2,9 @@ package com.di.marinetracker.backendspringboot.entities;
 
 import jakarta.persistence.*;
 import java.time.Instant;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 
 @Entity
 @Table(name = "vessel_positions")
@@ -117,5 +120,11 @@ public class VesselPosition {
 
     public void setTimestamp(Instant timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public Point getLocation() {
+
+        GeometryFactory geometryFactory = new GeometryFactory();
+        return geometryFactory.createPoint(new Coordinate(this.longitude, this.latitude));
     }
 }
