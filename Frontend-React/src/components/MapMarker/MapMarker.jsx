@@ -3,10 +3,17 @@ import { Marker } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import ShipArrow from '../../assets/images/shiparrow.png';
-import { SelectedShipContext } from '../../contexts/contexts';  
+import ShipArrowRed from '../../assets/images/redshiparrow.png';
+import { SelectedShipContext } from '../../contexts/contexts';
 
 const MapMarker = ({ position, label, heading = 0 }) => {
-  const { setSelectedShipInfo } = useContext(SelectedShipContext);  
+  const { ship, setSelectedShipInfo } = useContext(SelectedShipContext);
+
+  // ✅ Define isSelected by comparing selected ship to this marker
+  const isSelected = ship?.mmsi === label;
+
+  // Choose image based on selection
+  const image = isSelected ? ShipArrowRed : ShipArrow;
 
   const icon = L.divIcon({
     className: 'ship-icon',
@@ -14,10 +21,10 @@ const MapMarker = ({ position, label, heading = 0 }) => {
       transform: rotate(${-heading}deg);
       width: 32px;
       height: 32px;
-      background-image: url(${ShipArrow});
+      background-image: url(${image});
       background-size: contain;
       background-repeat: no-repeat;
-      background-position: center;      
+      background-position: center;
     "></div>`,
     iconSize: [32, 32],
     iconAnchor: [16, 16],
