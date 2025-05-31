@@ -9,10 +9,7 @@ import { SelectedShipContext } from '../../contexts/contexts';
 const MapMarker = ({ position, label, heading = 0 }) => {
   const { ship, setSelectedShipInfo } = useContext(SelectedShipContext);
 
-  // ✅ Define isSelected by comparing selected ship to this marker
-  const isSelected = ship?.mmsi === label;
-
-  // Choose image based on selection
+  const isSelected = ship?.mmsi == label;
   const image = isSelected ? ShipArrowRed : ShipArrow;
 
   const icon = L.divIcon({
