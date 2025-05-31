@@ -67,6 +67,10 @@ class VesselController {
     }
 
     // Single item
+    /*
+        TODO:
+        1. Get user from JWT and check if ship is in user's vessel.
+     */
     @CrossOrigin(origins ="${cors.urls}")
     @GetMapping("/vessels/{mmsi}")
     VesselDTO one(@PathVariable String mmsi) {
