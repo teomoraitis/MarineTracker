@@ -29,7 +29,7 @@ const Map = ({}) => {
       });
     }
   };
-console.log(ships);
+
   useMapEvents({
     click: () => {}, // add event handlers like so
     moveend: () => {
@@ -113,6 +113,6 @@ const MapWrapper = ({ ships }) => {
       <Map ships={ships} />
     </MapContainer>
   );
-}
+};
  
 export default MapWrapper;
