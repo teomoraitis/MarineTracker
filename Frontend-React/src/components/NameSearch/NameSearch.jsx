@@ -1,24 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { getVessel, listVessels } from '../../api/vesselsApi';
+import { SelectedShipContext } from '../../contexts/contexts';
 
 const NameSearch = ({}) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedInputValue, setDebouncedInputValue] = useState("");
   const [results, setResults] = useState([]);
+  const { setShowPath, setSelectedShipInfo } = useContext(SelectedShipContext);
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (searchTerm.trim() === '' || debouncedInputValue.trim() === '') {
       setResults([]);
       return;
     }
 
-    console.log(searchTerm);
-    setResults([{id: 1, label: 'tset'}, {id: 2, label: 'tset'}, {id: 3, label: 'tset'}]);
+    const vessels = await listVessels({ params: { name: searchTerm } });
+
+    setResults(vessels.content.map(vessel => ({ mmsi: vessel.mmsi, name: vessel.name })));
   };
 
-  const handleResultClick = () => {
+  const handleResultClick = async (result) => {
     setResults([]);
     setSearchTerm('')
     setDebouncedInputValue('');
+
+    const vessel = await getVessel(result.mmsi);
+    setSelectedShipInfo(vessel);
   };
 
   useEffect(() => {
@@ -45,7 +52,7 @@ const NameSearch = ({}) => {
           className='text-center m-auto w-full bg-inherit'
           placeholder='Name 🔎'
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e) => setSearchTerm(e.target.value.toUpperCase())}
         />
       </form>
       {
@@ -55,11 +62,12 @@ const NameSearch = ({}) => {
               results.map(result => {
                 return (
                   <div
-                    key={result.id}
-                    className='p-3 hover:bg-[#b7b9ba] transition-colors duration-100 cursor-pointer'
-                    onClick={handleResultClick}
+                    key={result.mmsi}
+                    className='flex flex-row items-center justify-between p-3 hover:bg-[#b7b9ba] transition-colors duration-100 cursor-pointer'
+                    onClick={() => handleResultClick(result)}
                   >
-                    {result.label}
+                    <p className='text-sm text-start'>{result.mmsi}</p>
+                    <p className='text-sm text-end'>{result.name}</p>
                   </div>
                 )
               })

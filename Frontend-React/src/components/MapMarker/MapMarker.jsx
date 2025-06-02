@@ -8,9 +8,7 @@ import { SelectedShipContext } from '../../contexts/contexts';
 
 const MapMarker = ({ position, label, heading = 0 }) => {
   const { ship, setSelectedShipInfo } = useContext(SelectedShipContext);
-
   const isSelected = ship?.mmsi === label;
-
   const image = isSelected ? ShipArrowRed : ShipArrow;
 
   const icon = L.divIcon({
