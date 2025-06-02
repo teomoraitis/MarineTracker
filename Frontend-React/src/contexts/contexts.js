@@ -46,6 +46,7 @@ export const SelectedShipContext = createContext({
   },
   showPath: false,
   setShowPath: () => {},
+  toggleShowPath: () => {},
   setSelectedShipInfo: () => {},
   setPath: () => {},
 });

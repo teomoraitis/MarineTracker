@@ -32,9 +32,24 @@ const App = () => {
     bounds: [],
   });
 
-  const login = () => {
-    const mockUser = { name: "Alice", token: "abc123" };
-    setUser(mockUser);
+  const login = (email = '', password = '') => {
+    let userType = "normal";
+    if(email === "admin") userType = "admin" ;
+    if(email === "log") userType = "loggedIn" ;
+    const mockGuest = {
+      name: userType,
+      token: "a1",
+    } ;
+    const mockUser = {
+      name: userType,
+      token: "b2",
+    } ;
+    const mockAdmin = {
+      name: userType,
+      token: "c3",
+    } ;
+    if(email === "admin") setUser(mockAdmin);
+    else if(email === "log") setUser(mockUser);
   };
 
   const logout = () => {
