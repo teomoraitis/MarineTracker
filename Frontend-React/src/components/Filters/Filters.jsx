@@ -67,7 +67,7 @@ const Filters = ({}) => {
             </div>
           )}
 
-          {/* Selected tags for Type 1 */}
+          {}
           {selectedTypes1.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-2">
               {selectedTypes1.map((type, index) => (
@@ -94,7 +94,7 @@ const Filters = ({}) => {
         </div>
       </div>
 
-      {/* Section 2 */}
+      {}
       <div className='flex flex-col gap-4'>
         <div>
           <div className='flex flex-row gap-5 items-center'>

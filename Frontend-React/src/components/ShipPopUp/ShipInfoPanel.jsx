@@ -1,9 +1,11 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { SelectedShipContext, MapContext } from '../../contexts/contexts';
+import Toggle from '../Toggle/Toggle.jsx'; 
 
 const ShipInfoPanel = () => {
-  const { ship } = useContext(SelectedShipContext);
+  const { ship, toggleShowPath, showPath } = useContext(SelectedShipContext);
   const { ships } = useContext(MapContext);
+  const [inFleet, setInFleet] = useState(false); 
 
   if (!ship?.mmsi) return null;
 
@@ -17,6 +19,26 @@ const ShipInfoPanel = () => {
       <div><strong>Course:</strong> {fullShip?.course ?? 'N/A'}°</div>
       <div><strong>Heading:</strong> {fullShip?.heading ?? 'N/A'}°</div>
       <div><strong>Coordinates:</strong> {fullShip?.lat}, {fullShip?.lon}</div>
+
+      {}
+      <div className="mt-4 space-y-3">
+        {}
+        <div className="flex items-center justify-between">
+          <span className="text-sm">Path history (12 hrs)</span>
+          <Toggle value={showPath} onChange={toggleShowPath} />
+        </div>
+
+        {}
+        <div className="flex items-center justify-between">
+          <span className="text-sm">In my fleet</span>
+          <input
+            type="checkbox"
+            checked={inFleet}
+            onChange={() => setInFleet(prev => !prev)}
+            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+          />
+        </div>
+      </div>
     </div>
   );
 };
