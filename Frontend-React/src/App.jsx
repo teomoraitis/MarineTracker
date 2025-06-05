@@ -18,6 +18,7 @@ const App = () => {
   const [showPath, setShowPath] = useState(false);
   const [path, setPath] = useState([]);
   const [ships, setShips] = useState([]);
+  const [hideShipInfo, setHideShipInfo] = useState(false);
   const [filters, setFilters] = useState({
     types: [],
     fleetOnly: false,
@@ -135,12 +136,17 @@ const App = () => {
         <FreeDrawContext.Provider value={{freeDrawOn: freeDrawOn, setFreeDraw: setFreeDraw}}>
           <SelectedShipContext.Provider
             value={{
-              ship: selectedShip,
-              setSelectedShipInfo: setSelectedShip,
-              showPath: true,
-              toggleShowPath,
-              path: path
-            }}
+            ship: selectedShip,
+            setSelectedShipInfo: (shipInfo) => {
+              setSelectedShip(shipInfo);
+              setHideShipInfo(false); 
+            },
+            showPath: showPath,
+            toggleShowPath,
+            path: path,
+            hideShipInfo,
+            setHideShipInfo
+          }}
           >
             <FilterContext.Provider
               value={{
