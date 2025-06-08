@@ -17,10 +17,18 @@ public class CorsConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        String urls = env.getProperty("cors.urls");
-        CorsRegistration reg = registry.addMapping("/api/**");
-        for(String url: urls.split(",")) {
-            reg.allowedOrigins(url);
+        if ("${com.di.marinetracker.backendspringboot.corsDisabled}" == "true") {
+            registry.addMapping("/**")
+                .allowedOriginPatterns("*") // Add the client URL here
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
+                .allowCredentials(true);
+        } else {
+            String urls = env.getProperty("cors.urls");
+            CorsRegistration reg = registry.addMapping("/api/**");
+            for (String url : urls.split(",")) {
+                reg.allowedOrigins(url);
+            }
         }
     }
 }

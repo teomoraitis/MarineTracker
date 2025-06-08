@@ -7,7 +7,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.locationtech.jts.geom.Polygon;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -15,8 +17,9 @@ public class User {
     @Id
     private String id;
     private String userName;
+    private String email;
     private String hashedPassword;
-    private String role;
+    private Set<String> roles = new HashSet<>();
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "zone_id", referencedColumnName = "id")
@@ -36,10 +39,11 @@ public class User {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
-    public User(String userName, String password, String role) {
+    public User(String userName, String email, String password, Set<String> roles) {
         this.userName = userName;
+        this.email = email;
         this.hashedPassword = passwordEncoder().encode(password);
-        this.role = role;
+        this.roles = roles;
     }
 
     public User() {
@@ -56,9 +60,23 @@ public class User {
 
     public String getUserName() {return userName;}
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public void setPassword(String password) { this.hashedPassword = passwordEncoder().encode(password); }
 
-    public String getRole() {return role;}
+    public Set<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<String> roles) {
+        this.roles = roles;
+    }
 
     public boolean passwordMatch(String password) {
         return (passwordEncoder().matches(password, this.hashedPassword));
@@ -68,7 +86,7 @@ public class User {
         return "User{" +
                 "id=" + id + '\'' +
                 "userName=" + userName + '\'' +
-                "role=" + role + '\'' +
+                "roles=" + roles + '\'' +
                 '}';
     }
 

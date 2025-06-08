@@ -11,6 +11,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Set;
+
 @RestController
 public class UserController {
     @Autowired
@@ -27,8 +29,9 @@ public class UserController {
         JsonNode jsonNode = new ObjectMapper().readTree(string);
         // TODO check if user already exists. Maybe via username / email?
         String userName = jsonNode.get("username").textValue();
+        String email    = jsonNode.get("email").textValue();
         String password = jsonNode.get("password").textValue();
-        User newUser = new User(userName, password, "user");
+        User newUser = new User(userName, email, password, Set.of("user"));
         userRepository.save(newUser);
         return new ResponseEntity<>(string, HttpStatus.CREATED);
     }
