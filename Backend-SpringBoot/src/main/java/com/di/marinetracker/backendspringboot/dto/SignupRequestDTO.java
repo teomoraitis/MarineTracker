@@ -2,29 +2,21 @@ package com.di.marinetracker.backendspringboot.dto;
 
 import java.util.Set;
 
-//import jakarta.validation.constraints.*;
-
 public class SignupRequestDTO {
-    //@NotBlank
-    //@Size(min = 3, max = 20)
+
     private String username;
 
-    //@NotBlank
-    //@Size(max = 50)
-    //@Email
     private String email;
 
     private Set<String> role;
 
-    //@NotBlank
-    //@Size(min = 6, max = 40)
     private String password;
 
-    public String getUserName() {
+    public String getUsername() {
         return username;
     }
 
-    public void setUserName(String username) {
+    public void setUsername(String username) {
         this.username = username;
     }
 

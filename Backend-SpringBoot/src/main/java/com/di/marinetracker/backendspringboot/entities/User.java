@@ -1,9 +1,6 @@
 package com.di.marinetracker.backendspringboot.entities;
 
 import jakarta.persistence.*;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.locationtech.jts.geom.Polygon;
 
 import java.util.ArrayList;
@@ -18,7 +15,7 @@ public class User {
     private String id;
     private String userName;
     private String email;
-    private String hashedPassword;
+    private String password;
     private Set<String> roles = new HashSet<>();
 
     @OneToOne(cascade = CascadeType.ALL)
@@ -34,15 +31,10 @@ public class User {
     @OrderBy("timestamp DESC")
     private List<Vessel> fleet = new ArrayList<>();
 
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-    }
-
     public User(String userName, String email, String password, Set<String> roles) {
         this.userName = userName;
         this.email = email;
-        this.hashedPassword = passwordEncoder().encode(password);
+        this.password = password;
         this.roles = roles;
     }
 
@@ -68,7 +60,9 @@ public class User {
         this.email = email;
     }
 
-    public void setPassword(String password) { this.hashedPassword = passwordEncoder().encode(password); }
+    public void setPassword(String password) { this.password = password; }
+
+    public String getPassword() { return password; }
 
     public Set<String> getRoles() {
         return roles;
@@ -76,10 +70,6 @@ public class User {
 
     public void setRoles(Set<String> roles) {
         this.roles = roles;
-    }
-
-    public boolean passwordMatch(String password) {
-        return (passwordEncoder().matches(password, this.hashedPassword));
     }
 
     public String toString() {
