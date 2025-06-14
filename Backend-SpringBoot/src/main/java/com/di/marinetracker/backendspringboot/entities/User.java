@@ -1,13 +1,12 @@
 package com.di.marinetracker.backendspringboot.entities;
 
 import jakarta.persistence.*;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.locationtech.jts.geom.Polygon;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -15,8 +14,9 @@ public class User {
     @Id
     private String id;
     private String userName;
-    private String hashedPassword;
-    private String role;
+    private String email;
+    private String password;
+    private Set<String> roles = new HashSet<>();
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "zone_id", referencedColumnName = "id")
@@ -31,15 +31,11 @@ public class User {
     @OrderBy("timestamp DESC")
     private List<Vessel> fleet = new ArrayList<>();
 
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-    }
-
-    public User(String userName, String password, String role) {
+    public User(String userName, String email, String password, Set<String> roles) {
         this.userName = userName;
-        this.hashedPassword = passwordEncoder().encode(password);
-        this.role = role;
+        this.email = email;
+        this.password = password;
+        this.roles = roles;
     }
 
     public User() {
@@ -56,19 +52,31 @@ public class User {
 
     public String getUserName() {return userName;}
 
-    public void setPassword(String password) { this.hashedPassword = passwordEncoder().encode(password); }
+    public String getEmail() {
+        return email;
+    }
 
-    public String getRole() {return role;}
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-    public boolean passwordMatch(String password) {
-        return (passwordEncoder().matches(password, this.hashedPassword));
+    public void setPassword(String password) { this.password = password; }
+
+    public String getPassword() { return password; }
+
+    public Set<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<String> roles) {
+        this.roles = roles;
     }
 
     public String toString() {
         return "User{" +
                 "id=" + id + '\'' +
                 "userName=" + userName + '\'' +
-                "role=" + role + '\'' +
+                "roles=" + roles + '\'' +
                 '}';
     }
 

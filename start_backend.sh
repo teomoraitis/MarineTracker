@@ -23,8 +23,8 @@ start_python_producer() {
 
 start_kafka() {
 	cd "$selfdir/Kafka/kafka_2.12-3.9.0"
-	launch_separate_tab "kafka topic" "./create_topic.sh"
-	launch_separate_tab "kafka start" "./start.sh"
+	launch_separate_tab "kafka topic" "./create_topic.sh; exec bash"
+	launch_separate_tab "kafka start" "./start.sh; exec bash"
 }
 
 start_docker() {
@@ -60,8 +60,8 @@ stop_docker() {
 
 start_springboot() {
 	sleep 20
-	cd "$selfdir/Backend-SpringBoot"
-	launch_separate_tab "springboot" "./mvnw clean spring-boot:run; exec bash"
+	#cd "$selfdir/Backend-SpringBoot"
+	#launch_separate_tab "springboot" "./mvnw clean spring-boot:run; exec bash"
 }
 
 handle_sigint() {
