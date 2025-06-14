@@ -23,17 +23,38 @@ start_python_producer() {
 
 start_kafka() {
 	cd "$selfdir/Kafka/kafka_2.12-3.9.0"
-	launch_separate_tab "kafka topic" "./create_topic.sh; exec bash"
 	launch_separate_tab "kafka start" "./start.sh; exec bash"
+	sleep 20
+	launch_separate_tab "kafka topic" "./create_topic.sh; exec bash"
 }
 
 start_docker() {
-	local result="$(docker start postgres_container 2>&1)"
-	local permission_denied="$(echo $result | grep -o 'permission denied')"
+	local exists="$(docker inspect postgres_container 2>&1)"
+	local permission_denied="$(echo $exists | grep -o 'permission denied')"
 	
+	needs_sudo=0
 	if [ -n "$permission_denied" ]; then
-		# try with sudo?
+		needs_sudo=1
+		exists="$(sudo docker inspect postgres_container 2>&1)"
+	fi
+
+
+	if [ -z "$exists" ]; then
+		echo "> docker pull postgis/postgis"
+		docker pull postgis/postgis
+		echo "> docker volume create postgis_data"
+		docker volume create postgis_data
+		echo "> docker run --name postgis_container -e POSTGRES_PASSWORD=mysecretpassword -d -p 5432:5432 -v postgis_data:/var/lib/postgresql/data postgis/postgis"
+		docker run --name postgis_container -e POSTGRES_PASSWORD=mysecretpassword -d -p 5432:5432 -v postgis_data:/var/lib/postgresql/data postgis/postgis
 		
+		echo -e "\n\nRun in pgadmin:"
+		echo "CREATE EXTENSION IF NOT EXISTS postgis;"
+		echo -e "\n\n"
+	fi
+
+	if (( $needs_sudo == 0 )); then
+		result="$(docker start postgres_container 2>&1)"
+	else
 		result="$(sudo docker start postgres_container 2>&1)"
 	fi
 	
