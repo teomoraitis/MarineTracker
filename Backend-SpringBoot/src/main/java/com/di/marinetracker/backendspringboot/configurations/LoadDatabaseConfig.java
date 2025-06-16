@@ -23,7 +23,7 @@ class LoadDatabaseConfig {
     CommandLineRunner initDatabase(VesselRepository repository) {
 
         return args -> {
-            try (Stream<String> lines = Files.lines(Paths.get("src/main/resources/csv/vessel_types_names.csv"))) {
+            try (Stream<String> lines = Files.lines(Paths.get(System.getProperty("user.dir"), "Backend-SpringBoot/src/main/resources/csv/vessel_types_names.csv"))) {
                 List<List<String>> records = lines.map(line -> Arrays.asList(line.split(",")))
                         .toList();
 

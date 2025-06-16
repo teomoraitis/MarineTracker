@@ -4,6 +4,9 @@ import com.di.marinetracker.backendspringboot.entities.Vessel;
 import com.di.marinetracker.backendspringboot.entities.VesselPosition;
 import com.di.marinetracker.backendspringboot.repositories.VesselRepository;
 import com.di.marinetracker.backendspringboot.repositories.VesselPositionRepository;
+import com.di.marinetracker.backendspringboot.websockets.VisibleAreaOfSession;
+import com.di.marinetracker.backendspringboot.websockets.WebSocketSender;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -15,8 +18,13 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
 
+import java.io.IOException;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Map;
 import java.util.Optional;
 
@@ -38,6 +46,9 @@ public class VesselPositionsConsumer {
 
     @Autowired
     SimpMessagingTemplate template;
+
+    @Autowired
+    WebSocketSender globalWebSocketSender;
 
     @Transactional
     @KafkaListener(topics = "${kafka.topic}", groupId = "ships-consumer")
@@ -104,6 +115,25 @@ public class VesselPositionsConsumer {
                     if (timestamp.isBefore(timestampPrev.plusSeconds(600))) {
                         vesselPositionRepository.delete(latest);
                     }
+
+                    Enumeration<String> activeUsers = globalWebSocketSender.getActiveUsers();
+
+                    // TODO  zone
+                    // Query users who just changed their view on the vessel, ie the vessel went from interesting
+                    // to non-interesting or vice versa, in terms of zone or speed.
+                    // The query would have the whole activeUsers in it.
+                    // The DB will return a list with users and it would be convenient to loop here,
+                    // and send empty setShips, empty hideShips, false hideAllShips and only notifications.
+
+                    double longitudePrev = Double.valueOf(prev.getLongitude().toString());
+                    double latitudePrev = Double.valueOf(prev.getLatitude().toString());
+                    globalWebSocketSender.forEachSession((username, session) -> {
+                        try {
+                            sendPerSessionUpdates(message, session, longitudePrev, latitudePrev, longitude, latitude);
+                        } catch (JsonProcessingException e) {
+                            logger.error("can't read previous JSONs, it's probably not the client's fault");
+                        }
+                    });
                 }
             }
             vesselPositionRepository.save(position);
@@ -111,26 +141,34 @@ public class VesselPositionsConsumer {
             // Log the update with details
             logger.info("Position updated - Vessel: {} (MMSI: {}), Position: lat={}, lon={}, speed={}, course={}, timestamp={}", 
                       vessel.getName(), vessel.getMmsi(), latitude, longitude, speed, course, timestamp);
-            
-            // Send the packet over websocket
-            // TODO send conditionally based on viewport & filters
-            JsonNode shipData = objectMapper.readTree(message);
-            ArrayNode setShips = objectMapper.createArrayNode();
-            setShips.add(shipData);
-
-            ArrayNode hideShips = objectMapper.createArrayNode();
-            ArrayNode notifications = objectMapper.createArrayNode();
-            // TODO set zone of interest notifications here.
-
-            JsonNode jsonNode = objectMapper.createObjectNode();
-            ((ObjectNode) jsonNode).put("setShips", setShips);
-            ((ObjectNode) jsonNode).put("hideShips", hideShips);
-            ((ObjectNode) jsonNode).put("hideAllShips", false);
-            ((ObjectNode) jsonNode).put("notifications", notifications);
-            template.convertAndSend("/topic/locations", jsonNode.toPrettyString());
-            //System.out.println("Sent message: " + jsonNode.toPrettyString()); //debugging
         } catch (Exception e) {
             logger.error("Error processing vessel position: {}", e.getMessage(), e);
+        }
+    }
+
+    private void sendPerSessionUpdates(String message, WebSocketSession session, double longitudePrev, double latitudePrev, Double longitude, Double latitude) throws JsonProcessingException {
+        JsonNode shipData = objectMapper.readTree(message);
+        ArrayNode setShips = objectMapper.createArrayNode();
+        ArrayNode hideShips = objectMapper.createArrayNode();
+        ArrayNode notifications = objectMapper.createArrayNode();
+
+        VisibleAreaOfSession v = globalWebSocketSender.visibleAreaOfSession.get(session.getId());
+        boolean wasWithin = v.isWithin(longitudePrev, latitudePrev);
+        boolean isWithin = v.isWithin(longitude, latitude);
+        if (wasWithin && isWithin) setShips.add(shipData);
+        else if (!wasWithin && isWithin) setShips.add(shipData);
+        else if (wasWithin && !isWithin) hideShips.add(shipData);
+
+        JsonNode jsonNode = objectMapper.createObjectNode();
+        ((ObjectNode) jsonNode).put("setShips", setShips);
+        ((ObjectNode) jsonNode).put("hideShips", hideShips);
+        ((ObjectNode) jsonNode).put("hideAllShips", false);
+        ((ObjectNode) jsonNode).put("notifications", notifications);
+
+        try {
+            session.sendMessage(new TextMessage(jsonNode.asText()));
+        } catch (IOException e) {
+            logger.error("couldn't send web socket message");
         }
     }
 }
