@@ -28,7 +28,6 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "vessel_id")
     )
-    @OrderBy("timestamp DESC")
     private List<Vessel> fleet = new ArrayList<>();
 
     public User(String userName, String email, String password, Set<String> roles) {

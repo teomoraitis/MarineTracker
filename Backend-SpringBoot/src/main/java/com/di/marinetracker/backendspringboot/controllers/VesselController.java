@@ -1,17 +1,22 @@
 package com.di.marinetracker.backendspringboot.controllers;
 
 import com.di.marinetracker.backendspringboot.dto.VesselPositionDTO;
+import com.di.marinetracker.backendspringboot.entities.User;
 import com.di.marinetracker.backendspringboot.entities.Vessel;
 import com.di.marinetracker.backendspringboot.dto.VesselDTO;
 import com.di.marinetracker.backendspringboot.entities.VesselPosition;
 import com.di.marinetracker.backendspringboot.exceptions.VesselNotFoundException;
+import com.di.marinetracker.backendspringboot.repositories.UserRepository;
 import com.di.marinetracker.backendspringboot.repositories.VesselPositionRepository;
 import com.di.marinetracker.backendspringboot.repositories.VesselRepository;
+import com.di.marinetracker.backendspringboot.services.UserDetailsImpl;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
@@ -20,31 +25,33 @@ import java.util.*;
 
 import static com.di.marinetracker.backendspringboot.specifications.VesselSpecifications.*;
 
-/*
-    TODO:
-    1. Possibly refactor this and create a service layer between the Controllers and the Repositories
-    Right now the Controller layer is responsible for request validation, business logic, DTO conversion, and responding to the client.
-*/
 
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
+@RequestMapping("/api/vessels")
 class VesselController {
 
     private final VesselRepository vesselRepository;
     private final VesselPositionRepository positionRepository;
+    private final UserRepository userRepository;
 
-    VesselController(VesselRepository vesselRepository, VesselPositionRepository positionRepository) {
+    VesselController(VesselRepository vesselRepository, VesselPositionRepository positionRepository, UserRepository userRepository) {
         this.vesselRepository = vesselRepository;
         this.positionRepository = positionRepository;
+        this.userRepository = userRepository;
     }
 
     @CrossOrigin(origins ="${cors.urls}")
-    @GetMapping("/vessels")
+    @GetMapping("")
     Page<VesselDTO> all(
         @RequestParam(required = false) String name,
         @RequestParam(required = false) String type,
         @RequestParam(defaultValue = "10") int limit,
-        @RequestParam(defaultValue = "0") int offset
+        @RequestParam(defaultValue = "0") int offset,
+        Authentication authentication
     ) {
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        String userId = userDetails.getId();
 
         Pageable pageable = PageRequest.of(offset / limit, limit, Sort.by("mmsi").ascending());
         Specification<Vessel> spec = Specification.where(hasType(type)).and(hasName(name));
@@ -62,28 +69,27 @@ class VesselController {
 
         return page.map(v -> {
             VesselPositionDTO vp = latestPositionMap.get(v.getMmsi());
-            return new VesselDTO(v.getMmsi(), v.getName(), v.getType(), vp);
+            return new VesselDTO(v.getMmsi(), v.getName(), v.getType(), vp, userRepository.existsByIdAndFleetMmsi(userId, v.getMmsi()));
         });
     }
 
     // Single item
-    /*
-        TODO:
-        1. Get user from JWT and check if ship is in user's vessel.
-     */
     @CrossOrigin(origins ="${cors.urls}")
-    @GetMapping("/vessels/{mmsi}")
-    VesselDTO one(@PathVariable String mmsi) {
+    @GetMapping("/{mmsi}")
+    VesselDTO one(@PathVariable String mmsi, Authentication authentication) {
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        String userId = userDetails.getId();
+
         Vessel vessel = vesselRepository.findById(mmsi)
-                .orElseThrow(() -> new VesselNotFoundException(mmsi));
+            .orElseThrow(() -> new VesselNotFoundException(mmsi));
 
         VesselPositionDTO latestPosition = positionRepository.findLatestByVesselMmsi(mmsi).map(VesselPositionDTO::new).orElse(null);
 
-        return new VesselDTO(vessel.getMmsi(), vessel.getName(), vessel.getType(), latestPosition);
+        return new VesselDTO(vessel.getMmsi(), vessel.getName(), vessel.getType(), latestPosition, userRepository.existsByIdAndFleetMmsi(userId, vessel.getMmsi()));
     }
 
     @CrossOrigin(origins ="${cors.urls}")
-    @GetMapping("/vessels/{mmsi}/path")
+    @GetMapping("/{mmsi}/path")
     List<VesselPositionDTO> path(@PathVariable String mmsi) {
         List<VesselPositionDTO> positions = new ArrayList<>();
 
@@ -98,14 +104,12 @@ class VesselController {
         return positions;
     }
 
-    /*
-        TODO:
-        1. Consume JWT passed through HTTP headers, and only allow the update call for admin role.
-        2. Account for possible RequestBody change due to frontend.
-    */
     @CrossOrigin(origins ="${cors.urls}")
-    @PutMapping("/vessels/{mmsi}")
-    VesselDTO updateVessel(@RequestBody Vessel newVessel, @PathVariable String mmsi) {
+    @PutMapping("/{mmsi}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    VesselDTO updateVessel(@RequestBody Vessel newVessel, @PathVariable String mmsi, Authentication authentication) {
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        String userId = userDetails.getId();
 
         Vessel savedVessel = vesselRepository.findById(mmsi)
                 .map(vessel -> {
@@ -121,7 +125,8 @@ class VesselController {
                 savedVessel.getMmsi(),
                 savedVessel.getName(),
                 savedVessel.getType(),
-                latestPosition.map(VesselPositionDTO::new).orElseThrow(() -> new VesselNotFoundException(mmsi))
+                latestPosition.map(VesselPositionDTO::new).orElseThrow(() -> new VesselNotFoundException(mmsi)),
+                userRepository.existsByIdAndFleetMmsi(userId, savedVessel.getMmsi())
         );
 
         return vesselDTO;
