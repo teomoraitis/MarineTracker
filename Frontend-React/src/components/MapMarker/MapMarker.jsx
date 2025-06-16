@@ -7,7 +7,7 @@ import ShipArrowRed from '../../assets/images/redshiparrow.png';
 import { SelectedShipContext } from '../../contexts/contexts';
 
 const MapMarker = ({ position, label, heading = 0 }) => {
-  const { ship, setSelectedShipInfo } = useContext(SelectedShipContext);
+  const { ship, setSelectedShipInfo, toggleShowPath } = useContext(SelectedShipContext);
   const isSelected = ship?.mmsi === label;
   const image = isSelected ? ShipArrowRed : ShipArrow;
 
@@ -37,6 +37,7 @@ const MapMarker = ({ position, label, heading = 0 }) => {
             heading,
             coordinates: position,
           });
+          toggleShowPath(ship?.mmsi);
         },
       }}
     />

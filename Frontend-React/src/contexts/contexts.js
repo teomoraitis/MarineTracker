@@ -12,8 +12,8 @@ export const FreeDrawContext = createContext({
 
 export const AuthContext = createContext({
   user: null,
-  login: () => {},
-  logout: () => {},
+  handleLogin: () => {},
+  handleLogout: () => {},
 });
 
 export const FilterContext = createContext({

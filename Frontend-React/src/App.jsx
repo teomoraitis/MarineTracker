@@ -6,10 +6,12 @@ import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 import './App.css';
 import Filters from './components/Filters/Filters.jsx';
-//import ShipPopUp from './components/ShipPopUp/ShipPopUp.jsx';
 import ShipInfoPanel from './components/ShipPopUp/ShipInfoPanel.jsx';
 import Footer from './components/Footer/Footer.jsx';
 import FreedrawTooltip from './components/FreedrawTooltip/FreedrawTooltip.jsx';
+import { login, logout } from './api/userApi.js';
+import { getVesselPath } from './api/vesselsApi.js';
+
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -33,32 +35,31 @@ const App = () => {
     bounds: [],
   });
 
-  const login = (email = '', password = '') => {
-    let userType = "normal";
-    if(email === "admin") userType = "admin" ;
-    if(email === "log") userType = "loggedIn" ;
-    const mockGuest = {
-      name: userType,
-      token: "a1",
-    } ;
-    const mockUser = {
-      name: userType,
-      token: "b2",
-    } ;
-    const mockAdmin = {
-      name: userType,
-      token: "c3",
-    } ;
-    if(email === "admin") setUser(mockAdmin);
-    else if(email === "log") setUser(mockUser);
+  const handleLogin = async (username = '', password = '') => {
+    if (username.trim() == '' || password.trim() == '') return;
+
+    try {
+      const user = await login({
+        username: username,
+        password: password
+      });
+      setUser(user);
+    } catch {
+      console.error("Error during login");
+    }
   };
 
-  const logout = () => {
-    setUser(null);
+  const handleLogout = async () => {
+    try {
+      await logout();
+      setUser(null);
+    } catch {
+      console.error("Error during logout");
+    }
   };
 
   useEffect(() => {
-    const socket = new SockJS("https://localhost:8443/ws");
+    const socket = new SockJS(`${process.env.REACT_APP_BACKEND_URL}ws`);
     const stompClient = new Client({
       webSocketFactory: () => socket,
       reconnectDelay: 5000,
@@ -115,23 +116,28 @@ const App = () => {
 }, []);
 
 
-  const toggleShowPath = () => {
+  const toggleShowPath = async (mmsi) => {
     setShowPath(!showPath);
-    console.log("showPath: ", showPath);
     // fetch path for selected ship
-    setPath([]);
+    if (!showPath) {
+      try {
+        const path = await getVesselPath(mmsi);
+        setPath(path);
+      } catch {
+        console.error("Error during path fetch");
+        setPath([]);
+      }
+    } else {
+      setPath([]);
+    }
   };
-
-  useEffect(() => {
-    console.log("selectedShip: ", selectedShip);
-  }, [selectedShip.mmsi]);
 
   useEffect(() => {
     console.log("filters: ", filters);
   }, [filters]);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, handleLogin, handleLogout }}>
       <MapContext.Provider value={{ ships, setShips }}>
         <FreeDrawContext.Provider value={{freeDrawOn: freeDrawOn, setFreeDraw: setFreeDraw}}>
           <SelectedShipContext.Provider
