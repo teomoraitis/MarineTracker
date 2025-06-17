@@ -2,8 +2,10 @@ import React, { useContext, useState } from 'react';
 import ShipShipGoLogo from '../../assets/images/shipshipgo.png';
 import NavbarItem from './NavbarItem.jsx';
 import { AuthContext } from '../../contexts/contexts.js';
+import { signup } from '../../api/userApi.js';
 
 const AuthModal = ({ title, onClose, onSubmit }) => {
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [acceptTerms, setAcceptTerms] = useState(false);
@@ -15,12 +17,21 @@ const AuthModal = ({ title, onClose, onSubmit }) => {
       <div className="bg-white p-6 rounded-lg w-[400px] shadow-lg">
         <h3 className="text-2xl font-bold mb-4 text-center">{title}</h3>
         <div className="flex flex-col gap-3">
+          {isSignUp && (
+            <input
+              type="email"
+              placeholder="e-mail *"
+              className="border border-gray-300 rounded px-3 py-2"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          )}
           <input
-            type="email"
-            placeholder="e-mail *"
+            type="username"
+            placeholder="username *"
             className="border border-gray-300 rounded px-3 py-2"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
           />
           <input
             type="password"
@@ -54,8 +65,8 @@ const AuthModal = ({ title, onClose, onSubmit }) => {
             Cancel
           </button>
           <button
-            onClick={() => onSubmit(email, password)}
-            disabled={isSignUp && !acceptTerms}
+            onClick={() => onSubmit(username, password, email)}
+            disabled={(isSignUp && !acceptTerms) || (!username.trim()) || (!password.trim()) || (isSignUp && !email)}
             className={`px-12 py-2 text-sm rounded ml-2 mr-4 text-white ${isSignUp && !acceptTerms ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
           >
             {isSignUp ? 'Sign Up' : 'Login'}
@@ -93,7 +104,7 @@ const Navbar = ({}) => {
           />
           <NavbarItem
             label="Logout"
-            onClick={() => authContext.logout()}
+            onClick={() => authContext.handleLogout()}
           />
         </>
       ) : (
@@ -112,13 +123,12 @@ const Navbar = ({}) => {
       <AuthModal
         title="Login"
         onClose={() => setShowLoginModal(false)}
-        onSubmit={(email, password) => {
-          console.log("Login with:", email, password);
+        onSubmit={(username, password) => {
           setShowLoginModal(false);
           if (authContext.user) { 
-            authContext.logout();
+            authContext.handleLogout();
           } else {
-            authContext.login(email, password); 
+            authContext.handleLogin(username, password); 
           }
 
         }}
@@ -128,9 +138,14 @@ const Navbar = ({}) => {
       <AuthModal
         title="Sign Up"
         onClose={() => setShowSignupModal(false)}
-        onSubmit={(email, password) => {
-          console.log("Sign up with:", email, password);
-          setShowSignupModal(false);
+        onSubmit={async (username, password, email) => {
+          try {
+            await signup({email, username, password})
+            setShowSignupModal(false);
+            authContext.handleLogin(username, password);
+          } catch {
+            console.error("Error during signup");
+          }
         }}
       />
     )}

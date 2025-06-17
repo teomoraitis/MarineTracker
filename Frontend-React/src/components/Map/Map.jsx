@@ -69,7 +69,7 @@ const Map = ({}) => {
         selectedShipContext.showPath && selectedShipContext.path.length > 0 && (
           <Polyline
             pathOptions={{ color: '#FF0000', weight: 2 }}
-            positions={selectedShipContext.path}
+            positions={selectedShipContext.path.map(position => ({ lat: position.latitude, lng: position.longitude }))}
           />
         )
       }

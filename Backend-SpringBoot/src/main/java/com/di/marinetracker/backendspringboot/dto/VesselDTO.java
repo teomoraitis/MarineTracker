@@ -7,11 +7,14 @@ public class VesselDTO {
     private String type;
     private VesselPositionDTO vesselPosition;
 
-    public VesselDTO(String mmsi, String name, String type, VesselPositionDTO vesselPositionDTO) {
+    private Boolean inFleet;
+
+    public VesselDTO(String mmsi, String name, String type, VesselPositionDTO vesselPositionDTO, Boolean inFleet) {
         this.mmsi = mmsi;
         this.name = name;
         this.type = type;
         this.vesselPosition = vesselPositionDTO;
+        this.inFleet = inFleet;
     }
     public String getMmsi() {
         return mmsi;
@@ -27,5 +30,9 @@ public class VesselDTO {
 
     public VesselPositionDTO getVesselPosition() {
         return vesselPosition;
+    }
+
+    public Boolean getInFleet() {
+        return inFleet;
     }
 }

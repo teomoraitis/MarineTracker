@@ -14,6 +14,8 @@ import com.di.marinetracker.backendspringboot.repositories.UserRepository;
 import com.di.marinetracker.backendspringboot.services.UserDetailsImpl;
 import com.di.marinetracker.backendspringboot.utils.JwtUtils;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -44,7 +46,7 @@ public class AuthController {
     JwtUtils jwtUtils;
 
     @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(@RequestBody LoginRequestDTO loginRequest) {
+    public ResponseEntity<?> authenticateUser(@RequestBody LoginRequestDTO loginRequest, HttpServletResponse response) {
         UsernamePasswordAuthenticationToken token =  new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
         Authentication authentication = authenticationManager.authenticate(token);
 
@@ -56,11 +58,31 @@ public class AuthController {
             .map(item -> item.getAuthority())
             .collect(Collectors.toList());
 
+        String cookieValue = String.format(
+            "jwt=%s; Path=/; Max-Age=%d; SameSite=None; Secure; HttpOnly",
+            jwt, 24 * 60 * 60
+        );
+
+        response.setHeader("Set-Cookie", cookieValue);
+
         return ResponseEntity.ok(new JWTResponseDTO(jwt,
             userDetails.getId(),
             userDetails.getUsername(),
             userDetails.getEmail(),
             roles));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+        Cookie cookie = new Cookie("jwt", null);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/signup")
@@ -69,6 +91,11 @@ public class AuthController {
             return ResponseEntity
                 .badRequest()
                 .body(new MessageResponseDTO("Error: Email is already in use!"));
+        }
+        if (userRepository.existsByUserName(signUpRequest.getUsername())) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponseDTO("Error: Username is already in use!"));
         }
 
         Set<String> strRoles = signUpRequest.getRole();
