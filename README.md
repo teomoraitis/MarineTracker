@@ -10,12 +10,12 @@ Built with <strong>Spring Boot</strong> and <strong>React</strong>. Using Apache
 ## The Team 
 **Team name:** "Ομάδα Χρηστών 4" <br>
 **Number of contributors:** 6
-- sdi2000150 - [Theodoros Moraitis (sdi2000150)](https://github.com/sdi2000150)
-- sdi1700254 - [Pierro Zachareas (plerros)](https://github.com/plerros)
 - sdi2000105 - [Christos Kypraios (ChristosKypraios)](https://github.com/ChristosKypraios)
+- sdi1700254 - [Pierro Zachareas (plerros)](https://github.com/plerros)
+- sdi2000150 - [Theodoros Moraitis (sdi2000150)](https://github.com/sdi2000150)
 - sdi2000006 - [Evgenios Paraskevas Mavroudakos (EugeneM02)](https://github.com/EugeneM02)
 - sdi1900048 - [Theodoros Dimakopoulos (TheodoreAlenas)](https://github.com/TheodoreAlenas)
-- sdi1700058 - [Panagiotis Kotsarinis (sdi1700058)](https://github.com/sdi1700058)
+
 
 ---
 
@@ -61,7 +61,7 @@ The project was developed in three phases:
         <li>WebSockets</li>
         <li>SSL/TLS (Self-Signed Certificate)</li>
         <li>JWT Auth</li>
-        <li>PostgreSQL v...</li>
+        <li>PostgreSQL v... via Docker...</li>
         <li>Testing & Automation ...</li>
         <li>...</li>
       </ul>
