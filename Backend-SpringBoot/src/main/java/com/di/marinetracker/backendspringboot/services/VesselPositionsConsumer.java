@@ -45,9 +45,6 @@ public class VesselPositionsConsumer {
     }
 
     @Autowired
-    SimpMessagingTemplate template;
-
-    @Autowired
     WebSocketSender globalWebSocketSender;
 
     @Transactional
