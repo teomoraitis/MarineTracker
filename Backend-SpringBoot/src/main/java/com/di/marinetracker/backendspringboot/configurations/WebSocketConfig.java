@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
@@ -20,6 +21,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private static final Logger logger = LoggerFactory.getLogger(WebSocketConfig.class);
 
     @Autowired
+    @Lazy       // lazy so that no loop of dependencies happens between them
     private WebSocketService webSocketService;
 
     @Autowired
