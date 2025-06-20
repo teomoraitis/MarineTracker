@@ -243,7 +243,7 @@ public class WebSocketService {
 
     // Send filtered data when user updates their filters
     private void sendFilteredDataToUser(UserSession userSession) {
-        // Implementation would be similar to sendInitialDataToUser
+        // TODO: Implementation would be similar to sendInitialDataToUser
         // but would apply the current filters
         logger.info("Sending filtered data to user: {}", userSession.getUserId());
     }
