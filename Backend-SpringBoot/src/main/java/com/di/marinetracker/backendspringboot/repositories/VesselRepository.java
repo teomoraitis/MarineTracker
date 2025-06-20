@@ -10,8 +10,10 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+// Repository interface for Vessel entity
 @Repository
 public interface VesselRepository extends JpaRepository<Vessel, String>, JpaSpecificationExecutor<Vessel> {
+    // Find the latest position report for each vessel in the given list of MMSIs
     @Query(value = """
         SELECT vp
         FROM VesselPosition vp

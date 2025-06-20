@@ -1,5 +1,6 @@
 package com.di.marinetracker.backendspringboot.dto;
 
+// DTO for sending simple message responses to the client
 public class MessageResponseDTO {
     private String message;
 

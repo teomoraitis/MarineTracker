@@ -18,41 +18,44 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+// Service that handles WebSocket communication with Frontend clients (guests or authenticated users)
 @Service
 public class WebSocketService {
     private static final Logger logger = LoggerFactory.getLogger(WebSocketService.class);
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    // For sending WebSocket messages
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
+    // Access user data
     @Autowired
     private UserRepository userRepository;
 
+    // JWT utility for authentication
     @Autowired
     private JwtUtils jwtUtils;
 
-    // Store active user sessions and their filters
+    // Map to store active user sessions and their filters
     private final Map<String, UserSession> activeSessions = new ConcurrentHashMap<>();
 
-    // Store vessel data cache for filtering
+    // Cache for vessel data to support filtering and quick access
     private final Map<String, JsonNode> vesselDataCache = new ConcurrentHashMap<>();
 
-    /**
-     * Broadcast vessel position to all channels (public and authenticated users)
-     */
+    // Broadcast vessel position to all channels (public-guest and authenticated users)
     public void broadcastVesselPosition(String vesselMessage, Vessel vessel) {
         try {
+            // Parse vessel message
             JsonNode vesselData = objectMapper.readTree(vesselMessage);
             String mmsi = vessel.getMmsi();
 
             // Cache the vessel data
             vesselDataCache.put(mmsi, vesselData);
 
-            // Broadcast to public guest endpoint
+            // Broadcast to public guest endpoint by calling broadcastToGuests()
             broadcastToGuests(vesselData);
 
-            // Broadcast to authenticated users with filtering
+            // Broadcast to authenticated users with filtering by calling broadcastToAuthenticatedUsers()
             broadcastToAuthenticatedUsers(vesselData, vessel);
 
         } catch (Exception e) {
@@ -60,11 +63,10 @@ public class WebSocketService {
         }
     }
 
-    /**
-     * Broadcast to public guest endpoint - all vessels visible
-     */
+    // Broadcast to public guest endpoint - all vessels visible
     private void broadcastToGuests(JsonNode vesselData) {
         try {
+            // Create a message for guests with the vessel data
             JsonNode guestMessage = createWebSocketMessage(
                     Arrays.asList(vesselData),
                     Collections.emptyList(),
@@ -72,6 +74,7 @@ public class WebSocketService {
                     Collections.emptyList()
             );
 
+            // Send to guest topic
             messagingTemplate.convertAndSend("/topic/guest", guestMessage.toString());
             logger.debug("Broadcasted to guest topic: vessel {}", vesselData.get("mmsi"));
 
@@ -80,15 +83,16 @@ public class WebSocketService {
         }
     }
 
-    /**
-     * Broadcast to authenticated users with personalized filtering
-     */
+    // Broadcast to authenticated users with personalized filtering
     private void broadcastToAuthenticatedUsers(JsonNode vesselData, Vessel vessel) {
         activeSessions.forEach((sessionId, userSession) -> {
             try {
+                // Check if user should receive this vessel by calling shouldSendToUser()
                 if (shouldSendToUser(vessel, userSession)) {
+                    // Generate notifications for zone of interest alerts by calling generateNotifications()
                     List<String> notifications = generateNotifications(vessel, userSession);
 
+                    // Create the vessel data message + notifications
                     JsonNode userMessage = createWebSocketMessage(
                             Arrays.asList(vesselData),
                             Collections.emptyList(),
@@ -96,6 +100,7 @@ public class WebSocketService {
                             notifications
                     );
 
+                    // Send the message to the user's specific queue
                     messagingTemplate.convertAndSendToUser(
                             userSession.getUserId(),
                             "/queue/vessels",
@@ -110,9 +115,7 @@ public class WebSocketService {
         });
     }
 
-    /**
-     * Determine if a vessel should be sent to a specific user based on their filters
-     */
+    // Determine if a vessel should be sent to a specific user based on their filters
     private boolean shouldSendToUser(Vessel vessel, UserSession userSession) {
         // Always show vessels in user's fleet
         if (userSession.getFleetMmsis().contains(vessel.getMmsi())) {
@@ -134,15 +137,15 @@ public class WebSocketService {
         return true;
     }
 
-    /**
-     * Generate notifications for zone of interest alerts
-     */
+    // Generate notifications for zone of interest alerts
     private List<String> generateNotifications(Vessel vessel, UserSession userSession) {
         List<String> notifications = new ArrayList<>();
 
+        // Check if vessel matches user's zone of interest conditions
         if (userSession.getZoneOfInterest() != null &&
                 userSession.getZoneOfInterest().matchesConditions(vessel)) {
 
+            // Add notification for entering zone of interest
             notifications.add(String.format(
                     "Vessel %s (%s) entered your zone of interest",
                     vessel.getName(),
@@ -153,15 +156,15 @@ public class WebSocketService {
         return notifications;
     }
 
-    /**
-     * Register a new user session when they connect
-     */
+    // Register a new user session when they connect
     public void registerUserSession(String sessionId, String jwtToken) {
         try {
+            // Validate JWT token and extract user information
             if (jwtToken != null && jwtUtils.validateJwtToken(jwtToken)) {
                 String userId = jwtUtils.getUserNameFromJwtToken(jwtToken);
                 Optional<User> userOpt = userRepository.findById(userId);
 
+                // If user exists, create a new UserSession
                 if (userOpt.isPresent()) {
                     User user = userOpt.get();
                     UserSession session = new UserSession(
@@ -172,6 +175,7 @@ public class WebSocketService {
                             user.getZoneOfInterest()
                     );
 
+                    // Register the session in the active sessions map
                     activeSessions.put(sessionId, session);
                     logger.info("Registered user session: {} for user: {}", sessionId, userId);
 
@@ -184,9 +188,7 @@ public class WebSocketService {
         }
     }
 
-    /**
-     * Remove user session when they disconnect
-     */
+    // Remove user session when they disconnect
     public void removeUserSession(String sessionId) {
         UserSession removed = activeSessions.remove(sessionId);
         if (removed != null) {
@@ -194,12 +196,11 @@ public class WebSocketService {
         }
     }
 
-    /**
-     * Update user's vessel type filters
-     */
+    // Update user's vessel type filters
     public void updateUserFilters(String sessionId, Set<String> vesselTypes) {
         UserSession session = activeSessions.get(sessionId);
         if (session != null) {
+            // Update filters
             session.setVesselTypeFilters(vesselTypes);
             logger.info("Updated filters for session {}: {}", sessionId, vesselTypes);
 
@@ -208,9 +209,7 @@ public class WebSocketService {
         }
     }
 
-    /**
-     * Send initial vessel data when user first connects
-     */
+    // Send initial vessel data when user first connects
     private void sendInitialDataToUser(UserSession userSession) {
         try {
             List<JsonNode> visibleVessels = new ArrayList<>();
@@ -242,18 +241,14 @@ public class WebSocketService {
         }
     }
 
-    /**
-     * Send filtered data when user updates their filters
-     */
+    // Send filtered data when user updates their filters
     private void sendFilteredDataToUser(UserSession userSession) {
         // Implementation would be similar to sendInitialDataToUser
         // but would apply the current filters
         logger.info("Sending filtered data to user: {}", userSession.getUserId());
     }
 
-    /**
-     * Create standardized WebSocket message format
-     */
+    // Create standardized WebSocket message format
     private JsonNode createWebSocketMessage(List<JsonNode> setShips, List<String> hideShips,
                                             boolean hideAllShips, List<String> notifications) {
         ObjectNode message = objectMapper.createObjectNode();
@@ -276,23 +271,20 @@ public class WebSocketService {
         return message;
     }
 
-    /**
-     * Get count of active sessions (for monitoring)
-     */
-    public int getActiveSessionCount() {
-        return activeSessions.size();
-    }
+    // Get count of active sessions (for monitoring, not used for now)
+//    public int getActiveSessionCount() {
+//        return activeSessions.size();
+//    }
 
-    /**
-     * Inner class to represent a user session
-     */
+    // Inner class to represent a user session
     private static class UserSession {
-        private final String userId;
-        private final String sessionId;
-        private final List<String> fleetMmsis;
-        private Set<String> vesselTypeFilters;
-        private final ZoneOfInterest zoneOfInterest;
+        private final String userId; // User identifier
+        private final String sessionId; // WebSocket session ID
+        private final List<String> fleetMmsis; // List of vessel MMSIs in user's fleet
+        private Set<String> vesselTypeFilters; // Vessel type filters
+        private final ZoneOfInterest zoneOfInterest; // User's zone of interest
 
+        // Constructor
         public UserSession(String userId, String sessionId, List<String> fleetMmsis,
                            Set<String> vesselTypeFilters, ZoneOfInterest zoneOfInterest) {
             this.userId = userId;

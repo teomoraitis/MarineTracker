@@ -2,6 +2,7 @@ package com.di.marinetracker.backendspringboot.dto;
 
 import java.util.List;
 
+// DTO for sending JWT authentication response data to the client
 public class JWTResponseDTO {
     private String token;
     private String type = "Bearer";

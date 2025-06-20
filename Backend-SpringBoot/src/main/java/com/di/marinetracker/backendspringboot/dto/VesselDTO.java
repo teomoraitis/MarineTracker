@@ -1,6 +1,6 @@
 package com.di.marinetracker.backendspringboot.dto;
 
-
+// DTO for transferring vessel data between backend and client
 public class VesselDTO {
     private String mmsi;
     private String name;

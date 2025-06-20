@@ -8,34 +8,45 @@ import org.locationtech.jts.geom.Polygon;
 import java.util.ArrayList;
 import java.util.List;
 
+// Entity representing a user's Zone of Interest (ZoI)
 @Entity
 @Table(name = "zones_of_interest")
 public class ZoneOfInterest {
+
+    // Unique identifier for the ZoI
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Polygon geometry defining the zone area
     @Column(columnDefinition = "geometry(Polygon, 4326)", nullable = false)
     private Polygon polygon;
 
+    // List of vessel types relevant to this zone
     @ElementCollection
     @CollectionTable(name = "zone_vessel_types", joinColumns = @JoinColumn(name = "zone_id"))
     @Column(name = "vessel_type")
     private List<String> vesselTypes = new ArrayList<>();
 
+    // Maximum allowed vessel speed in the zone
     private Double maxVesselSpeed;
 
+    // User associated with this zone of interest (One-to-One relationship with User)
     @OneToOne(mappedBy = "zoneOfInterest")
     private User user;
 
+    // Default empty constructor (for JPA?)
     public ZoneOfInterest() {
     }
 
+    // Full constructor
     public ZoneOfInterest(Polygon polygon, List<String> vesselTypes, Double maxVesselSpeed) {
         this.polygon = polygon;
         this.vesselTypes = vesselTypes;
         this.maxVesselSpeed = maxVesselSpeed;
     }
+
+    // Getters and setters for the ZoneOfInterest entity fields:
 
     public Long getId() {
         return id;
@@ -83,6 +94,7 @@ public class ZoneOfInterest {
                 '}';
     }
 
+    // Method to check if a vessel matches the conditions of this zone of interest
     public boolean matchesConditions(Vessel vessel) {
         if (vessel == null) return false;
 

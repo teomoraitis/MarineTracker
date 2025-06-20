@@ -14,21 +14,22 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+// Allows cross-origin requests from https://localhost:3000 origin
 @CrossOrigin(origins = "${cors.urls}")
+// Marks this class as a REST controller and sets the base request mapping
 @RestController
 @RequestMapping("/api/zone")
 public class ZoneOfInterestController {
 
+    // Injects the ZoneOfInterestRepository for zoi data access
     @Autowired
     ZoneOfInterestRepository zoneRepository;
 
+    // Injects the UserRepository for user data access
     @Autowired
     UserRepository userRepository;
 
-    /** When POST on /api/zone:
-     * Create or update a user's Zone of Interest.
-     * If one already exists, it will be updated.
-     */
+    // POST endpoint to create or update a user's Zone of Interest
     @PostMapping
     public ResponseEntity<?> createOrUpdateZone(@RequestBody ZoneOfInterestDTO dto) {
         // Get the currently authenticated user
@@ -66,15 +67,15 @@ public class ZoneOfInterestController {
         }
     }
 
-    /** When GET on /api/zone:
-     * Get the current authenticated user's Zone of Interest
-     */
+    // GET endpoint to retrieve the current user's Zone of Interest
     @GetMapping
     public ResponseEntity<?> getZone() {
+        // Get the currently authenticated user
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) auth.getPrincipal();
         User user = userRepository.findById(userDetails.getId()).orElseThrow();
 
+        // Check if user has a Zone of Interest and retrieve it
         ZoneOfInterest zone = user.getZoneOfInterest();
         if (zone == null) {
             return ResponseEntity.notFound().build();
@@ -86,19 +87,20 @@ public class ZoneOfInterestController {
         dto.setVesselTypes(zone.getVesselTypes());
         dto.setMaxVesselSpeed(zone.getMaxVesselSpeed());
 
+        // Return the Zone of Interest DTO
         return ResponseEntity.ok(dto);
     }
 
 
-    /** When DELETE on /api/zone:
-     * Delete the authenticated user's Zone of Interest
-     */
+    // DELETE endpoint to remove the current user's Zone of Interest
     @DeleteMapping
     public ResponseEntity<?> deleteZone() {
+        // Get the currently authenticated user
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) auth.getPrincipal();
         User user = userRepository.findById(userDetails.getId()).orElseThrow();
 
+        // Check if user has a Zone of Interest and retrieve it
         ZoneOfInterest zone = user.getZoneOfInterest();
         if (zone == null) {
             return ResponseEntity.notFound().build();

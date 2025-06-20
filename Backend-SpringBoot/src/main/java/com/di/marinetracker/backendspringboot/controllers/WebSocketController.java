@@ -12,27 +12,30 @@ import org.springframework.stereotype.Controller;
 import java.util.Map;
 import java.util.Set;
 
+// Marks this class as a WebSocket controller
 @Controller
 public class WebSocketController {
 
     private static final Logger logger = LoggerFactory.getLogger(WebSocketController.class);
 
+    // Injects the WebSocketService
     @Autowired
     private WebSocketService webSocketService;
 
-    /**
-     * Handle filter updates from authenticated users
-     */
+    // Handles filter updates sent by authenticated users over WebSocket
     @MessageMapping("/filters")
     public void updateFilters(@Payload Map<String, Object> filterData, SimpMessageHeaderAccessor headerAccessor) {
         try {
+            // Get the WebSocket session ID
             String sessionId = headerAccessor.getSessionId();
 
+            // Extract vessel types from the incoming filter data
             @SuppressWarnings("unchecked")
             Set<String> vesselTypes = (Set<String>) filterData.get("vesselTypes");
 
             logger.info("Received filter update from session {}: {}", sessionId, vesselTypes);
 
+            // Update user filters in the service
             webSocketService.updateUserFilters(sessionId, vesselTypes);
 
         } catch (Exception e) {
@@ -40,13 +43,13 @@ public class WebSocketController {
         }
     }
 
-    /**
-     * Handle ping messages to keep connection alive
-     */
+    // Handles ping messages to keep the WebSocket connection alive
     @MessageMapping("/ping")
     public void handlePing(SimpMessageHeaderAccessor headerAccessor) {
+        // Get the WebSocket session ID
         String sessionId = headerAccessor.getSessionId();
         logger.debug("Received ping from session: {}", sessionId);
+
         // WebSocket framework will automatically send pong
     }
 }

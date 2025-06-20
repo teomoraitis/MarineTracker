@@ -1,5 +1,6 @@
 package com.di.marinetracker.backendspringboot.dto;
 
+// DTO for receiving user login credentials from the client
 public class LoginRequestDTO {
     private String username;
 

@@ -16,6 +16,8 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.Optional;
 
+// Service that consumes vessel position updates from Kafka
+// and saves them to the database, while also calling the WebSocketService
 @Service
 public class VesselPositionsConsumer {
     private static final Logger logger = LoggerFactory.getLogger(VesselPositionsConsumer.class);
@@ -25,6 +27,7 @@ public class VesselPositionsConsumer {
     private final VesselPositionRepository vesselPositionRepository;
     private final WebSocketService webSocketService;
 
+    // Constructor injection for dependencies (instead of using @Autowired)
     public VesselPositionsConsumer(VesselRepository vesselRepository,
                                    VesselPositionRepository vesselPositionRepository,
                                    WebSocketService webSocketService) {
@@ -33,10 +36,12 @@ public class VesselPositionsConsumer {
         this.webSocketService = webSocketService;
     }
 
+    // Consumes messages from the Kafka topic specified in application properties
     @Transactional
     @KafkaListener(topics = "${kafka.topic}", groupId = "ships-consumer")
     public void consume(String message) {
         try {
+            // Parse incoming JSON message to a Map
             @SuppressWarnings("unchecked")
             Map<String, Object> positionData = objectMapper.readValue(message, Map.class);
 
@@ -47,11 +52,12 @@ public class VesselPositionsConsumer {
             Optional<Vessel> existingVessel = vesselRepository.findById(mmsi);
 
             if (!existingVessel.isPresent()) {
+                // Log and ignore if vessel is unknown
                 logger.warn("Received position for unknown vessel MMSI: {}. Ignoring position update.", mmsi);
                 return;
             }
 
-            // Get position data
+            // Extract position data from the message
             Double latitude = Double.valueOf(positionData.get("lat").toString());
             Double longitude = Double.valueOf(positionData.get("lon").toString());
             Double speed = Double.valueOf(positionData.get("speed").toString());
@@ -66,7 +72,7 @@ public class VesselPositionsConsumer {
 
             Vessel vessel = existingVessel.get();
 
-            // Create new position with all fields
+            // Create new VesselPosition entity with all the extracted data as fields
             VesselPosition position = new VesselPosition(
                     vessel,
                     latitude,
@@ -79,7 +85,7 @@ public class VesselPositionsConsumer {
                     timestamp
             );
 
-            // Save position and update vessel
+            // Add VesselPosition to Vessel entity
             vessel.addPosition(position);
 
             // Handle position history cleanup
@@ -103,13 +109,14 @@ public class VesselPositionsConsumer {
                 }
             }
 
+            // Save the new VesselPosition to the repository (database)
             vesselPositionRepository.save(position);
 
             // Log the update with details
             logger.info("Position updated - Vessel: {} (MMSI: {}), Position: lat={}, lon={}, speed={}, course={}, timestamp={}",
                     vessel.getName(), vessel.getMmsi(), latitude, longitude, speed, course, timestamp);
 
-            // Broadcast the vessel position using WebSocketService
+            // Broadcast the vessel position to Frontend using WebSocketService
             webSocketService.broadcastVesselPosition(message, vessel);
 
         } catch (Exception e) {

@@ -6,17 +6,22 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 
+// Entity representing a Vessel's Position report
 @Entity
 @Table(name = "vessel_positions")
 public class VesselPosition {
+
+    // Unique identifier for the position report
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Vessel associated with this position report (Many-to-One relationship with Vessel)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vessel_mmsi", nullable = false)
     private Vessel vessel;
 
+    // Geographical coordinates of the position report:
     private Double latitude;
     private Double longitude;
     private Double speed;
@@ -26,9 +31,11 @@ public class VesselPosition {
     private Integer heading;
     private Instant timestamp;
 
+    // Default empty constructor (for JPA?)
     public VesselPosition() {
     }
 
+    // Full constructor
     public VesselPosition(Vessel vessel, Double latitude, Double longitude, Double speed, Double course, 
                          Integer status, Double turn, Integer heading, Instant timestamp) {
         this.vessel = vessel;
@@ -41,6 +48,8 @@ public class VesselPosition {
         this.heading = heading;
         this.timestamp = timestamp;
     }
+
+    // Getters and setters for the VesselPosition entity fields:
 
     public Long getId() {
         return id;

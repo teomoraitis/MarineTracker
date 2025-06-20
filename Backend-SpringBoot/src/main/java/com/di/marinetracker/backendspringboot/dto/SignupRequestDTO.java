@@ -2,6 +2,7 @@ package com.di.marinetracker.backendspringboot.dto;
 
 import java.util.Set;
 
+// DTO for receiving user signup data from the client
 public class SignupRequestDTO {
 
     private String username;

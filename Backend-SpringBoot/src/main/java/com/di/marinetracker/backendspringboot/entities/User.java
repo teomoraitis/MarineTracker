@@ -8,20 +8,32 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+// Entity representing a User
 @Entity
 @Table(name = "users")
 public class User {
+    // Unique identifier for the user (UUID)
     @Id
     private String id;
+
+    // Username for authentication and display
     private String userName;
+
+    // User's email address
     private String email;
+
+    // Encrypted user password
     private String password;
+
+    // Set of roles assigned to the user
     private Set<String> roles = new HashSet<>();
 
+    // User's zone of interest (One-to-One relationship with ZoneOfInterest)
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "zone_id", referencedColumnName = "id")
     private ZoneOfInterest zoneOfInterest;
 
+    // List of vessels in the user's fleet (Many-to-Many relationship with Vessel)
     @ManyToMany
     @JoinTable(
             name = "fleets",
@@ -30,6 +42,7 @@ public class User {
     )
     private List<Vessel> fleet = new ArrayList<>();
 
+    // Constructor for creating a User with all fields
     public User(String userName, String email, String password, Set<String> roles) {
         this.userName = userName;
         this.email = email;
@@ -37,15 +50,19 @@ public class User {
         this.roles = roles;
     }
 
+    // Default empty constructor (for JPA?)
     public User() {
     }
 
+    // Generates a unique ID for the user before persisting to the database
     @PrePersist
     public void generateId() {
         if (this.id == null) {
             this.id = java.util.UUID.randomUUID().toString();
         }
     }
+
+    // Getters and Setters for the User entity fields:
 
     public String getId() {return id;}
 
@@ -91,6 +108,7 @@ public class User {
         return fleet;
     }
 
+    // Adds a new vessel to the user's fleet and updates the vessel's users list
     public void addToFleet(Vessel newVessel) {
         if (!fleet.contains(newVessel)) {
             fleet.add(newVessel);
@@ -98,6 +116,7 @@ public class User {
         }
     }
 
+    // Removes a vessel from the user's fleet and updates the vessel's users list
     public void removeFromFleet(Vessel vessel) {
         this.fleet.remove(vessel);
         vessel.getUsers().remove(this);

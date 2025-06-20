@@ -4,6 +4,7 @@ import com.di.marinetracker.backendspringboot.entities.VesselPosition;
 
 import java.time.Instant;
 
+// DTO for transferring vessel position data between backend and client
 public class VesselPositionDTO {
     private Double latitude;
     private Double longitude;
