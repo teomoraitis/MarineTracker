@@ -59,61 +59,56 @@ const App = () => {
   };
 
   useEffect(() => {
-    const socket = new SockJS(`${process.env.REACT_APP_BACKEND_URL}ws`);
+    const socket = new SockJS(`${process.env.REACT_APP_BACKEND_URL}ws/${user == null ? 'guest' : 'auth'}`);
     const stompClient = new Client({
       webSocketFactory: () => socket,
       reconnectDelay: 5000,
+      debug: (str) => {
+        console.log('STOMP Debug:', str);
+      },
       onConnect: () => {
         console.log("Connected to WebSocket (SockJS)");
 
-        stompClient.subscribe("/topic/locations", (message) => {
+        stompClient.subscribe(user == null ? '/topic/guest' : `/user/queue/vessels`, (message) => {
           try {
             const update = JSON.parse(message.body);
+            console.log(update)
 
-            const updateObject = update.setShips.reduce((agg, shipUpdate) => {
-              return {
-                ...agg,
-                [shipUpdate.mmsi]: shipUpdate,
-              };
-            }, {});
+            if (update.setShips && Array.isArray(update.setShips)) {
+              const updateObject = update.setShips.reduce((agg, shipUpdate) => {
+                return {
+                  ...agg,
+                  [shipUpdate.mmsi]: shipUpdate,
+                };
+              }, {});
 
-            setShips((prevShips) => ({
-              ...prevShips,
-              ...updateObject,
-            }));
+              setShips((prevShips) => ({
+                ...prevShips,
+                ...updateObject,
+              }));
+            }
           } catch (error) {
             console.error("Error parsing WebSocket message:", error);
+            console.error("Message body:", message.body);
           }
         });
       },
       onStompError: (frame) => {
-        console.error("STOMP Error:", frame.headers["message"]);
+        console.error("STOMP Error:", frame);
+      },
+      onWebSocketError: (event) => {
+        console.error("WebSocket Error:", event);
       },
     });
 
     stompClient.activate();
 
-    return () => stompClient.deactivate();
-  }, []);
-
-  useEffect(() => {
-  const dummyShip = {
-    mmsi: 999999999,
-    status: 0,
-    turn: 0,
-    speed: 12.5,
-    course: 90,
-    heading: 25,
-    lon: 23.7365,
-    lat: 37.9756,
-    timestamp: Date.now(),
-  };
-
-  setShips((prevShips) => ({
-    ...prevShips,
-    [dummyShip.mmsi]: dummyShip,
-  }));
-}, []);
+    return () => {
+      if (stompClient.connected) {
+        stompClient.deactivate();
+      }
+    };
+  }, [user]);
 
 
   const toggleShowPath = async (mmsi) => {
