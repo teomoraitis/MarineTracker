@@ -8,6 +8,7 @@
 //
 //    @Test
 //    void contextLoads() {
+//        // Verifies if Spring context loads successfully
 //    }
 //
 //}
