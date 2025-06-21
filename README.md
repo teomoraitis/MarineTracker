@@ -21,7 +21,10 @@ Built with <strong>Spring Boot</strong> and <strong>React</strong>. Using Apache
 
 ## Project Deliverables
 
-The project was developed in three phases:
+A mostly sequential, waterfall-inspired methodology was used: starting with SRS, 
+moving to system modeling and design (with some iteration to refine requirements), 
+and finishing with implementation/coding. <br>
+The project was completed in three phases:
 
 1. **1st Deliverable – SRS & UI Wireframes**  
    📁 [`1st Deliverable - SRS & UI Wireframes`](./1st%20Deliverable%20-%20SRS%20&%20UI%20Wireframes)  
