@@ -2,6 +2,8 @@ package com.di.marinetracker.backendspringboot.repositories;
 
 import com.di.marinetracker.backendspringboot.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -14,6 +16,9 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     // Find a user by their username
     Optional<User> findByUserName(String userName);
+
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.fleet WHERE u.userName = :userName")
+    Optional<User> findByUserNameWithFleet(@Param("userName") String userName);
 
     // Check if a user exists by username
     Boolean existsByUserName(String username);
