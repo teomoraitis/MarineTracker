@@ -4,17 +4,20 @@ import com.di.marinetracker.backendspringboot.entities.User;
 import com.di.marinetracker.backendspringboot.entities.Vessel;
 import com.di.marinetracker.backendspringboot.entities.ZoneOfInterest;
 import com.di.marinetracker.backendspringboot.repositories.UserRepository;
+import com.di.marinetracker.backendspringboot.utils.JwtPrincipal;
 import com.di.marinetracker.backendspringboot.utils.JwtUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -76,7 +79,7 @@ public class WebSocketService {
 
             // Send to guest topic
             messagingTemplate.convertAndSend("/topic/guest", guestMessage.toString());
-            logger.debug("Broadcasted to guest topic: vessel {}", vesselData.get("mmsi"));
+            logger.info("Broadcasted to guest topic: vessel {}", vesselData.get("mmsi"));
 
         } catch (Exception e) {
             logger.error("Error broadcasting to guests: {}", e.getMessage(), e);
@@ -107,7 +110,7 @@ public class WebSocketService {
                             userMessage.toString()
                     );
 
-                    logger.debug("Sent vessel {} to user {}", vessel.getMmsi(), userSession.getUserId());
+                    logger.info("Sent vessel {} to user {}", vessel.getMmsi(), userSession.getUserId());
                 }
             } catch (Exception e) {
                 logger.error("Error sending to user {}: {}", userSession.getUserId(), e.getMessage(), e);
@@ -157,32 +160,45 @@ public class WebSocketService {
     }
 
     // Register a new user session when they connect
-    public void registerUserSession(String sessionId, String jwtToken) {
+    @Transactional
+    public void registerUserSession(String sessionId, Principal principal) {
         try {
-            // Validate JWT token and extract user information
-            if (jwtToken != null && jwtUtils.validateJwtToken(jwtToken)) {
-                String userId = jwtUtils.getUserNameFromJwtToken(jwtToken);
-                Optional<User> userOpt = userRepository.findById(userId);
+            if (principal == null) {
+                logger.warn("No principal found for session {}", sessionId);
+                return;
+            }
 
-                // If user exists, create a new UserSession
-                if (userOpt.isPresent()) {
-                    User user = userOpt.get();
-                    UserSession session = new UserSession(
-                            userId,
-                            sessionId,
-                            user.getFleet().stream().map(Vessel::getMmsi).toList(),
-                            new HashSet<>(), // Default: no vessel type filters
-                            user.getZoneOfInterest()
-                    );
+            String userId = principal.getName();
 
-                    // Register the session in the active sessions map
-                    activeSessions.put(sessionId, session);
-                    logger.info("Registered user session: {} for user: {}", sessionId, userId);
-
-                    // Send initial vessel data to the newly connected user
-                    sendInitialDataToUser(session);
+            // Optional: if you want to re-validate the JWT for extra security:
+            if (principal instanceof JwtPrincipal jwtPrincipal) {
+                String jwt = jwtPrincipal.getJwt();
+                if (!jwtUtils.validateJwtToken(jwt)) {
+                    logger.warn("Invalid JWT for session {}", sessionId);
+                    return;
                 }
             }
+
+            Optional<User> userOpt = userRepository.findByUserNameWithFleet(userId);
+
+            if (userOpt.isPresent()) {
+                User user = userOpt.get();
+                UserSession session = new UserSession(
+                        userId,
+                        sessionId,
+                        user.getFleet().stream().map(Vessel::getMmsi).toList(),
+                        new HashSet<>(),
+                        user.getZoneOfInterest()
+                );
+
+                activeSessions.put(sessionId, session);
+                logger.info("Registered user session: {} for user: {}", sessionId, userId);
+
+                sendInitialDataToUser(session);
+            } else {
+                logger.warn("User not found for session {} and userId {}", sessionId, userId);
+            }
+
         } catch (Exception e) {
             logger.error("Error registering user session: {}", e.getMessage(), e);
         }
