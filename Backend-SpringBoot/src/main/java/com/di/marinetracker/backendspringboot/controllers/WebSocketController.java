@@ -23,6 +23,7 @@ public class WebSocketController {
     private WebSocketService webSocketService;
 
     // Handles filter updates sent by authenticated users over WebSocket
+    // accessible to the client as /app/filters
     @MessageMapping("/filters")
     public void updateFilters(@Payload Map<String, Object> filterData, SimpMessageHeaderAccessor headerAccessor) {
         try {
@@ -44,6 +45,7 @@ public class WebSocketController {
     }
 
     // Handles ping messages to keep the WebSocket connection alive
+    //accessible to the client as /app/ping
     @MessageMapping("/ping")
     public void handlePing(SimpMessageHeaderAccessor headerAccessor) {
         // Get the WebSocket session ID
