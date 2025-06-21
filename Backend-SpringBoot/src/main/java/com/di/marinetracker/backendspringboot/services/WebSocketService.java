@@ -138,6 +138,7 @@ public class WebSocketService {
     }
 
     // Generate notifications for zone of interest alerts
+    // TODO: Maybe this will change to a separate Notification Entity + Repository + Service etc...
     private List<String> generateNotifications(Vessel vessel, UserSession userSession) {
         List<String> notifications = new ArrayList<>();
 
