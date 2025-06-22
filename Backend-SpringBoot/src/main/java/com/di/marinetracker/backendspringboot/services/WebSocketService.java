@@ -1,7 +1,9 @@
 package com.di.marinetracker.backendspringboot.services;
 
+import com.di.marinetracker.backendspringboot.controllers.VesselCacheController;
 import com.di.marinetracker.backendspringboot.entities.User;
 import com.di.marinetracker.backendspringboot.entities.Vessel;
+import com.di.marinetracker.backendspringboot.entities.VesselPosition;
 import com.di.marinetracker.backendspringboot.entities.ZoneOfInterest;
 import com.di.marinetracker.backendspringboot.repositories.UserRepository;
 import com.di.marinetracker.backendspringboot.utils.JwtPrincipal;
@@ -43,17 +45,18 @@ public class WebSocketService {
     private final Map<String, UserSession> activeSessions = new ConcurrentHashMap<>();
 
     // Cache for vessel data to support filtering and quick access
-    private final Map<String, JsonNode> vesselDataCache = new ConcurrentHashMap<>();
+    @Autowired
+    private VesselCacheController vesselDataCache;
 
     // Broadcast vessel position to all channels (public-guest and authenticated users)
-    public void broadcastVesselPosition(String vesselMessage, Vessel vessel) {
+    public void broadcastVesselPosition(String vesselMessage, Vessel vessel, VesselPosition  vesselPosition) {
         try {
             // Parse vessel message
             JsonNode vesselData = objectMapper.readTree(vesselMessage);
             String mmsi = vessel.getMmsi();
 
             // Cache the vessel data
-            vesselDataCache.put(mmsi, vesselData);
+            vesselDataCache.put(mmsi, vesselData, vesselPosition);
 
             // Broadcast to public guest endpoint by calling broadcastToGuests()
             broadcastToGuests(vesselData);

@@ -117,7 +117,7 @@ public class VesselPositionsConsumer {
                     vessel.getName(), vessel.getMmsi(), latitude, longitude, speed, course, timestamp);
 
             // Broadcast the vessel position to Frontend using WebSocketService
-            webSocketService.broadcastVesselPosition(message, vessel);
+            webSocketService.broadcastVesselPosition(message, vessel, position);
 
         } catch (Exception e) {
             logger.error("Error processing vessel position: {}", e.getMessage(), e);

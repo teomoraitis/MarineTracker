@@ -10,6 +10,9 @@ import com.di.marinetracker.backendspringboot.repositories.UserRepository;
 import com.di.marinetracker.backendspringboot.repositories.VesselPositionRepository;
 import com.di.marinetracker.backendspringboot.repositories.VesselRepository;
 import com.di.marinetracker.backendspringboot.services.UserDetailsImpl;
+import com.fasterxml.jackson.databind.JsonNode;
+import org.geolatte.geom.V;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +20,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
@@ -35,6 +39,9 @@ class VesselController {
     private final VesselRepository vesselRepository;
     private final VesselPositionRepository positionRepository;
     private final UserRepository userRepository;
+
+    @Autowired
+    private VesselCacheController vesselDataCache;
 
     // Constructor injection for repositories (instead of using @Autowired)
     VesselController(VesselRepository vesselRepository, VesselPositionRepository positionRepository, UserRepository userRepository) {
@@ -121,6 +128,20 @@ class VesselController {
                 .map(VesselPositionDTO::new)
                 .toList();
         return positions;
+    }
+
+    @CrossOrigin(origins = "${cors.urls}")
+    @GetMapping("/reload")
+    List <VesselDTO> reload() {
+        List<VesselDTO> currentVessels = new ArrayList<>();
+
+        vesselDataCache.forEachVesselPosition((mmsi, vesselData) -> {
+            VesselPositionDTO vesselPositionDTO = new VesselPositionDTO(vesselData);
+            Vessel vessel = vesselData.getVessel();
+            VesselDTO vesselDTO = new VesselDTO(mmsi, vessel.getName(), vessel.getType(), vesselPositionDTO, false);
+            currentVessels.add(vesselDTO);
+        });
+        return currentVessels;
     }
 
     // Updates vessel details (admin only), when a PUT request is made to /api/vessels/{mmsi}
