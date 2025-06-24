@@ -5,7 +5,6 @@ import com.di.marinetracker.backendspringboot.entities.User;
 import com.di.marinetracker.backendspringboot.entities.Vessel;
 import com.di.marinetracker.backendspringboot.dto.VesselDTO;
 import com.di.marinetracker.backendspringboot.entities.VesselPosition;
-import com.di.marinetracker.backendspringboot.exceptions.VesselNotFoundException;
 import com.di.marinetracker.backendspringboot.repositories.UserRepository;
 import com.di.marinetracker.backendspringboot.repositories.VesselPositionRepository;
 import com.di.marinetracker.backendspringboot.repositories.VesselRepository;
@@ -100,7 +99,7 @@ class VesselController {
 
         // Find vessel or throw if not found
         Vessel vessel = vesselRepository.findById(mmsi)
-            .orElseThrow(() -> new VesselNotFoundException(mmsi));
+            .orElseThrow(() -> new RuntimeException("Vessel not found"));
 
         // Get latest position for vessel
         VesselPositionDTO latestPosition = positionRepository.findLatestByVesselMmsi(mmsi).map(VesselPositionDTO::new).orElse(null);
@@ -160,7 +159,7 @@ class VesselController {
                     vessel.setType(newVessel.getType());
                     return vesselRepository.save(vessel);
                 })
-                .orElseThrow(() -> new VesselNotFoundException(mmsi));
+                .orElseThrow(() -> new RuntimeException("Vessel not found"));
 
         // Get latest position for updated vessel
         Optional<VesselPosition> latestPosition = positionRepository.findLatestByVesselMmsi(savedVessel.getMmsi());
@@ -170,7 +169,7 @@ class VesselController {
                 savedVessel.getMmsi(),
                 savedVessel.getName(),
                 savedVessel.getType(),
-                latestPosition.map(VesselPositionDTO::new).orElseThrow(() -> new VesselNotFoundException(mmsi)),
+                latestPosition.map(VesselPositionDTO::new).orElseThrow(() -> new RuntimeException("Vessel not found")),
                 userRepository.existsByIdAndFleetMmsi(userId, savedVessel.getMmsi())
         );
 
