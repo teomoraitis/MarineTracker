@@ -46,6 +46,9 @@ npm run dev
 
 This will enable hot-reloading, so you can start coding immediately and see changes in real time.
 
+### Access the web page
+Once React is running, you can access the web page at: https://localhost:3000/
+
 ---
 
 ## Features
