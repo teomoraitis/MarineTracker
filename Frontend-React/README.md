@@ -50,5 +50,9 @@ This will enable hot-reloading, so you can start coding immediately and see chan
 
 ## Features
 
-- **Environment Variables:** Support for `.env` files is enabled. While we may not need them immediately, the setup allows easy configuration of environment-specific variables in the future.
+- **Environment Variables:** Support for `.env` files is enabled. This setup allows easy configuration of environment-specific variables. <br> 
+For example, one important .env file that should be included is:<br>
+```.env
+REACT_APP_BACKEND_URL=https://localhost:8443/
+```
 - **Custom Map Component:** Includes a map component with a free-draw feature.
