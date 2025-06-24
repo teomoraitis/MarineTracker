@@ -2,8 +2,10 @@ package com.di.marinetracker.backendspringboot.configurations;
 
 import com.di.marinetracker.backendspringboot.entities.Vessel;
 import com.di.marinetracker.backendspringboot.repositories.VesselRepository;
+import com.di.marinetracker.backendspringboot.services.VesselPositionsConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +20,10 @@ import java.util.stream.Stream;
 class LoadDatabaseConfig {
 
     private static final Logger log = LoggerFactory.getLogger(LoadDatabaseConfig.class);
+
+    // Inject the VesselPositionsConsumer to start consuming vessel position updates right after preloading the database
+    @Autowired
+    private VesselPositionsConsumer vesselPositionsConsumer;
 
     // Bean that runs on application startup to preload the database with vessel data from a CSV file
     @Bean
@@ -41,6 +47,9 @@ class LoadDatabaseConfig {
                 }
                 log.info("\n...\n" + "Preloading complete. Loaded {} vessels.\n" + "...", records.size());
                 System.out.println(); // Newline
+
+                // Start the Kafka listener to consume vessel position updates
+                vesselPositionsConsumer.startKafkaListener();
 
             } catch (IOException e) {
                 throw new RuntimeException(e);

@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.config.KafkaListenerEndpointRegistry;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,18 +28,28 @@ public class VesselPositionsConsumer {
     private final VesselPositionRepository vesselPositionRepository;
     private final WebSocketService webSocketService;
 
+    // Need this to explicitly start the Kafka listener
+    private final KafkaListenerEndpointRegistry kafkaListenerEndpointRegistry;
+
+
     // Constructor injection for dependencies (instead of using @Autowired)
     public VesselPositionsConsumer(VesselRepository vesselRepository,
                                    VesselPositionRepository vesselPositionRepository,
-                                   WebSocketService webSocketService) {
+                                   WebSocketService webSocketService, KafkaListenerEndpointRegistry kafkaListenerEndpointRegistry) {
         this.vesselRepository = vesselRepository;
         this.vesselPositionRepository = vesselPositionRepository;
         this.webSocketService = webSocketService;
+        this.kafkaListenerEndpointRegistry = kafkaListenerEndpointRegistry;
+    }
+
+    // Method to start the Kafka listener explicitly (called after preloading the database by LoadDatabaseConfig)
+    public void startKafkaListener() {
+        kafkaListenerEndpointRegistry.getListenerContainer("vesselPositionsListener").start();
     }
 
     // Consumes messages from the Kafka topic specified in application properties
     @Transactional
-    @KafkaListener(topics = "${kafka.topic}", groupId = "ships-consumer")
+    @KafkaListener(id = "vesselPositionsListener", topics = "${kafka.topic}", groupId = "ships-consumer", autoStartup = "false")
     public void consume(String message) {
         try {
             // Parse incoming JSON message to a Map
