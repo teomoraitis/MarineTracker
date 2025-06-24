@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is the initialization of the frontend for our project. Instead of using `create-react-app` (which has recently been deprecated), the setup was done manually using **Webpack**.
+This is the initialization of the frontend-React for our project. Instead of using `create-react-app` (which has recently been deprecated), the setup was done manually using **Webpack**.
 
 This approach gives us more control over the configuration and is better aligned with current best practices in the React ecosystem.
 
