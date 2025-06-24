@@ -1,5 +1,4 @@
-
-# React Frontend
+# Frontend Setup for MarineTracker
 
 ## Overview
 
