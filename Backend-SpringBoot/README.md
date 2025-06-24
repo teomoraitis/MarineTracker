@@ -71,6 +71,8 @@ spring.jpa.show-sql=true
 Right click on [BackendSpringBootApplication.java](./src/main/java/com/di/marinetracker/backendspringboot/BackendSpringBootApplication.java)
 and click `Run`.
 
+### 6. Proceed to React execution
+Check Frontend Setup for MarineTracker README.
 
 ## Check if Online
 
