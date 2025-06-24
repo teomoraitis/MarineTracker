@@ -78,6 +78,9 @@ Check [Frontend Setup for MarineTracker README](../Frontend-React/README.md).
 
 Once the application is running, you can access the backend API at:
 https://localhost:8443/
+<br>
+Or proceed to [Frontend Setup for MarineTracker README](../Frontend-React/README.md), and access the frontend at:
+https://localhost:3000/
 
 
 ## Notes
