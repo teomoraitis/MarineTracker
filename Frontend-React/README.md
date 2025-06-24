@@ -53,9 +53,9 @@ Once React is running, you can access the web page at: https://localhost:3000/
 
 ## Features
 
+- **Custom Map Component:** Includes a map component with a free-draw feature.
 - **Environment Variables:** Support for `.env` files is enabled. This setup allows easy configuration of environment-specific variables. <br> 
 For example, one important .env file that should be included is:<br>
 ```.env
 REACT_APP_BACKEND_URL=https://localhost:8443/
 ```
-- **Custom Map Component:** Includes a map component with a free-draw feature.
