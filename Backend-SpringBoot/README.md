@@ -72,7 +72,7 @@ Right click on [BackendSpringBootApplication.java](./src/main/java/com/di/marine
 and click `Run`.
 
 ### 6. Proceed to React execution
-Check Frontend Setup for MarineTracker README.
+Check [Frontend Setup for MarineTracker README](../Frontend-React/README.md).
 
 ## Check if Online
 
