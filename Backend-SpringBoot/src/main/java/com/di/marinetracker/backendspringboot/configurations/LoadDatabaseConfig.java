@@ -39,12 +39,20 @@ class LoadDatabaseConfig {
                 System.out.println(); // Newline
                 log.info("\n...\n" + "Preloading Database with Static vessel data from vessel_types_names.csv\n" + "...");
                 // Iterates over each record and saves a new Vessel entity to the repository
-                for (List<String> record : records) {
+                int total = records.size();
+                for (int i = 0; i < total; i++) {
+                    List<String> record = records.get(i);
                     String mmsi = (record.size() >= 1) ? record.get(0) : "";
                     String type = (record.size() >= 2) ? record.get(1) : "";
                     String name = (record.size() >= 3) ? record.get(2) : "";
                     repository.save(new Vessel(mmsi, type, name));
+
+                    // Visual progress bar for preloading
+                    int progress = (int) (((i + 1) / (double) total) * 50);
+                    String bar = "[" + "=".repeat(progress) + " ".repeat(50 - progress) + "]";
+                    System.out.print("\r" + bar + " " + (i + 1) + "/" + total);
                 }
+                System.out.println();
                 log.info("\n...\n" + "Preloading complete. Loaded {} vessels.\n" + "...", records.size());
                 System.out.println(); // Newline
 
