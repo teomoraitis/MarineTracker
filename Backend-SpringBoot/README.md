@@ -71,14 +71,11 @@ spring.jpa.show-sql=true
 Right click on [BackendSpringBootApplication.java](./src/main/java/com/di/marinetracker/backendspringboot/BackendSpringBootApplication.java)
 and click `Run`.
 
-### 6. Proceed to React execution
-Check [Frontend Setup for MarineTracker README](../Frontend-React/README.md).
-
 ## Check if Online
 
 Once the application is running, you can access the backend API at:
 https://localhost:8443/
-<br>
+<br><br>
 Or proceed to [Frontend Setup for MarineTracker README](../Frontend-React/README.md), and access the frontend at:
 https://localhost:3000/
 
