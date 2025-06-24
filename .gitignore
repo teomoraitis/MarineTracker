@@ -53,6 +53,7 @@
 
 /Kafka/kafka_2.12-3.9.0/logs/*
 /Kafka/kafka_2.12-3.9.0/logs/
+/Kafka/kafka_2.12-3.9.0/logs/**
 
 ### NodeJS ###
 dist/*
