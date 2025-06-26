@@ -5,6 +5,7 @@ import com.di.marinetracker.backendspringboot.entities.User;
 import com.di.marinetracker.backendspringboot.entities.Vessel;
 import com.di.marinetracker.backendspringboot.entities.VesselPosition;
 import com.di.marinetracker.backendspringboot.entities.ZoneOfInterest;
+import com.di.marinetracker.backendspringboot.entities.Notification;
 import com.di.marinetracker.backendspringboot.repositories.UserRepository;
 import com.di.marinetracker.backendspringboot.utils.JwtPrincipal;
 import com.di.marinetracker.backendspringboot.utils.JwtUtils;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.security.Principal;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 // Service that handles WebSocket communication with Frontend clients (guests or authenticated users)
 @Service
@@ -40,6 +42,10 @@ public class WebSocketService {
     // JWT utility for authentication
     @Autowired
     private JwtUtils jwtUtils;
+
+    // Notification service for zone alerts
+    @Autowired
+    private NotificationService notificationService;
 
     // Map to store active user sessions and their filters
     private final Map<String, UserSession> activeSessions = new ConcurrentHashMap<>();
@@ -95,15 +101,20 @@ public class WebSocketService {
             try {
                 // Check if user should receive this vessel by calling shouldSendToUser()
                 if (shouldSendToUser(vessel, userSession)) {
-                    // Generate notifications for zone of interest alerts by calling generateNotifications()
-                    List<String> notifications = generateNotifications(vessel, userSession);
+                    // Generate notifications for zone of interest alerts
+                    List<Notification> notifications = generateNotifications(vessel, userSession);
+
+                    // Convert notifications to strings for WebSocket message
+                    List<String> notificationMessages = notifications.stream()
+                            .map(Notification::getMessage)
+                            .collect(Collectors.toList());
 
                     // Create the vessel data message + notifications
                     JsonNode userMessage = createWebSocketMessage(
                             Arrays.asList(vesselData),
                             Collections.emptyList(),
                             false,
-                            notifications
+                            notificationMessages
                     );
 
                     // Send the message to the user's specific queue
@@ -123,6 +134,11 @@ public class WebSocketService {
 
     // Determine if a vessel should be sent to a specific user based on their filters
     private boolean shouldSendToUser(Vessel vessel, UserSession userSession) {
+        // If fleet-only filter is active, only show fleet vessels
+        if (userSession.isShowOnlyFleetVessels()) {
+            return userSession.getFleetMmsis().contains(vessel.getMmsi());
+        }
+
         // Always show vessels in user's fleet
         if (userSession.getFleetMmsis().contains(vessel.getMmsi())) {
             return true;
@@ -143,24 +159,22 @@ public class WebSocketService {
         return true;
     }
 
-    // Generate notifications for zone of interest alerts
-    // TODO: Maybe this will change to a separate Notification Entity + Repository + Service etc...
-    private List<String> generateNotifications(Vessel vessel, UserSession userSession) {
-        List<String> notifications = new ArrayList<>();
-
-        // Check if vessel matches user's zone of interest conditions
-        if (userSession.getZoneOfInterest() != null &&
-                userSession.getZoneOfInterest().matchesConditions(vessel)) {
-
-            // Add notification for entering zone of interest
-            notifications.add(String.format(
-                    "Vessel %s (%s) entered your zone of interest",
-                    vessel.getName(),
-                    vessel.getMmsi()
-            ));
+    // Generate notifications for zone of interest alerts using the NotificationService
+    private List<Notification> generateNotifications(Vessel vessel, UserSession userSession) {
+        try {
+            if (userSession.getZoneOfInterest() != null) {
+                return notificationService.generateZoneNotifications(
+                        vessel,
+                        userSession.getUserId(),
+                        userSession.getZoneOfInterest()
+                );
+            }
+            return Collections.emptyList();
+        } catch (Exception e) {
+            logger.error("Error generating notifications for vessel {} and user {}: {}",
+                    vessel.getMmsi(), userSession.getUserId(), e.getMessage(), e);
+            return Collections.emptyList();
         }
-
-        return notifications;
     }
 
     // Register a new user session when they connect
@@ -229,6 +243,15 @@ public class WebSocketService {
         }
     }
 
+    public void updateFleetFilter(String sessionId, boolean showOnlyFleet) {
+        UserSession session = activeSessions.get(sessionId);
+        if (session != null) {
+            session.setShowOnlyFleetVessels(showOnlyFleet);
+            logger.info("Updated fleet filter for session {}: showOnlyFleet={}", sessionId, showOnlyFleet);
+            sendFilteredDataToUser(session);
+        }
+    }
+
     // Send initial vessel data when user first connects
     private void sendInitialDataToUser(UserSession userSession) {
         try {
@@ -263,9 +286,41 @@ public class WebSocketService {
 
     // Send filtered data when user updates their filters
     private void sendFilteredDataToUser(UserSession userSession) {
-        // TODO: Implementation would be similar to sendInitialDataToUser
-        // but would apply the current filters
-        logger.info("Sending filtered data to user: {}", userSession.getUserId());
+        try {
+            List<JsonNode> visibleVessels = new ArrayList<>();
+
+            vesselDataCache.forEach((mmsi, vesselData) -> {
+                // Create a simple vessel object to check filters
+                // In production, you'd want to get the full Vessel entity
+                if (userSession.isShowOnlyFleetVessels()) {
+                    if (userSession.getFleetMmsis().contains(mmsi)) {
+                        visibleVessels.add(vesselData);
+                    }
+                } else {
+                    // Apply other filters (vessel type, zone, etc.)
+                    // This is simplified - you'd need full vessel data for complete filtering
+                    visibleVessels.add(vesselData);
+                }
+            });
+
+            JsonNode filterMessage = createWebSocketMessage(
+                    visibleVessels,
+                    Collections.emptyList(),
+                    false,
+                    Arrays.asList("Filters updated")
+            );
+
+            messagingTemplate.convertAndSendToUser(
+                    userSession.getUserId(),
+                    "/queue/vessels",
+                    filterMessage.toString()
+            );
+
+            logger.info("Sent filtered data to user: {}", userSession.getUserId());
+
+        } catch (Exception e) {
+            logger.error("Error sending filtered data to user: {}", e.getMessage(), e);
+        }
     }
 
     // Create standardized WebSocket message format
@@ -303,6 +358,7 @@ public class WebSocketService {
         private final List<String> fleetMmsis; // List of vessel MMSIs in user's fleet
         private Set<String> vesselTypeFilters; // Vessel type filters
         private final ZoneOfInterest zoneOfInterest; // User's zone of interest
+        private boolean showOnlyFleetVessels = false;
 
         // Constructor
         public UserSession(String userId, String sessionId, List<String> fleetMmsis,
@@ -323,5 +379,9 @@ public class WebSocketService {
             this.vesselTypeFilters = vesselTypeFilters;
         }
         public ZoneOfInterest getZoneOfInterest() { return zoneOfInterest; }
+        public boolean isShowOnlyFleetVessels() { return showOnlyFleetVessels; }
+        public void setShowOnlyFleetVessels(boolean showOnlyFleetVessels) {
+            this.showOnlyFleetVessels = showOnlyFleetVessels;
+        }
     }
 }
