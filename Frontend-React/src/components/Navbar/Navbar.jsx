@@ -151,9 +151,35 @@ const Navbar = ({}) => {
     )}
       {showHelpModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg w-80 shadow-lg text-center">
-            <h3 className="text-lg font-semibold mb-4">Help</h3>
-            <p className="text-sm text-gray-700">Temporary Text</p>
+          <div className="bg-white p-8 rounded-lg w-full max-w-xl shadow-2xl text-left">
+            <h3 className="text-xl font-semibold mb-4">Help</h3>
+
+            <div className="text-sm text-gray-700 space-y-4">
+              <p>Welcome to Marine Tracker! Here is how you can use this site.</p>
+
+              <div>
+                <p className="font-semibold">As a casual user:</p>
+                <ul className="list-disc list-inside ml-4">
+                  <li>You can zoom in and out of the map to view ship positions more accurately.</li>
+                  <li>You can click on any ship and view information about it, such as its position, direction, and speed.</li>
+                  <li>You can easily create an account by clicking on the Sign Up button to access more features.</li>
+                </ul>
+              </div>
+
+              <div>
+                <p className="font-semibold">As a logged in user:</p>
+                <ul className="list-disc list-inside ml-4">
+                  <li>You can add ships to your fleet and track them more easily by clicking on them and then the corresponding button 
+                    in the top right popup.</li>
+                  <li>You can view ship path history (last 12 hours) in the same way.</li>
+                  <li>You can apply filters for ship type, speed, and region at the left of your screen.</li>
+                  <li>You can draw Zones of Interest on the map to monitor specific areas by clicking the corresponding button, "Edit"
+                    and then drawing on the map.</li>
+                  <li>You can view any noticiations you receive by clicking the button at the top right of your screen.</li>
+                </ul>
+              </div>
+            </div>
+
             <button
               onClick={() => setShowHelpModal(false)}
               className="mt-6 px-4 py-2 text-sm bg-blue-600 text-white hover:bg-blue-700 rounded"
@@ -162,7 +188,7 @@ const Navbar = ({}) => {
             </button>
           </div>
         </div>
-        )}
+      )}
       </div>
     </div>
   );

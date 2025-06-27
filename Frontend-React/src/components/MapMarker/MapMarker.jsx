@@ -1,20 +1,30 @@
 import React, { useContext } from 'react';
-import { Marker } from 'react-leaflet';
+import { Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import ShipArrow from '../../assets/images/shiparrow.png';
 import ShipArrowRed from '../../assets/images/redshiparrow.png';
-import { SelectedShipContext } from '../../contexts/contexts';
+import { SelectedShipContext, MapContext } from '../../contexts/contexts';
 
-const MapMarker = ({ position, label, heading = 0 }) => {
-  const { ship, setSelectedShipInfo, toggleShowPath } = useContext(SelectedShipContext);
+const MapMarker = ({ label }) => {
+  const { ship, setSelectedShipInfo } = useContext(SelectedShipContext);
+  const { ships } = useContext(MapContext);
+
+  const liveShip = ships[label];
+  if (!liveShip) return null; 
+
   const isSelected = ship?.mmsi === label;
   const image = isSelected ? ShipArrowRed : ShipArrow;
+
+  const course = liveShip.course ?? 0;
+  const heading = liveShip.heading ?? 511;
+  const position = [liveShip.lat, liveShip.lon];
+  const calculatedHeading = heading !== 511 ? heading : course;
 
   const icon = L.divIcon({
     className: 'ship-icon',
     html: `<div style="
-      transform: rotate(${-heading}deg);
+      transform: rotate(${calculatedHeading - 90}deg);
       width: 32px;
       height: 32px;
       background-image: url(${image});
@@ -34,13 +44,17 @@ const MapMarker = ({ position, label, heading = 0 }) => {
         click: () => {
           setSelectedShipInfo({
             mmsi: label,
-            heading,
-            coordinates: position,
+            heading: liveShip.heading,
+            course: liveShip.course,
+            speed: liveShip.speed,
+            lat: liveShip.lat,
+            lon: liveShip.lon,
+            inFleet: liveShip.inFleet,
           });
-          toggleShowPath(ship?.mmsi);
         },
       }}
-    />
+    >
+    </Marker>
   );
 };
 

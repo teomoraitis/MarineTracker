@@ -83,7 +83,8 @@ const Map = ({}) => {
                 lng: ship.lon
               }}
               label={ship.mmsi}
-              heading={ship.heading || 0}
+              heading={ship.heading ?? 511}
+              course={(ship.courseoverground) ?? undefined}
             />
           )
         })
@@ -96,7 +97,7 @@ const Map = ({}) => {
 
 const MapWrapper = ({ ships }) => {
   const selectedShipContext = useContext(SelectedShipContext);
-  const [center, setCenter] = useState(selectedShipContext.ship?.coordinates ?? { lat: 38, lng: 24 });
+  const [center, setCenter] = useState(selectedShipContext.ship?.coordinates ?? { lat: 48, lng: -5 });
 
   useEffect(() => {
     setCenter(selectedShipContext.ship?.coordinates ?? center);
