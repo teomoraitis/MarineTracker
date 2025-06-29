@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # set this if you're using a venv
-#python_venv_bin="~/producer_venv/bin/python"
+python_venv_bin="~/producer_venv/bin/python"
 
 selfname="$(basename "$0")"
 selfdir="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
@@ -28,6 +28,10 @@ start_kafka() {
 	launch_separate_tab "kafka topic" "./create_topic.sh; exec bash"
 }
 
+stop_kafka() {
+	cd "$selfdir/Kafka/kafka_2.12-3.9.0"
+	./stop.sh
+}
 start_docker() {
 	local exists="$(docker inspect postgres_container 2>&1)"
 	local permission_denied="$(echo $exists | grep -o 'permission denied')"
@@ -87,6 +91,7 @@ start_springboot() {
 
 handle_sigint() {
 	stop_docker
+	stop_kafka
 }
 
 trap handle_sigint SIGINT
