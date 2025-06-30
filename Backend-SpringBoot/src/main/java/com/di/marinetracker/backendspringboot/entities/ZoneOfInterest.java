@@ -94,18 +94,29 @@ public class ZoneOfInterest {
                 '}';
     }
 
+    public boolean isVesselInZone(Vessel vessel) {
+        if (vessel == null) return false;
+
+        VesselPosition vesselPosition = vessel.getLatestPosition();
+        if (vesselPosition == null) return false;
+
+        Point location = vesselPosition.getLocation();
+        return location != null && polygon.contains(location);
+    }
+
     // Method to check if a vessel matches the conditions of this zone of interest
     public boolean matchesConditions(Vessel vessel) {
         if (vessel == null) return false;
 
         VesselPosition vesselPosition = vessel.getLatestPosition();
-        Point location = vesselPosition.getLocation();
+        if (vesselPosition == null) return false;
+
         String type = vessel.getType();
         Double speed = vesselPosition.getSpeed();
 
-        if (location == null || type == null || speed == null) return false;
+        if (type == null || speed == null) return false;
 
-        return polygon.contains(location)
+        return isVesselInZone(vessel)
                 && vesselTypes.contains(type)
                 && (maxVesselSpeed == null || speed <= maxVesselSpeed);
     }

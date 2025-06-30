@@ -27,22 +27,30 @@ public class WebSocketController {
     @MessageMapping("/filters")
     public void updateFilters(@Payload Map<String, Object> filterData, SimpMessageHeaderAccessor headerAccessor) {
         try {
-            // Get the WebSocket session ID
             String sessionId = headerAccessor.getSessionId();
 
-            // Extract vessel types from the incoming filter data
+            // Handle vessel type filters
             @SuppressWarnings("unchecked")
             Set<String> vesselTypes = (Set<String>) filterData.get("vesselTypes");
 
-            logger.info("Received filter update from session {}: {}", sessionId, vesselTypes);
+            if (vesselTypes != null) {
+                logger.info("Received vessel type filter update from session {}: {}", sessionId, vesselTypes);
+                webSocketService.updateUserFilters(sessionId, vesselTypes);
+            }
 
-            // Update user filters in the service
-            webSocketService.updateUserFilters(sessionId, vesselTypes);
+            // Handle fleet filter
+            Boolean showOnlyFleet = (Boolean) filterData.get("showOnlyFleet");
+            if (showOnlyFleet != null) {
+                logger.info("Received fleet filter update from session {}: {}", sessionId, showOnlyFleet);
+                webSocketService.updateFleetFilter(sessionId, showOnlyFleet);
+            }
 
         } catch (Exception e) {
             logger.error("Error updating filters: {}", e.getMessage(), e);
         }
     }
+
+
 
     // Handles ping messages to keep the WebSocket connection alive
     //accessible to the client as /app/ping
