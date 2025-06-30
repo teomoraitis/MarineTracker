@@ -16,7 +16,6 @@ public class BackendSpringBootApplication {
         System.out.println(); // Newline
         System.out.println("Backend Spring Boot for the MarineTracker Web Platform was successfully started.");
         System.out.println(); // Newline
-
     }
 
 }
