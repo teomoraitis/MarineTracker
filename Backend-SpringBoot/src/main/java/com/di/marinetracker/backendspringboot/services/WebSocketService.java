@@ -205,7 +205,7 @@ public class WebSocketService {
                         userId,
                         sessionId,
                         user.getFleet().stream().map(Vessel::getMmsi).toList(),
-                        new HashSet<>(),
+                        new ArrayList<>(),
                         user.getZoneOfInterest()
                 );
 
@@ -231,15 +231,12 @@ public class WebSocketService {
     }
 
     // Update user's vessel type filters
-    public void updateUserFilters(String sessionId, Set<String> vesselTypes) {
+    public void updateUserFilters(String sessionId, ArrayList<String> vesselTypes) {
         UserSession session = activeSessions.get(sessionId);
         if (session != null) {
             // Update filters
             session.setVesselTypeFilters(vesselTypes);
             logger.info("Updated filters for session {}: {}", sessionId, vesselTypes);
-
-            // Send updated vessel data based on new filters
-            sendFilteredDataToUser(session);
         }
     }
 
@@ -248,7 +245,6 @@ public class WebSocketService {
         if (session != null) {
             session.setShowOnlyFleetVessels(showOnlyFleet);
             logger.info("Updated fleet filter for session {}: showOnlyFleet={}", sessionId, showOnlyFleet);
-            sendFilteredDataToUser(session);
         }
     }
 
@@ -285,15 +281,17 @@ public class WebSocketService {
     }
 
     // Send filtered data when user updates their filters
-    private void sendFilteredDataToUser(UserSession userSession) {
+    public void sendFilteredDataToUser(String sessionId) {
+        UserSession session = activeSessions.get(sessionId);
         try {
             List<JsonNode> visibleVessels = new ArrayList<>();
 
             vesselDataCache.forEach((mmsi, vesselData) -> {
                 // Create a simple vessel object to check filters
                 // In production, you'd want to get the full Vessel entity
-                if (userSession.isShowOnlyFleetVessels()) {
-                    if (userSession.getFleetMmsis().contains(mmsi)) {
+                if (session.isShowOnlyFleetVessels()) {
+                    if (session.getFleetMmsis().contains(mmsi)) {
+                        logger.info(mmsi);
                         visibleVessels.add(vesselData);
                     }
                 } else {
@@ -311,12 +309,12 @@ public class WebSocketService {
             );
 
             messagingTemplate.convertAndSendToUser(
-                    userSession.getUserId(),
+                    session.getUserId(),
                     "/queue/vessels",
                     filterMessage.toString()
             );
 
-            logger.info("Sent filtered data to user: {}", userSession.getUserId());
+            logger.info("Sent filtered data to user: {}", session.getUserId());
 
         } catch (Exception e) {
             logger.error("Error sending filtered data to user: {}", e.getMessage(), e);
@@ -356,13 +354,13 @@ public class WebSocketService {
         private final String userId; // User identifier
         private final String sessionId; // WebSocket session ID
         private final List<String> fleetMmsis; // List of vessel MMSIs in user's fleet
-        private Set<String> vesselTypeFilters; // Vessel type filters
+        private ArrayList<String> vesselTypeFilters; // Vessel type filters
         private final ZoneOfInterest zoneOfInterest; // User's zone of interest
         private boolean showOnlyFleetVessels = false;
 
         // Constructor
         public UserSession(String userId, String sessionId, List<String> fleetMmsis,
-                           Set<String> vesselTypeFilters, ZoneOfInterest zoneOfInterest) {
+                           ArrayList<String> vesselTypeFilters, ZoneOfInterest zoneOfInterest) {
             this.userId = userId;
             this.sessionId = sessionId;
             this.fleetMmsis = fleetMmsis;
@@ -374,8 +372,8 @@ public class WebSocketService {
         public String getUserId() { return userId; }
         public String getSessionId() { return sessionId; }
         public List<String> getFleetMmsis() { return fleetMmsis; }
-        public Set<String> getVesselTypeFilters() { return vesselTypeFilters; }
-        public void setVesselTypeFilters(Set<String> vesselTypeFilters) {
+        public ArrayList<String> getVesselTypeFilters() { return vesselTypeFilters; }
+        public void setVesselTypeFilters(ArrayList<String> vesselTypeFilters) {
             this.vesselTypeFilters = vesselTypeFilters;
         }
         public ZoneOfInterest getZoneOfInterest() { return zoneOfInterest; }

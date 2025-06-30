@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Map from './components/Map/Map.jsx';
 import Navbar from './components/Navbar/Navbar.jsx';
-import { MapContext, FreeDrawContext, AuthContext, SelectedShipContext, FilterContext } from './contexts/contexts.js';
+import { MapContext, FreeDrawContext, AuthContext, SelectedShipContext, FilterContext, ZoiContext } from './contexts/contexts.js';
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 import './App.css';
@@ -19,21 +19,23 @@ const App = () => {
   const [selectedShip, setSelectedShip] = useState({});
   const [showPath, setShowPath] = useState(false);
   const [path, setPath] = useState([]);
-  const [ships, setShips] = useState([]);
+  const [ships, setShips] = useState({});
   const [hideShipInfo, setHideShipInfo] = useState(false);
   const [filters, setFilters] = useState({
-    types: [],
-    fleetOnly: false,
-    zoi: {
-      show: false,
-      area: [],
-      restrictions: {
-        speed: 0,
-        types: [],
-      },
-    },
+    vesselTypes: [],
+    showOnlyFleet: false,
     bounds: [],
   });
+  const [zoi, setZoi] = useState({
+    show: false,
+    area: [],
+    restrictions: {
+      speed: 0,
+      types: [],
+    },
+  });
+
+  const stompClientRef = useRef(null);
 
   const handleLogin = async (username = '', password = '') => {
     if (username.trim() == '' || password.trim() == '') return;
@@ -101,6 +103,7 @@ const App = () => {
       },
     });
 
+    stompClientRef.current = stompClient;
     stompClient.activate();
 
     return () => {
@@ -129,6 +132,20 @@ const App = () => {
 
   useEffect(() => {
     console.log("filters: ", filters);
+    if (!stompClientRef.current || !stompClientRef.current.connected) {
+      console.warn("WebSocket client not connected, cannot send filters");
+      return;
+    }
+
+    try {
+      stompClientRef.current.publish({
+        destination: "/app/filters",
+        body: JSON.stringify(filters)
+      });
+    } catch (error) {
+      console.error("Error sending filters via WebSocket:", error);
+    }
+    setShips({})
   }, [filters]);
 
   return (
@@ -155,18 +172,25 @@ const App = () => {
                 onFilterChange: setFilters
               }}
             >
-              <div className='h-dvh'>
-                <Navbar />
-                <div className='relative w-full flex flex-row'>
-                  { user && <Filters /> }
+              <ZoiContext.Provider
+                value={{
+                  zoi: zoi,
+                  setZoi: setZoi,
+                }}
+              >
+                <div className='h-dvh'>
+                  <Navbar />
                   <div className='relative w-full flex flex-row'>
-                    <Map ships={ships}/>
-                    <ShipInfoPanel />
-                    <FreedrawTooltip />
+                    { user && <Filters /> }
+                    <div className='relative w-full flex flex-row'>
+                      <Map ships={ships}/>
+                      <ShipInfoPanel />
+                      <FreedrawTooltip />
+                    </div>
                   </div>
+                  <Footer />
                 </div>
-                <Footer />
-              </div>
+              </ZoiContext.Provider>
             </FilterContext.Provider>
           </SelectedShipContext.Provider>
         </FreeDrawContext.Provider>

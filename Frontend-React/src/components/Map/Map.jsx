@@ -34,30 +34,30 @@ const Map = ({}) => {
     click: () => {}, // add event handlers like so
     moveend: () => {
       const bounds = map.getBounds();
-      onFilterChange({
-        ...filters,
-        bounds: [
-          bounds.getNorthEast(),
-          bounds.getSouthEast(),
-          bounds.getSouthWest(),
-          bounds.getNorthWest(),
-        ],
-      });
+      // onFilterChange({
+      //   ...filters,
+      //   bounds: [
+      //     bounds.getNorthEast(),
+      //     bounds.getSouthEast(),
+      //     bounds.getSouthWest(),
+      //     bounds.getNorthWest(),
+      //   ],
+      // });
     },
   });
 
-  useEffect(() => {
-    const bounds = map.getBounds();
-    onFilterChange({
-      ...filters,
-      bounds: [
-        bounds.getNorthEast(),
-        bounds.getSouthEast(),
-        bounds.getSouthWest(),
-        bounds.getNorthWest(),
-      ],
-    });
-  }, []);
+  // useEffect(() => {
+  //   const bounds = map.getBounds();
+  //   onFilterChange({
+  //     ...filters,
+  //     bounds: [
+  //       bounds.getNorthEast(),
+  //       bounds.getSouthEast(),
+  //       bounds.getSouthWest(),
+  //       bounds.getNorthWest(),
+  //     ],
+  //   });
+  // }, []);
 
   return (
     <>
