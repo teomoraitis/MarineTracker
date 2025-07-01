@@ -11,7 +11,6 @@ const Map = ({}) => {
   const polygonRef = useRef(null); // store polygon reference
   const { ships } = useContext(MapContext);
   const selectedShipContext = useContext(SelectedShipContext);
-  const { filters, onFilterChange } = useContext(FilterContext);
   const map = useMap();
   const { zoi, setZoi } = useContext(ZoiContext);
 

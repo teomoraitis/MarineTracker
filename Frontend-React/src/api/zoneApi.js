@@ -36,7 +36,8 @@ export const getZoneOfInterest = async () => {
 };
 
 export const saveZoneOfInterest = async (polygon, speed, types) => {
-  console.log(polygon);
+  if (polygon.length == 0) return;
+
   if (
     polygon[0].lat !== polygon[polygon.length - 1].lat ||
     polygon[0].lng !== polygon[polygon.length - 1].lng
