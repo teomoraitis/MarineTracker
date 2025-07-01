@@ -13,7 +13,7 @@ const MapMarker = ({ label }) => {
   const liveShip = ships[label];
   if (!liveShip) return null; 
 
-  const isSelected = ship?.mmsi === label;
+  const isSelected = ship?.mmsi == label;
   const image = isSelected ? ShipArrowRed : ShipArrow;
 
   const course = liveShip.course ?? 0;

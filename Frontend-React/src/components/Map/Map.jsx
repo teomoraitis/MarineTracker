@@ -57,29 +57,29 @@ const Map = ({}) => {
     click: () => {}, // add event handlers like so
     moveend: () => {
       const bounds = map.getBounds();
-      onFilterChange({
-        ...filters,
-        bounds: [
-          bounds.getNorthEast(),
-          bounds.getSouthEast(),
-          bounds.getSouthWest(),
-          bounds.getNorthWest(),
-        ],
-      });
+      // onFilterChange({
+      //   ...filters,
+      //   bounds: [
+      //     bounds.getNorthEast(),
+      //     bounds.getSouthEast(),
+      //     bounds.getSouthWest(),
+      //     bounds.getNorthWest(),
+      //   ],
+      // });
     },
   });
 
   useEffect(() => {
     const bounds = map.getBounds();
-    onFilterChange({
-      ...filters,
-      bounds: [
-        bounds.getNorthEast(),
-        bounds.getSouthEast(),
-        bounds.getSouthWest(),
-        bounds.getNorthWest(),
-      ],
-    });
+    // onFilterChange({
+    //   ...filters,
+    //   bounds: [
+    //     bounds.getNorthEast(),
+    //     bounds.getSouthEast(),
+    //     bounds.getSouthWest(),
+    //     bounds.getNorthWest(),
+    //   ],
+    // });
   }, []);
 
   return (
@@ -118,28 +118,42 @@ const Map = ({}) => {
   );
 };
 
-const MapWrapper = ({ ships }) => {
-  const selectedShipContext = useContext(SelectedShipContext);
-  const [center, setCenter] = useState(selectedShipContext.ship?.coordinates ?? { lat: 48, lng: -5 });
+const CenterMapOnShip = ({ ship }) => {
+  console.log(ship);
+  const map = useMap();
 
   useEffect(() => {
-    const newCenter = {
-      lat: selectedShipContext.ship?.vesselPosition?.latitude ?? center.lat,
-      lng: selectedShipContext.ship?.vesselPosition?.longitude ?? center.lng
-    };
-    console.log(newCenter)
-    setCenter(newCenter);
-  }, [selectedShipContext.ship?.mmsi]);
+    let newCenter = map.getCenter();
+    if (ship?.vesselPosition) {
+      newCenter = [
+        ship.vesselPosition.latitude,
+        ship.vesselPosition.longitude
+      ];
+    } else if (ship?.lat && ship?.lon) {
+      newCenter = [
+        ship.lat,
+        ship.lon
+      ];
+    }
+    map.flyTo(newCenter, 10);
+  }, [ship?.mmsi]);
+
+  return null;
+};
+
+const MapWrapper = ({ ships }) => {
+  const selectedShipContext = useContext(SelectedShipContext);
 
   return (
     <MapContainer
-      center={center}
+      center={{ lat: 48, lng: -5 }}
       zoom={9}
       scrollWheelZoom={true}
       zoomControl={false}
       className='w-full h-[85vh] z-10'
     >
       <Map ships={ships} />
+      <CenterMapOnShip ship={selectedShipContext.ship} />
     </MapContainer>
   );
 };
