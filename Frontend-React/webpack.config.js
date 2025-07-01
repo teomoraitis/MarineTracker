@@ -33,6 +33,14 @@ module.exports = {
     open: true,
     hot: true,
     historyApiFallback: true,
+    proxy: [
+      {
+        context: ['/api'],
+        target: 'https://localhost:8443',
+        secure: false,
+        changeOrigin: true,
+      },
+    ],
   },
   module: {
     rules: [

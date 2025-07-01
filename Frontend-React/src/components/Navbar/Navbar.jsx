@@ -3,6 +3,8 @@ import ShipShipGoLogo from '../../assets/images/shipshipgo.png';
 import NavbarItem from './NavbarItem.jsx';
 import { AuthContext } from '../../contexts/contexts.js';
 import { signup } from '../../api/userApi.js';
+import AdminExportButton from '../Admin/AdminExportButton.jsx';
+
 
 const AuthModal = ({ title, onClose, onSubmit }) => {
   const [username, setUsername] = useState('');
@@ -95,8 +97,9 @@ const Navbar = ({}) => {
       <div className='flex flex-row content-center h-2/3 my-auto'>
       {authContext.user ? (
         <>
-          {authContext.user.name === 'admin' && (
-            <NavbarItem label="Admin" onClick={() => alert("Go to admin panel")} />
+          {/* Admin navbar button */}
+          {authContext.user && authContext.user.username === 'admin' && (
+              <AdminExportButton />
           )}
           <NavbarItem
             label="Notifications"
