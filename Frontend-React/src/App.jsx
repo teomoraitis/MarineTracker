@@ -9,7 +9,7 @@ import Filters from './components/Filters/Filters.jsx';
 import ShipInfoPanel from './components/ShipPopUp/ShipInfoPanel.jsx';
 import Footer from './components/Footer/Footer.jsx';
 import FreedrawTooltip from './components/FreedrawTooltip/FreedrawTooltip.jsx';
-import { login, logout } from './api/userApi.js';
+import { getUser, login, logout } from './api/userApi.js';
 import { getVesselPath } from './api/vesselsApi.js';
 
 
@@ -62,6 +62,17 @@ const App = () => {
       console.error("Error during logout");
     }
   };
+
+  const checkIfUserIsLoggedIn = async () => {
+    const user = await getUser();
+    if (user != null) {
+      setUser(user);
+    }
+  };
+
+  useEffect(() => {
+    checkIfUserIsLoggedIn();
+  }, []);
 
   useEffect(() => {
     const socket = new SockJS(`${process.env.REACT_APP_BACKEND_URL}ws/${user == null ? 'guest' : 'auth'}`);

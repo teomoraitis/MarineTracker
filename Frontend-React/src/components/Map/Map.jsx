@@ -15,26 +15,26 @@ const Map = ({}) => {
   const map = useMap();
   const { zoi, setZoi } = useContext(ZoiContext);
 
-  useEffect(() => {
-    const fetchZoi = async () => {
-      if(zoi.show) {
-        const savedZoi = await getZoneOfInterest();
+  const fetchZoi = async () => {
+    if(zoi.show) {
+      const savedZoi = await getZoneOfInterest();
 
-        const zoiPolygon = L.polygon(savedZoi.area.map((point) => {return [point.lat, point.lng]}), { color: "rgba(200, 0, 0, 0.5)" });
+      const zoiPolygon = L.polygon(savedZoi.area.map((point) => {return [point.lat, point.lng]}), { color: "rgba(200, 0, 0, 0.5)" });
 
-        if (polygonRef.current) {
-          polygonRef.current.remove(); // remove the old polygon from the map
-        }
-        polygonRef.current = zoiPolygon; // store the new polygon reference
-        zoiPolygon.addTo(map);
-        setZoi({
-          ...zoi,
-          restrictions: savedZoi.restrictions,
-          area: zoiPolygon?.getLatLngs()[0],
-        });
-
+      if (polygonRef.current) {
+        polygonRef.current.remove(); // remove the old polygon from the map
       }
+      polygonRef.current = zoiPolygon; // store the new polygon reference
+      zoiPolygon.addTo(map);
+      setZoi({
+        ...zoi,
+        restrictions: savedZoi.restrictions,
+        area: zoiPolygon?.getLatLngs()[0],
+      });
     }
+  };
+
+  useEffect(() => {
     fetchZoi();
   }, [zoi.show]);
 
