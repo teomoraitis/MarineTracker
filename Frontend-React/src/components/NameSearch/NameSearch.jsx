@@ -6,7 +6,7 @@ const NameSearch = ({}) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedInputValue, setDebouncedInputValue] = useState("");
   const [results, setResults] = useState([]);
-  const { setShowPath, setSelectedShipInfo } = useContext(SelectedShipContext);
+  const { setSelectedShipInfo } = useContext(SelectedShipContext);
 
   const handleSearch = async () => {
     if (searchTerm.trim() === '' || debouncedInputValue.trim() === '') {

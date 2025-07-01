@@ -95,6 +95,7 @@ const App = () => {
 
             if (update.setShips && Array.isArray(update.setShips)) {
               const updateObject = update.setShips.reduce((agg, shipUpdate) => {
+                console.log(shipUpdate);
                 return {
                   ...agg,
                   [shipUpdate.mmsi]: shipUpdate,

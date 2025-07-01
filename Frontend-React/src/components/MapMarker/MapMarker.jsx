@@ -4,11 +4,13 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import ShipArrow from '../../assets/images/shiparrow.png';
 import ShipArrowRed from '../../assets/images/redshiparrow.png';
-import { SelectedShipContext, MapContext } from '../../contexts/contexts';
+import { SelectedShipContext, MapContext, AuthContext } from '../../contexts/contexts';
+import { getVessel } from '../../api/vesselsApi';
 
 const MapMarker = ({ label }) => {
   const { ship, setSelectedShipInfo } = useContext(SelectedShipContext);
   const { ships } = useContext(MapContext);
+  const { user } = useContext(AuthContext);
 
   const liveShip = ships[label];
   if (!liveShip) return null; 
@@ -41,16 +43,21 @@ const MapMarker = ({ label }) => {
       position={position}
       icon={icon}
       eventHandlers={{
-        click: () => {
-          setSelectedShipInfo({
-            mmsi: label,
-            heading: liveShip.heading,
-            course: liveShip.course,
-            speed: liveShip.speed,
-            lat: liveShip.lat,
-            lon: liveShip.lon,
-            inFleet: liveShip.inFleet,
-          });
+        click: async () => {
+          if (user) {
+            const vessel = await getVessel(label);
+            setSelectedShipInfo(vessel);
+          } else {
+            setSelectedShipInfo({
+              mmsi: label,
+              heading: liveShip.heading,
+              course: liveShip.course,
+              speed: liveShip.speed,
+              lat: liveShip.lat,
+              lon: liveShip.lon,
+              inFleet: liveShip.inFleet,
+            });
+          }
         },
       }}
     >
