@@ -36,6 +36,7 @@ const App = () => {
   });
 
   const stompClientRef = useRef(null);
+  const subscriptionRef = useRef(null);
 
   const handleLogin = async (username = '', password = '') => {
     if (username.trim() == '' || password.trim() == '') return;
@@ -71,7 +72,11 @@ const App = () => {
       onConnect: () => {
         console.log("Connected to WebSocket (SockJS)");
 
-        stompClient.subscribe(user == null ? '/topic/guest' : `/user/queue/vessels`, (message) => {
+        if (subscriptionRef.current) {
+          subscriptionRef.current.unsubscribe();
+        }
+
+        subscriptionRef.current = stompClient.subscribe(user == null ? '/topic/guest' : `/user/queue/vessels`, (message) => {
           try {
             const update = JSON.parse(message.body);
             console.log(update)
