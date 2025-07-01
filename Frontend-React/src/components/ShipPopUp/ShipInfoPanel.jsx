@@ -56,6 +56,8 @@ const ShipInfoPanel = () => {
         </button>
       </div>
       <div><strong>MMSI:</strong> {ship.mmsi}</div>
+      { ship?.name && (<div><strong>Name:</strong> {ship.name}</div>) }
+      { ship?.type && (<div><strong>Type:</strong> {ship.type}</div>) }
       <div><strong>Speed:</strong> {fullShip?.speed ?? 'N/A'} knots</div>
       <div><strong>Course:</strong> {fullShip?.course ?? 'N/A'}°</div>
       <div><strong>Heading:</strong> {fullShip?.heading ?? 'N/A'}°</div>

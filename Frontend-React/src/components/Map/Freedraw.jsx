@@ -1,21 +1,32 @@
 import { useEffect, useContext } from "react";
 import { useMap } from "react-leaflet";
 import L from "leaflet";
-import FreeDraw from "leaflet-freedraw";
-import { FreeDrawContext } from "../../contexts/contexts";
+import FreeDraw, { freeDraw } from "leaflet-freedraw";
+import { FreeDrawContext, ZoiContext } from "../../contexts/contexts";
 
 const FreeDrawComponent = ({ setPolygon }) => {
   const map = useMap();
   const freeDrawContext = useContext(FreeDrawContext);
+  const { zoi } = useContext(ZoiContext);
 
   useEffect(() => {
     if (!map) return;
 
     const freeDraw = new FreeDraw({ mode: freeDrawContext.freeDrawOn ? FreeDraw.CREATE : FreeDraw.NONE });
     map.addLayer(freeDraw);
+    if (!zoi.show) {
+      freeDraw.clear();
+
+      map.eachLayer((layer) => {
+        if (layer instanceof L.Polygon) {
+          map.removeLayer(layer);
+        }
+      });
+      setPolygon(null);
+      return;
+    }
 
     const handleMarkers = (event) => {
-      console.log(event.latLngs)
       // create polygon
       const newPolygon = L.polygon(event.latLngs, { color: "rgba(200, 0, 0, 0.5)" });
       newPolygon.addTo(map);
@@ -49,7 +60,7 @@ const FreeDrawComponent = ({ setPolygon }) => {
       freeDraw.off("markers", handleMarkers);
       map.removeLayer(freeDraw);
     };
-  }, [map, setPolygon]);
+  }, [map, setPolygon, zoi.show]);
 
   return null;
 };

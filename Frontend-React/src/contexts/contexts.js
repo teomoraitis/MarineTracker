@@ -18,19 +18,23 @@ export const AuthContext = createContext({
 
 export const FilterContext = createContext({
   filters: {
-    types: [],
-    fleetOnly: false,
-    zoi: {
-      show: false,
-      area: [],
-      restrictions: {
-        speed: 0,
-        types: [],
-      },
-    },
+    vesselTypes: [],
+    showOnlyFleet: false,
     bounds: null,
   },
   onFilterChange: () => {},
+});
+
+export const ZoiContext = createContext({
+  zoi: {
+    show: false,
+    area: [],
+    restrictions: {
+      speed: 0,
+      types: [],
+    },
+  },
+  setZoi: () => {},
 });
 
 export const SelectedShipContext = createContext({

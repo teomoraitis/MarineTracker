@@ -12,22 +12,21 @@ import com.di.marinetracker.backendspringboot.dto.SignupRequestDTO;
 import com.di.marinetracker.backendspringboot.entities.User;
 import com.di.marinetracker.backendspringboot.repositories.UserRepository;
 import com.di.marinetracker.backendspringboot.services.UserDetailsImpl;
+import com.di.marinetracker.backendspringboot.services.UserDetailsServiceImpl;
 import com.di.marinetracker.backendspringboot.utils.JwtUtils;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 // Allows cross-origin requests from any origin with a max age of 3600 seconds
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -50,6 +49,9 @@ public class AuthController {
     // Injects the JwtUtils for JWT operations
     @Autowired
     JwtUtils jwtUtils;
+
+    @Autowired
+    private UserDetailsServiceImpl userDetailsService;
 
     // Handles user login POST requests
     @PostMapping("/login")
@@ -85,6 +87,35 @@ public class AuthController {
             userDetails.getUsername(),
             userDetails.getEmail(),
             roles));
+    }
+
+    // Handles user login POST requests
+    @GetMapping("/login-status")
+    public ResponseEntity<?> getCurrentUser(@CookieValue(name = "jwt", required = false) String jwt) {
+        if (jwt == null || jwt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+        }
+
+        if (!jwtUtils.validateJwtToken(jwt)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+        }
+
+        String username = jwtUtils.getUserNameFromJwtToken(jwt);
+
+        // Here you can load more user info if you like
+        UserDetailsImpl userDetails = (UserDetailsImpl) userDetailsService.loadUserByUsername(username);
+
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(item -> item.getAuthority())
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(new JWTResponseDTO(
+                jwt,
+                userDetails.getId(),
+                userDetails.getUsername(),
+                userDetails.getEmail(),
+                roles
+        ));
     }
 
     // Handles user logout POST requests

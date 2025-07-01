@@ -2,15 +2,40 @@ import React, { useRef, useState, useContext, useEffect } from 'react';
 import { MapContainer, Polyline, TileLayer, ZoomControl, useMap, useMapEvents } from 'react-leaflet';
 import Marker from '../MapMarker/MapMarker.jsx';
 import FreeDrawComponent from './Freedraw.jsx'
-import { FilterContext, MapContext, SelectedShipContext } from '../../contexts/contexts.js';
+import { FilterContext, MapContext, SelectedShipContext, ZoiContext } from '../../contexts/contexts.js';
+import { getZoneOfInterest } from '../../api/zoneApi.js';
+import L from "leaflet";
 
 
 const Map = ({}) => {
   const polygonRef = useRef(null); // store polygon reference
   const { ships } = useContext(MapContext);
   const selectedShipContext = useContext(SelectedShipContext);
-  const { filters, onFilterChange } = useContext(FilterContext);
   const map = useMap();
+  const { zoi, setZoi } = useContext(ZoiContext);
+
+  const fetchZoi = async () => {
+    if(zoi.show) {
+      const savedZoi = await getZoneOfInterest();
+
+      const zoiPolygon = L.polygon(savedZoi.area.map((point) => {return [point.lat, point.lng]}), { color: "rgba(200, 0, 0, 0.5)" });
+
+      if (polygonRef.current) {
+        polygonRef.current.remove(); // remove the old polygon from the map
+      }
+      polygonRef.current = zoiPolygon; // store the new polygon reference
+      zoiPolygon.addTo(map);
+      setZoi({
+        ...zoi,
+        restrictions: savedZoi.restrictions,
+        area: zoiPolygon?.getLatLngs()[0],
+      });
+    }
+  };
+
+  useEffect(() => {
+    fetchZoi();
+  }, [zoi.show]);
 
   const handlePolygonChange = (newPolygon) => {
 
@@ -20,12 +45,9 @@ const Map = ({}) => {
 
     polygonRef.current = newPolygon; // store the new polygon reference
     if (newPolygon?.getLatLngs()?.length <= 1) {
-      onFilterChange({
-        ...filters,
-        zoi: {
-          ...filters.zoi,
-          area: polygonRef.current?.getLatLngs() ?? [],
-        },
+      setZoi({
+        ...zoi,
+        area: newPolygon?.getLatLngs()[0],
       });
     }
   };
@@ -34,29 +56,29 @@ const Map = ({}) => {
     click: () => {}, // add event handlers like so
     moveend: () => {
       const bounds = map.getBounds();
-      onFilterChange({
-        ...filters,
-        bounds: [
-          bounds.getNorthEast(),
-          bounds.getSouthEast(),
-          bounds.getSouthWest(),
-          bounds.getNorthWest(),
-        ],
-      });
+      // onFilterChange({
+      //   ...filters,
+      //   bounds: [
+      //     bounds.getNorthEast(),
+      //     bounds.getSouthEast(),
+      //     bounds.getSouthWest(),
+      //     bounds.getNorthWest(),
+      //   ],
+      // });
     },
   });
 
   useEffect(() => {
     const bounds = map.getBounds();
-    onFilterChange({
-      ...filters,
-      bounds: [
-        bounds.getNorthEast(),
-        bounds.getSouthEast(),
-        bounds.getSouthWest(),
-        bounds.getNorthWest(),
-      ],
-    });
+    // onFilterChange({
+    //   ...filters,
+    //   bounds: [
+    //     bounds.getNorthEast(),
+    //     bounds.getSouthEast(),
+    //     bounds.getSouthWest(),
+    //     bounds.getNorthWest(),
+    //   ],
+    // });
   }, []);
 
   return (
@@ -95,23 +117,42 @@ const Map = ({}) => {
   );
 };
 
-const MapWrapper = ({ ships }) => {
-  const selectedShipContext = useContext(SelectedShipContext);
-  const [center, setCenter] = useState(selectedShipContext.ship?.coordinates ?? { lat: 48, lng: -5 });
+const CenterMapOnShip = ({ ship }) => {
+  console.log(ship);
+  const map = useMap();
 
   useEffect(() => {
-    setCenter(selectedShipContext.ship?.coordinates ?? center);
-  }, [selectedShipContext.ship?.mmsi]);
+    let newCenter = map.getCenter();
+    if (ship?.vesselPosition) {
+      newCenter = [
+        ship.vesselPosition.latitude,
+        ship.vesselPosition.longitude
+      ];
+    } else if (ship?.lat && ship?.lon) {
+      newCenter = [
+        ship.lat,
+        ship.lon
+      ];
+    }
+    map.flyTo(newCenter, 10);
+  }, [ship?.mmsi]);
+
+  return null;
+};
+
+const MapWrapper = ({ ships }) => {
+  const selectedShipContext = useContext(SelectedShipContext);
 
   return (
     <MapContainer
-      center={center}
+      center={{ lat: 48, lng: -5 }}
       zoom={9}
       scrollWheelZoom={true}
       zoomControl={false}
       className='w-full h-[85vh] z-10'
     >
       <Map ships={ships} />
+      <CenterMapOnShip ship={selectedShipContext.ship} />
     </MapContainer>
   );
 };
