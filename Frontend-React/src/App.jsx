@@ -56,6 +56,8 @@ const App = () => {
     try {
       await logout();
       setUser(null);
+      setFreeDraw(false);
+      setZoi({ show: false, area: [], restrictions: { types: [], speed: 0 }});
     } catch {
       console.error("Error during logout");
     }
@@ -67,7 +69,7 @@ const App = () => {
       webSocketFactory: () => socket,
       reconnectDelay: 5000,
       debug: (str) => {
-        console.log('STOMP Debug:', str);
+        // console.log('STOMP Debug:', str);
       },
       onConnect: () => {
         console.log("Connected to WebSocket (SockJS)");
@@ -79,7 +81,6 @@ const App = () => {
         subscriptionRef.current = stompClient.subscribe(user == null ? '/topic/guest' : `/user/queue/vessels`, (message) => {
           try {
             const update = JSON.parse(message.body);
-            console.log(update)
 
             if (update.setShips && Array.isArray(update.setShips)) {
               const updateObject = update.setShips.reduce((agg, shipUpdate) => {

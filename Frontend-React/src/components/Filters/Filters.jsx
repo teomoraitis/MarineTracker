@@ -3,6 +3,7 @@ import Toggle from '../Toggle/Toggle.jsx';
 import NameSearch from '../NameSearch/NameSearch.jsx';
 import { FreeDrawContext, FilterContext, ZoiContext } from '../../contexts/contexts.js';
 import HoverInfo from '../HoverInfo/HoverInfo.jsx';
+import { saveZoneOfInterest } from '../../api/zoneApi.js';
 
 const Filters = ({}) => {
   const { freeDrawOn, setFreeDraw } = useContext(FreeDrawContext);
@@ -10,6 +11,7 @@ const Filters = ({}) => {
   const { zoi, setZoi } = useContext(ZoiContext);
 
   const [showTypesDropdownFilters, setShowTypesDropdownFilters] = useState(false);
+  const [showTypesDropdownZoi, setShowTypesDropdownZoi] = useState(false);
 
   const shipTypes = [
     "Anti-pollution", "Cargo", "Cargo-hazarda(major)", "Cargo-hazardb", "Cargo-hazardc(minor)", "Cargo-hazardd(recognizable)",
@@ -24,6 +26,10 @@ const Filters = ({}) => {
     } else {
       setList([...list, type]);
     }
+  };
+
+  const saveZoi = async () => {
+    await saveZoneOfInterest(zoi.area, zoi.restrictions.speed, zoi.restrictions.types)
   };
 
   return (
@@ -98,17 +104,28 @@ const Filters = ({}) => {
             <h6 className='text-lg font-bold'>Zone of Interest</h6>
             <Toggle
               value={zoi.show}
-              onChange={(val) => setZoi({
-                ...zoi,
-                show: val
-              })}
+              onChange={(val) => {
+                if (zoi.show) {
+                  saveZoi();
+                  setFreeDraw(false);
+                }
+                setZoi({
+                  ...zoi,
+                  show: val
+                })
+              }}
             />
           </div>
           {
             zoi.show && (
               <button
                 className='w-fit p-1'
-                onClick={() => setFreeDraw(!freeDrawOn)}
+                onClick={() => {
+                  if (freeDrawOn) {
+                    saveZoi();
+                  }
+                  setFreeDraw(!freeDrawOn)
+                }}
               >
                 <h6 className='text-sm font-light text-left'>{freeDrawOn ? "✅ Save" : "🗺️ Edit"}</h6>
               </button>
@@ -129,13 +146,11 @@ const Filters = ({}) => {
                   min='0'
                   max='20'
                   type='number'
+                  disabled={!freeDrawOn}
                   value={zoi.restrictions.speed}
-                  onChange={(e) => onFilterChange({
-                    ...filters,
-                    zoi: {
-                      ...zoi,
-                      restrictions: { ...zoi.restrictions, speed: e.target.value }
-                    }
+                  onChange={(e) => setZoi({
+                    ...zoi,
+                    restrictions: { ...zoi.restrictions, speed: e.target.value }
                   })}
                 />
               </div>
@@ -144,7 +159,7 @@ const Filters = ({}) => {
               <div className='flex flex-col gap-2'>
                 <div
                   className='flex flex-row gap-3 items-center cursor-pointer'
-                  onClick={() => setZoi({ ...zoi, show: !zoi.show })}
+                  onClick={() => setShowTypesDropdownZoi(!showTypesDropdownZoi)}
                 >
                   <div className='flex flex-row items-center'>
                     <h6 className='text-sm font-light text-left'>📋 Type:</h6>
@@ -153,7 +168,8 @@ const Filters = ({}) => {
                   <span className='text-xs text-gray-500'>{zoi.show ? '▲' : '▼'}</span>
                 </div>
 
-                {zoi.show && (
+                {
+                  showTypesDropdownZoi && freeDrawOn && (
                   <div className="flex flex-col border border-gray-300 rounded-lg px-2 py-1 shadow-sm max-h-40 overflow-y-auto">
                     {shipTypes.map((type, index) => (
                       <div
@@ -169,7 +185,8 @@ const Filters = ({}) => {
                       </div>
                     ))}
                   </div>
-                )}
+                  )
+                }
 
                 {/* Selected tags for Type 2 */}
                 {zoi.restrictions.types.length > 0 && (
