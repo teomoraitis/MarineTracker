@@ -115,20 +115,18 @@ Then run the Spring Boot backend by following these steps in:
 Finally, run the React frontend by following these steps in:
 📁 [`Frontend-React/README.md`](./Frontend-React/README.md)
 
-### 🚀 Quick Start Script of steps 1.& 2.(Optional)
+### Quick Start Script of steps 1.& 2.(Optional)
 **Note:** You can automatically run Kafka and Spring Boot by running this script:
-
 ```bash
 ./start_backend.sh
 ```
-
 This script will:
 - Start Kafka/ZooKeeper in separate terminal tabs
 - Launch the Python producer
 - Start the PostgreSQL Docker container
 - Prepare the Spring Boot backend environment
 
-**Prerequisites:** This script may need ...
+**Prerequisites:** This script needs gnome-terminal in order to run.
 
 After running the script, you'll still need to manually start the React frontend as described in step 3 above.
 
