@@ -113,7 +113,7 @@ const Navbar = ({}) => {
       <div className='flex flex-row content-center h-2/3 my-auto'>
       {authContext.user ? (
         <>
-          {authContext.user.name === 'admin' && (
+          {authContext.user.username === 'admin' && (
             <NavbarItem label="Admin" onClick={() => alert("Go to admin panel")} />
           )}
           <NavbarItem
