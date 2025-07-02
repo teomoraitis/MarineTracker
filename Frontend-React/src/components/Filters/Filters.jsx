@@ -114,6 +114,7 @@ const Filters = ({}) => {
                   show: val
                 })
               }}
+              disabled={zoi.show && freeDrawOn && (zoi.area.length == 0 || zoi.restrictions.speed == 0 || zoi.restrictions.types.length == 0)}
             />
           </div>
           {
@@ -126,6 +127,7 @@ const Filters = ({}) => {
                   }
                   setFreeDraw(!freeDrawOn)
                 }}
+                disabled={freeDrawOn && (zoi.area.length == 0 || zoi.restrictions.speed == 0 || zoi.restrictions.types.length == 0)}
               >
                 <h6 className='text-sm font-light text-left'>{freeDrawOn ? "✅ Save" : "🗺️ Edit"}</h6>
               </button>
