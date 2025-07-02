@@ -108,11 +108,11 @@ First, run Kafka/ZooKeeper and the Python producer by following the instructions
 📁 [`Kafka/README.md`](./Kafka/README.md)
 
 ### 🌱 2. Start Spring Boot Backend
-Then run the Spring Boot backend by following these steps in:
+Then run the Spring Boot backend by following the instructions in:
 📁 [`Backend-SpringBoot/README.md`](./Backend-SpringBoot/README.md)
 
 ### ⚛️ 3. Start React Frontend
-Finally, run the React frontend by following these steps in:
+Finally, run the React frontend by following the instructions in:
 📁 [`Frontend-React/README.md`](./Frontend-React/README.md)
 
 <br>
