@@ -7,6 +7,16 @@ export const login = ({ username, password }) => {
   ).then(res => res.data);
 };
 
+export const getUser = async () => {
+  try {
+    const res = await api.get('auth/login-status');
+    return res.data;
+  } catch (e) {
+    console.error("User is not logged in.", e);
+    return null;
+  }
+}
+
 export const logout = () => {
   return api.post(
     'auth/logout',

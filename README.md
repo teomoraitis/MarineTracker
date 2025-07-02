@@ -11,10 +11,10 @@ Built with <strong>Spring Boot</strong> and <strong>React</strong>. Using Apache
 **Team name:** "Ομάδα Χρηστών 4" <br>
 **Number of contributors:** 6
 - sdi2000105 - [Christos Kypraios (ChristosKypraios)](https://github.com/ChristosKypraios)
-- sdi1700254 - [Pierro Zachareas (plerros)](https://github.com/plerros)
 - sdi2000150 - [Theodoros Moraitis (sdi2000150)](https://github.com/sdi2000150)
 - sdi2000006 - [Evgenios Paraskevas Mavroudakos (EugeneM02)](https://github.com/EugeneM02)
 - sdi1900048 - [Theodoros Dimakopoulos (TheodoreAlenas)](https://github.com/TheodoreAlenas)
+- sdi1700254 - [Pierro Zachareas (plerros)](https://github.com/plerros)
 
 
 ---
@@ -24,7 +24,7 @@ Built with <strong>Spring Boot</strong> and <strong>React</strong>. Using Apache
 A mostly sequential, waterfall-inspired methodology was used: starting with SRS, 
 moving to system modeling and design (with some iteration to refine requirements), 
 and finishing with implementation/coding. <br>
-The project was completed in three phases:
+The project was completed in three main phases:
 
 1. **1st Deliverable – SRS & UI Wireframes**  
    📁 [`1st Deliverable - SRS & UI Wireframes`](./1st%20Deliverable%20-%20SRS%20&%20UI%20Wireframes)  
@@ -57,36 +57,41 @@ The project was completed in three phases:
   <tr>
     <td>
       <ul>
-        <li>Spring Boot v...</li>
-        <li>Java 17 (JDK ...)</li>
-        <li>Maven v...</li>
+        <li><strong>Spring Boot</strong> v3.4.4</li>
+        <li>Java 17 (openJDK 17)</li>
+        <li>Maven v3.9.9 (Apache Maven Wrapper)</li>
+        <li>PostgreSQL via Docket (postgis/postgis:17-3.4)</li>
         <li>RESTful API</li>
-        <li>WebSockets</li>
-        <li>SSL/TLS (Self-Signed Certificate)</li>
-        <li>JWT Auth</li>
-        <li>PostgreSQL v... via Docker...</li>
-        <li>Testing & Automation ...</li>
-        <li>...</li>
+        <li>SSL/TLS (Self-Signed Certificate) (HTTPS)</li>
+        <li>WebSockets (STOMP/WSS)</li>
+        <li>JWT/Auth (jwt & spring security)</li>
+        <li>Testing & Automation (Mockito/...)</li>
       </ul>
     </td>
     <td>
       <ul>
-        <li>React v...</li>
-        <li>JavaScript v...</li>
-        <li>HTML... / CSS...</li>
-        <li>Leaflet.js ...</li>
-        <li>OpenStreetMap API (?) ...</li>
+        <li><strong>React</strong> v19.1.0</li>
+        <li>NodeJS v22.15.0</li>
+        <li>JavaScript ES2024</li>
+        <li>Webpack	5.98.0</li>
+        <li>HTML5+</li>
+        <li>CSS3+ (Tailwind CSS v3.4.17)</li>
+        <li>Leaflet.js 1.9.4 (React Leaflet	5.0.0)</li>
         <li>SPA Architecture</li>
-        <li>Testing & Automation ...</li>
-        <li>...</li>
       </ul>
     </td>
     <td>
       <ul>
-        <li>Apache Kafka v...</li>
-        <li>AIS Dataset from Zenodo (6-month period)</li>
-        <li>Python ... producer</li>
-        <li>...</li>
+        <li>Apache <strong>Kafka</strong> v3.9.0 <br>(kafka_2.12-3.9.0)</li>
+        <li>ZooKeeper v3.8.4</li>
+        <li>AIS Dataset <br>(6-month period)</li>
+        <li>Python Producer:
+          <ul>
+            <li>python3 (v3.10.12)</li>
+            <li>confluent-kafka client v2.10.0</li>
+            <li>pandas library v2.2.3</li>
+          </ul>
+        </li>
       </ul>
     </td>
   </tr>
@@ -106,6 +111,7 @@ Key features include:
 ...
 
 ### Home Page - Guest
+Mock
 
 ### Home Page - Registered User
 

@@ -73,10 +73,9 @@ public class ZoneOfInterestController {
         // Get the currently authenticated user
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) auth.getPrincipal();
-        User user = userRepository.findById(userDetails.getId()).orElseThrow();
 
         // Check if user has a Zone of Interest and retrieve it
-        ZoneOfInterest zone = user.getZoneOfInterest();
+        ZoneOfInterest zone = zoneRepository.findByUserIdWithVesselTypes(userDetails.getId());
         if (zone == null) {
             return ResponseEntity.notFound().build();
         }

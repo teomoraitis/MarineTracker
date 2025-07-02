@@ -9,6 +9,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,12 +27,13 @@ public class WebSocketController {
     // accessible to the client as /app/filters
     @MessageMapping("/filters")
     public void updateFilters(@Payload Map<String, Object> filterData, SimpMessageHeaderAccessor headerAccessor) {
+        logger.info(filterData.toString());
         try {
             String sessionId = headerAccessor.getSessionId();
 
             // Handle vessel type filters
             @SuppressWarnings("unchecked")
-            Set<String> vesselTypes = (Set<String>) filterData.get("vesselTypes");
+            ArrayList<String> vesselTypes = (ArrayList<String>) filterData.get("vesselTypes");
 
             if (vesselTypes != null) {
                 logger.info("Received vessel type filter update from session {}: {}", sessionId, vesselTypes);
@@ -44,6 +46,8 @@ public class WebSocketController {
                 logger.info("Received fleet filter update from session {}: {}", sessionId, showOnlyFleet);
                 webSocketService.updateFleetFilter(sessionId, showOnlyFleet);
             }
+
+            webSocketService.sendFilteredDataToUser(sessionId);
 
         } catch (Exception e) {
             logger.error("Error updating filters: {}", e.getMessage(), e);
