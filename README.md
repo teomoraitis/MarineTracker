@@ -65,7 +65,7 @@ The project was completed in three main phases:
         <li><strong>Spring Boot</strong> v3.4.4</li>
         <li>Java 17 (openJDK 17)</li>
         <li>Maven v3.9.9 (Apache Maven Wrapper)</li>
-        <li>PostgreSQL via Docket (postgis/postgis:17-3.4)</li>
+        <li>PostgreSQL via Docker (postgis/postgis:17-3.4)</li>
         <li>RESTful API</li>
         <li>SSL/TLS (Self-Signed Certificate) (HTTPS)</li>
         <li>WebSockets (STOMP/WSS)</li>
