@@ -11,7 +11,7 @@ Completed for the "Software Engineering" course (spring 2025).
 
 ## The Team 
 **Team name:** "Ομάδα Χρηστών 4" <br>
-**Number of contributors:** 6
+**Number of contributors:** 5
 - sdi2000105 - [Christos Kypraios (ChristosKypraios)](https://github.com/ChristosKypraios)
 - sdi2000150 - [Theodoros Moraitis (sdi2000150)](https://github.com/sdi2000150)
 - sdi2000006 - [Evgenios Paraskevas Mavroudakos (EugeneM02)](https://github.com/EugeneM02)
