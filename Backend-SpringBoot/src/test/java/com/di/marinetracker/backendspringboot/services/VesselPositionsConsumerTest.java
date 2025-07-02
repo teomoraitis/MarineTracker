@@ -54,11 +54,11 @@ class VesselPositionsConsumerTest {
     }
 
     @Test
-    void testVessels9MinutesApart_arentSavedTogether() {
+    void testUpdates9MinutesApart_arentSavedTogether() {
         when(vesselRepository.findById(any())).thenReturn(Optional.of(new Vessel("123456789", "Cargo")));
         VesselPosition[] lastOne = new VesselPosition[3];
         // Times: 0, 1 second, 1 minute.
-        // lastOne[0] is the latest saved.
+        // lastOne[0] is the latest saved. lastOne[1] is only there because the first update of a vessel never changes.
         // We expect the saved 1-second one to go away and the 1-minute one to be saved.
         lastOne[0] = new VesselPosition(null, 0.0, 0.0, 0.0, 0.0, 0, 0.0, 0, Instant.ofEpochSecond(1));
         lastOne[1] = new VesselPosition(null, 0.0, 0.0, 0.0, 0.0, 0, 0.0, 0, Instant.ofEpochSecond(0));
@@ -68,12 +68,10 @@ class VesselPositionsConsumerTest {
     }
 
     @Test
-    void testVessels10MinutesApart_areSavedTogether() {
+    void testUpdates10MinutesApart_areSavedTogether() {
         when(vesselRepository.findById(any())).thenReturn(Optional.of(new Vessel("123456789", "Cargo")));
         VesselPosition[] lastOne = new VesselPosition[3];
-        // Times: 0, 1 second, 1 minute.
-        // lastOne[0] is the latest saved.
-        // We expect the saved 1-second one to go away and the 1-minute one to be saved.
+        // 0, 1 second, 1 second + 1 minute + 1 second = 602 seconds
         lastOne[0] = new VesselPosition(null, 0.0, 0.0, 0.0, 0.0, 0, 0.0, 0, Instant.ofEpochSecond(1));
         lastOne[1] = new VesselPosition(null, 0.0, 0.0, 0.0, 0.0, 0, 0.0, 0, Instant.ofEpochSecond(0));
         Mockito.when(vesselPositionRepository.find2LatestByVesselMmsi("123456789")).thenReturn(Optional.of(lastOne));
