@@ -103,15 +103,15 @@ The project was completed in three main phases:
 
 To run the complete MarineTracker platform, follow these steps in order:
 
-### 1. Start Kafka/ZooKeeper and Python Producer
+### 🦑 1. Start Kafka/ZooKeeper and Python Producer
 First, run Kafka/ZooKeeper and the Python producer by following the instructions in:
 📁 [`Kafka/README.md`](./Kafka/README.md)
 
-### 2. Start Spring Boot Backend
+### 🌱 2. Start Spring Boot Backend
 Then run the Spring Boot backend by following these steps in:
 📁 [`Backend-SpringBoot/README.md`](./Backend-SpringBoot/README.md)
 
-### 3. Start React Frontend
+### ⚛️ 3. Start React Frontend
 Finally, run the React frontend by following these steps in:
 📁 [`Frontend-React/README.md`](./Frontend-React/README.md)
 
