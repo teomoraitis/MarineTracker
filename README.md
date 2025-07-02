@@ -122,7 +122,7 @@ Finally, run the React frontend by following the instructions in:
 📁 [`Frontend-React/README.md`](./Frontend-React/README.md)
 
 
-#### Quick Start Script of steps 1 & 2 (Optional)
+#### Quick Start Script of steps 1 & 2 (Optional):
 You can automatically run Kafka and Spring Boot by running this script (*it needs gnome-terminal in order to run*):
 ```bash
 ./start_backend.sh
