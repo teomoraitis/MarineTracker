@@ -66,4 +66,18 @@ class VesselPositionsConsumerTest {
         consumer.consume("{\"mmsi\":\"123456789\",\"type\":\"Cargo\",\"lat\":0,\"lon\":0,\"speed\":0,\"course\":0,\"status\":0,\"turn\":0,\"heading\":0,\"timestamp\":600}");
         verify(vesselPositionRepository, times(1)).delete(any());
     }
+
+    @Test
+    void testVessels10MinutesApart_areSavedTogether() {
+        when(vesselRepository.findById(any())).thenReturn(Optional.of(new Vessel("123456789", "Cargo")));
+        VesselPosition[] lastOne = new VesselPosition[3];
+        // Times: 0, 1 second, 1 minute.
+        // lastOne[0] is the latest saved.
+        // We expect the saved 1-second one to go away and the 1-minute one to be saved.
+        lastOne[0] = new VesselPosition(null, 0.0, 0.0, 0.0, 0.0, 0, 0.0, 0, Instant.ofEpochSecond(1));
+        lastOne[1] = new VesselPosition(null, 0.0, 0.0, 0.0, 0.0, 0, 0.0, 0, Instant.ofEpochSecond(0));
+        Mockito.when(vesselPositionRepository.find2LatestByVesselMmsi("123456789")).thenReturn(Optional.of(lastOne));
+        consumer.consume("{\"mmsi\":\"123456789\",\"type\":\"Cargo\",\"lat\":0,\"lon\":0,\"speed\":0,\"course\":0,\"status\":0,\"turn\":0,\"heading\":0,\"timestamp\":602}");
+        verify(vesselPositionRepository, times(0)).delete(any());
+    }
 }
