@@ -10,7 +10,7 @@ public interface ZoneOfInterestRepository extends JpaRepository<ZoneOfInterest, 
 
     @Query("""
         select z from ZoneOfInterest z
-        join fetch z.vesselTypes
+        left join fetch z.vesselTypes
         where z.user.id = :userId
     """)
     ZoneOfInterest findByUserIdWithVesselTypes(@Param("userId") String userId);

@@ -38,6 +38,7 @@
     "dotenv": "^16.4.7",
     "leaflet": "^1.9.4",
     "leaflet-freedraw": "^2.14.0",
+    "leaflet-pip": "^1.1.0",
     "net": "^1.0.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

@@ -36,7 +36,6 @@ const ShipInfoPanel = () => {
   };
 
   const handleFleetChange = async () => {
-    console.log(ship.mmsi)
     if (ship.inFleet) {
       try {
         await removeFromFleet({ mmsi: ship.mmsi });

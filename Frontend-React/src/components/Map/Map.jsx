@@ -1,10 +1,11 @@
-import React, { useRef, useState, useContext, useEffect } from 'react';
+import React, { useRef, useContext, useEffect } from 'react';
 import { MapContainer, Polyline, TileLayer, ZoomControl, useMap, useMapEvents } from 'react-leaflet';
 import Marker from '../MapMarker/MapMarker.jsx';
 import FreeDrawComponent from './Freedraw.jsx'
-import { FilterContext, MapContext, SelectedShipContext, ZoiContext } from '../../contexts/contexts.js';
+import { MapContext, SelectedShipContext, ZoiContext } from '../../contexts/contexts.js';
 import { getZoneOfInterest } from '../../api/zoneApi.js';
 import L from "leaflet";
+import leafletPip from "leaflet-pip";
 
 
 const Map = ({}) => {
@@ -107,6 +108,27 @@ const Map = ({}) => {
               label={ship.mmsi}
               heading={ship.heading ?? 511}
               course={(ship.courseoverground) ?? undefined}
+              isInZoi={
+                zoi.show &&
+                zoi.area.length > 2 && // must be a polygon
+                (() => {
+                  // Create GeoJSON feature *on the fly*
+                  const geoJsonFeature = {
+                    type: "Feature",
+                    geometry: {
+                      type: "Polygon",
+                      coordinates: [
+                        zoi.area.map(point => [point.lng, point.lat])
+                      ]
+                    }
+                  };
+
+                  const geoJsonLayer = L.geoJSON(geoJsonFeature);
+                  // leaflet-pip expects [lng, lat]:
+                  const matches = leafletPip.pointInLayer([ship.lon, ship.lat], geoJsonLayer);
+                  return matches.length > 0;
+                })()
+              }
             />
           )
         })
@@ -118,7 +140,6 @@ const Map = ({}) => {
 };
 
 const CenterMapOnShip = ({ ship }) => {
-  console.log(ship);
   const map = useMap();
 
   useEffect(() => {

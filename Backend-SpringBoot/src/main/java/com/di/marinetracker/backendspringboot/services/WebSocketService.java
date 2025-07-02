@@ -7,6 +7,7 @@ import com.di.marinetracker.backendspringboot.entities.VesselPosition;
 import com.di.marinetracker.backendspringboot.entities.ZoneOfInterest;
 import com.di.marinetracker.backendspringboot.entities.Notification;
 import com.di.marinetracker.backendspringboot.repositories.UserRepository;
+import com.di.marinetracker.backendspringboot.repositories.ZoneOfInterestRepository;
 import com.di.marinetracker.backendspringboot.utils.JwtPrincipal;
 import com.di.marinetracker.backendspringboot.utils.JwtUtils;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -46,6 +47,10 @@ public class WebSocketService {
     // Notification service for zone alerts
     @Autowired
     private NotificationService notificationService;
+
+    // Repository for fetching ZoneOfInterest objects
+    @Autowired
+    private ZoneOfInterestRepository zoneRepository;
 
     // Map to store active user sessions and their filters
     private final Map<String, UserSession> activeSessions = new ConcurrentHashMap<>();
@@ -153,7 +158,7 @@ public class WebSocketService {
                 return notificationService.generateZoneNotifications(
                         vessel,
                         userSession.getUserId(),
-                        userSession.getZoneOfInterest()
+                        zoneRepository.findByUserIdWithVesselTypes(userSession.getUserId())
                 );
             }
             return Collections.emptyList();
@@ -194,9 +199,9 @@ public class WebSocketService {
                 UserSession session = new UserSession(
                         userId,
                         sessionId,
-                        user.getFleet().stream().map(Vessel::getMmsi).toList(),
+                        new ArrayList<>(user.getFleet().stream().map(Vessel::getMmsi).toList()),
                         new ArrayList<>(),
-                        user.getZoneOfInterest()
+                        zoneRepository.findByUserIdWithVesselTypes(userId)
                 );
 
                 activeSessions.put(sessionId, session);
@@ -366,10 +371,10 @@ public class WebSocketService {
 //    }
 
     // Inner class to represent a user session
-    private static class UserSession {
+    public static class UserSession {
         private final String userId; // User identifier
         private final String sessionId; // WebSocket session ID
-        private final List<String> fleetMmsis; // List of vessel MMSIs in user's fleet
+        private List<String> fleetMmsis; // List of vessel MMSIs in user's fleet
         private ArrayList<String> vesselTypeFilters; // Vessel type filters
         private final ZoneOfInterest zoneOfInterest; // User's zone of interest
         private boolean showOnlyFleetVessels = false;
@@ -388,6 +393,9 @@ public class WebSocketService {
         public String getUserId() { return userId; }
         public String getSessionId() { return sessionId; }
         public List<String> getFleetMmsis() { return fleetMmsis; }
+        public void setFleetMmsis(List<String> fleetMmsis) {
+            this.fleetMmsis = fleetMmsis;
+        }
         public ArrayList<String> getVesselTypeFilters() { return vesselTypeFilters; }
         public void setVesselTypeFilters(ArrayList<String> vesselTypeFilters) {
             this.vesselTypeFilters = vesselTypeFilters;
@@ -396,6 +404,30 @@ public class WebSocketService {
         public boolean isShowOnlyFleetVessels() { return showOnlyFleetVessels; }
         public void setShowOnlyFleetVessels(boolean showOnlyFleetVessels) {
             this.showOnlyFleetVessels = showOnlyFleetVessels;
+        }
+    }
+
+    public void addVesselToUserSessionFleet(String userId, String mmsi) {
+        System.out.println(activeSessions);
+        for (UserSession session : activeSessions.values()) {
+            System.out.println(session.getUserId());
+            System.out.println(userId);
+            if (session.getUserId().equals(userId)) {
+                System.out.println("found user session");
+                if (!session.getFleetMmsis().contains(mmsi)) {
+                    session.getFleetMmsis().add(mmsi);
+                    logger.info("Added vessel {} to fleet in session {}", mmsi, session.getSessionId());
+                }
+            }
+        }
+    }
+
+    public void removeVesselFromUserSessionFleet(String userId, String mmsi) {
+        for (UserSession session : activeSessions.values()) {
+            if (session.getUserId().equals(userId)) {
+                session.getFleetMmsis().remove(mmsi);
+                logger.info("Removed vessel {} from fleet in session {}", mmsi, session.getSessionId());
+            }
         }
     }
 }

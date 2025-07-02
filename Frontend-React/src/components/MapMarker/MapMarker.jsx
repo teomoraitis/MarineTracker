@@ -4,11 +4,11 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import ShipArrow from '../../assets/images/shiparrow.png';
 import ShipArrowRed from '../../assets/images/redshiparrow.png';
+import { SelectedShipContext, MapContext, AuthContext, ZoiContext } from '../../contexts/contexts';
 import ShipDot from '../../assets/images/stationaryship.png';
-import { SelectedShipContext, MapContext, AuthContext } from '../../contexts/contexts';
 import { getVessel } from '../../api/vesselsApi';
 
-const MapMarker = ({ label }) => {
+const MapMarker = ({ label, isInZoi=false }) => {
   const { ship, setSelectedShipInfo } = useContext(SelectedShipContext);
   const { ships } = useContext(MapContext);
   const { user } = useContext(AuthContext);
@@ -20,7 +20,7 @@ const MapMarker = ({ label }) => {
 
   const speed = liveShip.speed ?? 0;
   const isStationary = speed < 0.3;
-  const image = isStationary ? ShipDot : (isSelected ? ShipArrowRed : ShipArrow);
+  const image = isStationary ? ShipDot : (isSelected || isInZoi ? ShipArrowRed : ShipArrow);
 
   const course = liveShip.course ?? 0;
   const heading = liveShip.heading ?? 511;
