@@ -4,6 +4,7 @@ import NameSearch from '../NameSearch/NameSearch.jsx';
 import { FreeDrawContext, FilterContext, ZoiContext } from '../../contexts/contexts.js';
 import HoverInfo from '../HoverInfo/HoverInfo.jsx';
 import { saveZoneOfInterest } from '../../api/zoneApi.js';
+import "./Filters.css";
 
 const Filters = ({}) => {
   const { freeDrawOn, setFreeDraw } = useContext(FreeDrawContext);
@@ -33,7 +34,7 @@ const Filters = ({}) => {
   };
 
   return (
-    <section className="w-[20vw] p-6 flex flex-col gap-10">
+    <section className="w-[20vw] p-6 flex flex-col gap-10 overflow-y-scroll scrollbar">
       {/* Section 1 */}
       <div className='flex flex-col gap-4'>
         <h6 className='text-lg font-bold'>Filters</h6>
