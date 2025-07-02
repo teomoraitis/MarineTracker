@@ -140,7 +140,6 @@ const Map = ({}) => {
 };
 
 const CenterMapOnShip = ({ ship }) => {
-  console.log(ship);
   const map = useMap();
 
   useEffect(() => {

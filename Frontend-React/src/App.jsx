@@ -38,6 +38,7 @@ const App = () => {
 
   const stompClientRef = useRef(null);
   const subscriptionRef = useRef(null);
+  const pingIntervalRef = useRef(null);
 
   const handleLogin = async (username = '', password = '') => {
     if (username.trim() == '' || password.trim() == '') return;
@@ -93,7 +94,6 @@ const App = () => {
 
             if (update.setShips && Array.isArray(update.setShips)) {
               const updateObject = update.setShips.reduce((agg, shipUpdate) => {
-                console.log(shipUpdate);
                 return {
                   ...agg,
                   [shipUpdate.mmsi]: shipUpdate,
@@ -110,6 +110,15 @@ const App = () => {
             console.error("Message body:", message.body);
           }
         });
+
+        // start ping interval
+        pingIntervalRef.current = setInterval(() => {
+          try {
+            stompClient.publish({ destination: "/app/ping", body: "" });
+          } catch (e) {
+            console.error("ping STOMP failed");
+          }
+        }, 30000);
       },
       onStompError: (frame) => {
         console.error("STOMP Error:", frame);
