@@ -33,7 +33,7 @@ The project was completed in three main phases:
    📁 [`1st Deliverable - SRS & UI Wireframes`](./1st%20Deliverable%20-%20SRS%20&%20UI%20Wireframes)  
    Includes:  
    - Software Requirements Specification (SRS)  
-   - UI mockup wireframes of the UI/UX
+   - UI/UX mockup wireframes of the web app
 
 2. **2nd Deliverable – System Modeling & UML**  
    📁 [`2nd Deliverable - System Modeling & UML`](./2nd%20Deliverable%20-%20System%20Modeling%20&%20UML)  
