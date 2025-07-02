@@ -155,7 +155,7 @@ The platform simulates real-world maritime traffic by replaying a 6-month histor
 ### User Roles & Permissions
 The platform supports three distinct user roles:
 
-**Anonymous Users:**
+**Guests:**
 - View live vessel positions on the map
 - Basic vessel information access
 
