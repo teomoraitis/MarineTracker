@@ -4,6 +4,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import ShipArrow from '../../assets/images/shiparrow.png';
 import ShipArrowRed from '../../assets/images/redshiparrow.png';
+import ShipDot from '../../assets/images/stationaryship.png';
 import { SelectedShipContext, MapContext, AuthContext } from '../../contexts/contexts';
 import { getVessel } from '../../api/vesselsApi';
 
@@ -13,10 +14,13 @@ const MapMarker = ({ label }) => {
   const { user } = useContext(AuthContext);
 
   const liveShip = ships[label];
-  if (!liveShip) return null; 
+  if (!liveShip) return null;
 
   const isSelected = ship?.mmsi == label;
-  const image = isSelected ? ShipArrowRed : ShipArrow;
+
+  const speed = liveShip.speed ?? 0;
+  const isStationary = speed < 0.3;
+  const image = isStationary ? ShipDot : (isSelected ? ShipArrowRed : ShipArrow);
 
   const course = liveShip.course ?? 0;
   const heading = liveShip.heading ?? 511;
