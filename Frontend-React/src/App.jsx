@@ -219,9 +219,9 @@ const App = () => {
                   setZoi: setZoi,
                 }}
               >
-                <div className='h-dvh'>
+                <div className='h-full'>
                   <Navbar />
-                  <div className='relative w-full flex flex-row'>
+                  <div className='h-[85vh] relative w-full flex flex-row'>
                     { user && <Filters /> }
                     <div className='relative w-full flex flex-row'>
                       <Map ships={ships}/>
