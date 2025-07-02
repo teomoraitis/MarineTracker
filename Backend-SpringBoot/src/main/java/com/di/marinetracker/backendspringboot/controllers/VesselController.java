@@ -143,11 +143,24 @@ class VesselController {
         return currentVessels;
     }
 
+    @CrossOrigin(origins = "${cors.urls}")
+    @GetMapping("/static-info")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    List<Map<String, String>> staticInfo() {
+        return vesselRepository.findAll().stream()
+                .map(v -> Map.of(
+                        "id", v.getMmsi().toString(), // Convert to String
+                        "name", v.getName(),
+                        "type", v.getType()
+                ))
+                .toList();
+    }
+
     // Updates vessel details (admin only), when a PUT request is made to /api/vessels/{mmsi}
     @CrossOrigin(origins ="${cors.urls}")
     @PutMapping("/{mmsi}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    VesselDTO updateVessel(@RequestBody Vessel newVessel, @PathVariable String mmsi, Authentication authentication) {
+    VesselDTO updateVessel(@RequestBody Map<String, String> updates, @PathVariable String mmsi, Authentication authentication) {
         // Get authenticated user ID
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         String userId = userDetails.getId();
@@ -155,8 +168,12 @@ class VesselController {
         // Update vessel if found, else throw exception
         Vessel savedVessel = vesselRepository.findById(mmsi)
                 .map(vessel -> {
-                    vessel.setName(newVessel.getName());
-                    vessel.setType(newVessel.getType());
+                    if (updates.containsKey("name")) {
+                        vessel.setName(updates.get("name"));
+                    }
+                    if (updates.containsKey("type")) {
+                        vessel.setType(updates.get("type"));
+                    }
                     return vesselRepository.save(vessel);
                 })
                 .orElseThrow(() -> new RuntimeException("Vessel not found"));
