@@ -4,7 +4,7 @@ import NavbarItem from './NavbarItem.jsx';
 import { AuthContext } from '../../contexts/contexts.js';
 import { signup } from '../../api/userApi.js';
 
-const AuthModal = ({ title, onClose, onSubmit }) => {
+const AuthModal = ({ title, onClose, onSubmit, setShowTermsModal, setShowForgotPasswordModal   }) => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -48,11 +48,20 @@ const AuthModal = ({ title, onClose, onSubmit }) => {
                 checked={acceptTerms}
                 onChange={(e) => setAcceptTerms(e.target.checked)}
               />
-              I accept the <a href="#" className="text-blue-600 underline">terms and conditions</a>
+              I accept the{" "}
+              <span
+                onClick={() => setShowTermsModal(true)}
+                className="text-blue-600 underline cursor-pointer"
+              >
+                terms and conditions
+              </span>
             </label>
           )}
           {!isSignUp && (
-            <div className="text-sm text-blue-600 underline cursor-pointer w-fit">
+            <div
+              className="text-sm text-blue-600 underline cursor-pointer w-fit"
+              onClick={() => setShowTermsModal && setShowTermsModal(false) || setShowForgotPasswordModal(true)} 
+            >
               I forgot my password
             </div>
           )}
@@ -83,10 +92,19 @@ const Navbar = ({}) => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
   const [showHelpModal, setShowHelpModal] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
   return (
     <div className='h-[10vh] bg-[#E8E8E8] flex flex-row justify-between content-center px-3'>
       <div className='flex flex-row content-center h-2/3 my-auto'>
-        <img src={ShipShipGoLogo} alt="logo" className='cursor-pointer'/>
+        <img
+          src={ShipShipGoLogo}
+          alt="logo"
+          className="cursor-pointer"
+          onClick={() => {
+          window.location.reload();
+        }}
+        />
         <NavbarItem
           label="Help"
           onClick={() => {setShowHelpModal(true)}}
@@ -132,6 +150,7 @@ const Navbar = ({}) => {
           }
 
         }}
+        setShowForgotPasswordModal={setShowForgotPasswordModal}
       />
     )}
     {showSignupModal && (
@@ -147,6 +166,7 @@ const Navbar = ({}) => {
             console.error("Error during signup");
           }
         }}
+        setShowTermsModal={setShowTermsModal}
       />
     )}
       {showHelpModal && (
@@ -182,6 +202,56 @@ const Navbar = ({}) => {
 
             <button
               onClick={() => setShowHelpModal(false)}
+              className="mt-6 px-4 py-2 text-sm bg-blue-600 text-white hover:bg-blue-700 rounded"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+      {showTermsModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-8 rounded-lg w-full max-w-xl shadow-2xl text-left">
+            <h3 className="text-xl font-semibold mb-4">Terms and Conditions</h3>
+            <div className="text-sm text-gray-700 space-y-4 max-h-[60vh] overflow-y-auto">
+              <p>
+                By signing up to Marine Tracker, you agree to the following terms:
+              </p>
+              <ul className="list-disc list-inside ml-4 space-y-2">
+                <li>You will use this service lawfully and responsibly.</li>
+                <li>You are aware that this is a university project and will treat it accordingly.</li>
+                <li>Marine Tracker is not to be reproduced in part or in its entirety without explicit consent from its developers.</li>
+                <li>You have read the README file at https://github.com/sdi2000150/MarineTracker/blob/main/README.md.</li>
+                <li>You are aware that the data displayed in Marine Tracker is historic and publicly available, not live.</li>
+                <li>You are advised to kindly report any bugs you may encounter to the developers of this site.</li>
+                <li>If you have read thus far into the terms and conditions and are our professor, you are legally obligated to pass
+                  all of us with a grade of 9 or above.
+                </li>
+                <li>These terms are subject to change at any time.</li>
+              </ul>
+            </div>
+            <button
+              onClick={() => setShowTermsModal(false)}
+              className="mt-6 px-4 py-2 text-sm bg-blue-600 text-white hover:bg-blue-700 rounded"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+      {showForgotPasswordModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-8 rounded-lg w-full max-w-md shadow-2xl">
+            <h3 className="text-xl font-semibold mb-4 text-center">Reset Password</h3>
+            <div className="text-sm text-gray-700 space-y-4 max-h-[60vh] overflow-y-auto">
+              <p>
+                This is a university project. As a result, password recovery is as of now unavailable. You can create a 
+                new user account, manually reset the database or contact the demo admin. We are sorry for any inconvenience this
+                may have caused.
+              </p>
+            </div>
+            <button
+              onClick={() => setShowForgotPasswordModal(false)}
               className="mt-6 px-4 py-2 text-sm bg-blue-600 text-white hover:bg-blue-700 rounded"
             >
               Close

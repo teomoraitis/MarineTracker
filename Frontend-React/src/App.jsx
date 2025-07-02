@@ -17,8 +17,9 @@ const App = () => {
   const [user, setUser] = useState(null);
   const [freeDrawOn, setFreeDraw] = useState(false);
   const [selectedShip, setSelectedShip] = useState({});
-  const [showPath, setShowPath] = useState(false);
   const [path, setPath] = useState([]);
+  const [pathShipMmsi, setPathShipMmsi] = useState(null);
+  const [isPathVisible, setIsPathVisible] = useState(false); 
   const [ships, setShips] = useState([]);
   const [hideShipInfo, setHideShipInfo] = useState(false);
   const [filters, setFilters] = useState({
@@ -39,10 +40,7 @@ const App = () => {
     if (username.trim() == '' || password.trim() == '') return;
 
     try {
-      const user = await login({
-        username: username,
-        password: password
-      });
+      const user = await login({ username, password });
       setUser(user);
     } catch {
       console.error("Error during login");
@@ -110,26 +108,41 @@ const App = () => {
     };
   }, [user]);
 
-
-  const toggleShowPath = async (mmsi) => {
-    setShowPath(!showPath);
-    // fetch path for selected ship
-    if (!showPath) {
-      try {
-        const path = await getVesselPath(mmsi);
-        setPath(path);
-      } catch {
-        console.error("Error during path fetch");
-        setPath([]);
-      }
-    } else {
+  
+  const loadShipPath = async (mmsi) => {
+    try {
+      const path = await getVesselPath(mmsi);
+      setPath(path);
+      setPathShipMmsi(mmsi);
+    } catch {
+      console.error('Error fetching vessel path');
       setPath([]);
+      setPathShipMmsi(null);
     }
   };
 
-  useEffect(() => {
-    console.log("filters: ", filters);
-  }, [filters]);
+  const toggleShowPath = async () => {
+    if (isPathVisible) {
+      setIsPathVisible(false);
+    } else {
+      if (selectedShip?.mmsi) {
+        await loadShipPath(selectedShip.mmsi);
+        setIsPathVisible(true);
+      }
+    }
+  };
+
+  const handleShipSelect = async (shipInfo) => {
+    setSelectedShip(shipInfo);
+    setHideShipInfo(false);
+
+    if (isPathVisible && shipInfo?.mmsi) {
+      await loadShipPath(shipInfo.mmsi);
+    } else {
+      setPath([]);
+      setPathShipMmsi(null);
+    }
+  };
 
   return (
     <AuthContext.Provider value={{ user, handleLogin, handleLogout }}>
@@ -137,24 +150,16 @@ const App = () => {
         <FreeDrawContext.Provider value={{freeDrawOn: freeDrawOn, setFreeDraw: setFreeDraw}}>
           <SelectedShipContext.Provider
             value={{
-            ship: selectedShip,
-            setSelectedShipInfo: (shipInfo) => {
-              setSelectedShip(shipInfo);
-              setHideShipInfo(false); 
-            },
-            showPath: showPath,
-            toggleShowPath,
-            path: path,
-            hideShipInfo,
-            setHideShipInfo
-          }}
+              ship: selectedShip,
+              setSelectedShipInfo: handleShipSelect, 
+              showPath: isPathVisible && pathShipMmsi === selectedShip?.mmsi,
+              toggleShowPath,
+              path,
+              hideShipInfo,
+              setHideShipInfo,
+            }}
           >
-            <FilterContext.Provider
-              value={{
-                filters: filters,
-                onFilterChange: setFilters
-              }}
-            >
+            <FilterContext.Provider value={{ filters, onFilterChange: setFilters }}>
               <div className='h-dvh'>
                 <Navbar />
                 <div className='relative w-full flex flex-row'>
@@ -174,5 +179,5 @@ const App = () => {
     </AuthContext.Provider>
   );
 };
- 
+
 export default App;
