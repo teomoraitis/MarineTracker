@@ -114,7 +114,7 @@ To run the complete MarineTracker platform, follow these steps in order:
 First, run Kafka/ZooKeeper and the Python producer by following the instructions in:
 📁 [`Kafka/README.md`](./Kafka/README.md)
 
-### 🌱 2. Start Spring Boot/Postgres Backend
+### 🌱 2. Start SpringBoot/Postgres Backend
 Then run the Spring Boot backend by following the instructions in:
 📁 [`Backend-SpringBoot/README.md`](./Backend-SpringBoot/README.md)
 
