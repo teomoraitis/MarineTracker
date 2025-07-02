@@ -69,9 +69,69 @@ class WebSocketServiceTest {
         verifyNoMoreInteractions(messagingTemplate);
     }
 
-    // TODO
-    // removing a user
-    // filters
+    @Test
+    void testFilterByNonExistingFleet_noMessage() {
+        createUser("a");
+        createUser("b");
+        ArrayList<String> types = new ArrayList<>();
+        types.add("type-that-doesnt-exist");
+        webSocketService.updateUserFilters("session-of-a", types);
+
+        broadcastSomething();
+        verify(messagingTemplate).convertAndSendToUser(eq("b"), eq("/queue/vessels"), anyString());
+        verify(messagingTemplate).convertAndSend(eq("/topic/guest"), anyString());
+        verifyNoMoreInteractions(messagingTemplate);
+    }
+
+    // TODO the filters are under construction
+    // @Test
+    void testDisablingFilters() {
+        createUser("a");
+        createUser("b");
+        ArrayList<String> types = new ArrayList<>();
+        types.add("type-that-doesnt-exist");
+        webSocketService.updateUserFilters("session-of-a", types);
+        webSocketService.updateFleetFilter("session-of-a", false);
+
+        broadcastSomething();
+        verify(messagingTemplate).convertAndSendToUser(eq("a"), eq("/queue/vessels"), anyString());
+        verify(messagingTemplate).convertAndSendToUser(eq("b"), eq("/queue/vessels"), anyString());
+        verify(messagingTemplate).convertAndSend(eq("/topic/guest"), anyString());
+        verifyNoMoreInteractions(messagingTemplate);
+    }
+
+    @Test
+    void testReenablingFilters() {
+        createUser("a");
+        createUser("b");
+        ArrayList<String> types = new ArrayList<>();
+        types.add("type-that-doesnt-exist");
+        webSocketService.updateUserFilters("session-of-a", types);
+        webSocketService.updateFleetFilter("session-of-a", false);
+        webSocketService.updateFleetFilter("session-of-a", true);
+
+        broadcastSomething();
+        verify(messagingTemplate).convertAndSendToUser(eq("b"), eq("/queue/vessels"), anyString());
+        verify(messagingTemplate).convertAndSend(eq("/topic/guest"), anyString());
+        verifyNoMoreInteractions(messagingTemplate);
+    }
+
+    // TODO the filters are under construction
+    //@Test
+    void testTwoFiltersWhereOneMatches_sendsMessage() {
+        createUser("a");
+        createUser("b");
+        ArrayList<String> types = new ArrayList<>();
+        types.add("type-that-doesnt-exist");
+        types.add("Cargo");
+        webSocketService.updateUserFilters("session-of-a", types);
+
+        broadcastSomething();
+        verify(messagingTemplate).convertAndSendToUser(eq("a"), eq("/queue/vessels"), anyString());
+        verify(messagingTemplate).convertAndSendToUser(eq("b"), eq("/queue/vessels"), anyString());
+        verify(messagingTemplate).convertAndSend(eq("/topic/guest"), anyString());
+        verifyNoMoreInteractions(messagingTemplate);
+    }
 
     private void createUser(String name) {
         Principal principal = Mockito.mock(JwtPrincipal.class);
