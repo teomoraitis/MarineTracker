@@ -141,19 +141,43 @@ After running the script, you'll still need to manually start the React frontend
 ---
 
 ## The Platform
-MarineTracker is a web-based platform for real-time vessel tracking using AIS (Automatic Identification System) data. 
+MarineTracker is a web-based maritime surveillance platform designed for real-time vessel monitoring using AIS (Automatic Identification System) data streams, resembling commercial maritime tracking services like [marinetraffic.com](https://www.marinetraffic.com/).
+The platform simulates real-world maritime traffic by replaying a 6-month historical AIS dataset at real-time speed through Apache Kafka.
 
-Key features include:
-- **Real-time visualization of vessels** on a map with details like location, status, type, and course.
-- **Historical playback** of vessel trajectories for the past 12 hours.
-- **Fleet management**, allowing users to follow specific ships and apply filters.
-- **Zone of Interest** functionality, where users can define regions on the map and set movement restrictions.
-- **Admin privileges** to edit static ship data.
-...
+### Core Features
+- **Real-time vessel visualization** on an interactive map displaying live ship positions, status, type, and course information
+- **Historical trajectory tracking** allowing users to view a vessel's previous route (e.g., last 12 hours)
+- **Fleet management system** enabling registered users to save and monitor ships of interest
+- **Advanced filtering capabilities** to display vessels based on specific criteria (fleet ships, cargo vessels, etc.)
+- **Zone of Interest (ZoI) functionality** where users can define geographical regions with custom movement restrictions and receive alerts when violations occur
+- **Collision monitoring zones** (bonus feature) that detect potential vessel collisions and generate notifications
+- **Administrative controls** for managing static vessel data and user privileges
 
-### Home Page - Guest
-Mock
+### User Roles & Permissions
+The platform supports three distinct user roles:
 
-### Home Page - Registered User
+**Anonymous Users:**
+- View live vessel positions on the map
+- Basic vessel information access
 
-### Home Page - Admin
+**Registered Users:**
+- Full access to all vessel tracking features
+- Fleet management and custom vessel lists
+- Zone of Interest creation with alert notifications
+- Historical trajectory viewing
+- Advanced filtering and search capabilities
+
+**Administrators:**
+- All registered user privileges
+- Ability to modify static vessel data (vessel types, classifications)
+- Ability to export static data of all vessels.
+
+### Technical Architecture
+The platform follows a modern microservices architecture:
+- **Backend:** RESTful API built with Spring Boot, supporting real-time WebSocket connections
+- **Frontend:** Single Page Application (SPA) developed in React with interactive mapping via Leaflet.js
+- **Data Streaming:** Apache Kafka handles real-time AIS data streaming and processing
+- **Security:** HTTPS implementation with self-signed certificates and JWT-based authentication
+- **Database:** PostgreSQL with PostGIS extensions for geospatial data management
+
+The system processes AIS data in real-time, providing users with up-to-date maritime traffic information while maintaining the performance and reliability required for critical maritime surveillance operations.
