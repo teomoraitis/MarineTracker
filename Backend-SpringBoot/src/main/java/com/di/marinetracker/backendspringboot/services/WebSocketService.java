@@ -134,28 +134,15 @@ public class WebSocketService {
 
     // Determine if a vessel should be sent to a specific user based on their filters
     private boolean shouldSendToUser(Vessel vessel, UserSession userSession) {
-        // If fleet-only filter is active, only show fleet vessels
-        if (userSession.isShowOnlyFleetVessels()) {
-            return userSession.getFleetMmsis().contains(vessel.getMmsi());
-        }
-
-        // Always show vessels in user's fleet
-        if (userSession.getFleetMmsis().contains(vessel.getMmsi())) {
-            return true;
-        }
-
-        // Apply vessel type filters
-        if (!userSession.getVesselTypeFilters().isEmpty() &&
-                !userSession.getVesselTypeFilters().contains(vessel.getType())) {
+        // Fleet filter: only show fleet vessels if enabled
+        if (userSession.isShowOnlyFleetVessels() && !userSession.getFleetMmsis().contains(vessel.getMmsi())) {
             return false;
         }
-
-        // Apply zone of interest filter
-        if (userSession.getZoneOfInterest() != null) {
-            return userSession.getZoneOfInterest().matchesConditions(vessel);
+        // Type filter: only show selected types if any are set
+        if (!userSession.getVesselTypeFilters().isEmpty() && !userSession.getVesselTypeFilters().contains(vessel.getType())) {
+            return false;
         }
-
-        // If no specific filters, show all vessels
+        // Do NOT filter by zone of interest
         return true;
     }
 
@@ -187,6 +174,9 @@ public class WebSocketService {
             }
 
             String userId = principal.getName();
+
+            // Remove any existing session(s) for this user
+            activeSessions.entrySet().removeIf(entry -> entry.getValue().getUserId().equals(userId));
 
             // Optional: if you want to re-validate the JWT for extra security:
             if (principal instanceof JwtPrincipal jwtPrincipal) {
@@ -253,11 +243,25 @@ public class WebSocketService {
         try {
             List<JsonNode> visibleVessels = new ArrayList<>();
 
+//            vesselDataCache.forEach((mmsi, vesselData) -> {
+//                // This is a simplified check - in production you'd want to fetch full vessel data
+//                if (userSession.getFleetMmsis().contains(mmsi)) {
+//                    visibleVessels.add(vesselData);
+//                }
+//            });
+            // Changed to this in order to respect user filters
             vesselDataCache.forEach((mmsi, vesselData) -> {
-                // This is a simplified check - in production you'd want to fetch full vessel data
-                if (userSession.getFleetMmsis().contains(mmsi)) {
-                    visibleVessels.add(vesselData);
+                // Fleet filter
+                if (userSession.isShowOnlyFleetVessels() && !userSession.getFleetMmsis().contains(mmsi)) {
+                    return;
                 }
+                // Type filter
+                ArrayList<String> typeFilters = userSession.getVesselTypeFilters();
+                String vesselType = vesselData.has("type") ? vesselData.get("type").asText() : null;
+                if (typeFilters != null && !typeFilters.isEmpty() && (vesselType == null || !typeFilters.contains(vesselType))) {
+                    return;
+                }
+                visibleVessels.add(vesselData);
             });
 
             if (!visibleVessels.isEmpty()) {
@@ -284,21 +288,33 @@ public class WebSocketService {
     public void sendFilteredDataToUser(String sessionId) {
         UserSession session = activeSessions.get(sessionId);
         try {
+            // First send a clear message
+            JsonNode clearMessage = createWebSocketMessage(
+                    Collections.emptyList(),
+                    Collections.emptyList(),
+                    true,  // Set hideAllShips to true
+                    Collections.emptyList()
+            );
+            messagingTemplate.convertAndSendToUser(
+                    session.getUserId(),
+                    "/queue/vessels",
+                    clearMessage.toString()
+            );
+
             List<JsonNode> visibleVessels = new ArrayList<>();
 
             vesselDataCache.forEach((mmsi, vesselData) -> {
-                // Create a simple vessel object to check filters
-                // In production, you'd want to get the full Vessel entity
-                if (session.isShowOnlyFleetVessels()) {
-                    if (session.getFleetMmsis().contains(mmsi)) {
-                        logger.info(mmsi);
-                        visibleVessels.add(vesselData);
-                    }
-                } else {
-                    // Apply other filters (vessel type, zone, etc.)
-                    // This is simplified - you'd need full vessel data for complete filtering
-                    visibleVessels.add(vesselData);
+                // Fleet filter
+                if (session.isShowOnlyFleetVessels() && !session.getFleetMmsis().contains(mmsi)) {
+                    return;
                 }
+                // Type filter
+                ArrayList<String> typeFilters = session.getVesselTypeFilters();
+                String vesselType = vesselData.has("type") ? vesselData.get("type").asText() : null;
+                if (typeFilters != null && !typeFilters.isEmpty() && (vesselType == null || !typeFilters.contains(vesselType))) {
+                    return;
+                }
+                visibleVessels.add(vesselData);
             });
 
             JsonNode filterMessage = createWebSocketMessage(
