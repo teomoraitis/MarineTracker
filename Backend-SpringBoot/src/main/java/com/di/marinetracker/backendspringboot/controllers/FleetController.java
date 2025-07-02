@@ -6,11 +6,15 @@ import com.di.marinetracker.backendspringboot.repositories.UserRepository;
 import com.di.marinetracker.backendspringboot.repositories.VesselRepository;
 
 import com.di.marinetracker.backendspringboot.services.UserDetailsImpl;
+import com.di.marinetracker.backendspringboot.services.WebSocketService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 // Allows cross-origin requests from any origin with a max age of 3600 seconds
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -26,6 +30,10 @@ public class FleetController {
     // Injects the VesselRepository for vessel data access
     @Autowired
     VesselRepository vesselRepository;
+
+    // WebSocketService here so we can update the UserSession with changes to fleet
+    @Autowired
+    WebSocketService webSocketService;
 
     // Adds a vessel to the authenticated user's fleet when a POST request is made to /api/fleet/{mmsi}
     @Transactional
@@ -47,6 +55,8 @@ public class FleetController {
         // Add vessel to user's fleet and save the user
         user.addToFleet(vessel);
         userRepository.save(user);
+
+        webSocketService.addVesselToUserSessionFleet(user.getUserName(), mmsi);
 
         // Return success response
         return ResponseEntity.ok("Vessel added to fleet.");
@@ -72,6 +82,8 @@ public class FleetController {
         // Remove vessel from user's fleet and save the user
         user.removeFromFleet(vessel);
         userRepository.save(user);
+
+        webSocketService.removeVesselFromUserSessionFleet(user.getUserName(), mmsi);
 
         // Return success response
         return ResponseEntity.ok("Vessel removed from fleet.");
