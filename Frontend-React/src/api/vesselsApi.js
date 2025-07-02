@@ -22,3 +22,10 @@ export const getVessel = (mmsi) => {
 export const getVesselPath = (mmsi) => {
   return api.get(`vessels/${mmsi}/path`).then(res => res.data);
 };
+
+export const updateVesselData = (mmsi, name, type) => {
+  return api.put(
+    `vessels/${mmsi}`,
+    { name, type }
+  ).then(res => res.data);
+};
