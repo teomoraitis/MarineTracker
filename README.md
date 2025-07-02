@@ -83,6 +83,7 @@ The project was completed in three main phases:
     <td>
       <ul>
         <li>Apache <strong>Kafka</strong> v3.9.0 <br>(kafka_2.12-3.9.0)</li>
+        <li>ZooKeeper v3.8.4</li>
         <li>AIS Dataset <br>(6-month period)</li>
         <li>Python Producer:
           <ul>
