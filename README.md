@@ -114,7 +114,7 @@ To run the complete MarineTracker platform, follow these steps in order:
 First, run Kafka/ZooKeeper and the Python producer by following the instructions in: 
 [`Kafka/README.md`](./Kafka/README.md)
 
-### 🌱 2. Start SpringBoot/Postgres - Backend
+### 🌱 2. Start Spring Boot and Postgres - Backend
 Then run the Spring Boot backend by following the instructions in: 
 [`Backend-SpringBoot/README.md`](./Backend-SpringBoot/README.md)
 
@@ -172,11 +172,9 @@ The platform supports three distinct user roles:
 - Ability to export static data of all vessels.
 
 ### Technical Architecture
-The platform follows a modern microservices architecture:
+The platform follows a modern architecture:
 - **Backend:** RESTful API built with Spring Boot, supporting real-time WebSocket connections
 - **Frontend:** Single Page Application (SPA) developed in React with interactive mapping via Leaflet.js
 - **Data Streaming:** Apache Kafka handles real-time AIS data streaming and processing
 - **Security:** HTTPS implementation with self-signed certificates and JWT-based authentication
 - **Database:** PostgreSQL with PostGIS extensions for geospatial data management
-
-The system processes AIS data in real-time, providing users with up-to-date maritime traffic information while maintaining the performance and reliability required for critical maritime surveillance operations.
