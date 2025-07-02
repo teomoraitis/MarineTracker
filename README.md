@@ -4,6 +4,7 @@
 <strong>Full-stack web platform</strong> featuring real-time <strong>vessel monitoring</strong> through <strong>AIS</strong> data stream processing. <br>
 Built with <strong>Spring Boot</strong> and <strong>React</strong>. Using Apache <strong>Kafka</strong> and <strong>PostgreSQL</strong>.
 
+<br>
 
 ---
 
@@ -16,6 +17,7 @@ Built with <strong>Spring Boot</strong> and <strong>React</strong>. Using Apache
 - sdi1900048 - [Theodoros Dimakopoulos (TheodoreAlenas)](https://github.com/TheodoreAlenas)
 - sdi1700254 - [Pierro Zachareas (plerros)](https://github.com/plerros)
 
+<br>
 
 ---
 
@@ -43,6 +45,8 @@ The project was completed in three main phases:
    📁 [`Frontend-React`](./Frontend-React)  
    📁 [`Kafka`](./Kafka)  
    Complete implementation of the full-stack platform, integrating Backend, Frontend, and real-time Kafka-based data ingestion.
+
+<br>
 
 ---
 
@@ -97,6 +101,8 @@ The project was completed in three main phases:
   </tr>
 </table>
 
+<br>
+
 ---
 
 ## Getting Started
@@ -129,6 +135,8 @@ This script will:
 - Prepare the Spring Boot backend environment
 
 After running the script, you'll still need to manually start the React frontend as described in step 3 above.
+
+<br>
 
 ---
 
