@@ -35,7 +35,7 @@ public class NotificationService {
      */
     @Transactional
     public List<Notification> generateZoneNotifications(Vessel vessel, String userId, ZoneOfInterest zone) {
-        // Tests can pass a different time argument, to test the cooldown timer.
+        // Tests can pass a different time argument, to test the cooldown timer
         return generateZoneNotifications(vessel, userId, zone, LocalDateTime.now());
     }
     public List<Notification> generateZoneNotifications(Vessel vessel, String userId, ZoneOfInterest zone, LocalDateTime timeNow) {
