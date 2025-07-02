@@ -13,9 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Map;
-
 // Allows cross-origin requests from any origin with a max age of 3600 seconds
 @CrossOrigin(origins = "*", maxAge = 3600)
 // Marks this class as a REST controller and sets the base request mapping
