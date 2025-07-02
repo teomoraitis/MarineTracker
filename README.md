@@ -57,7 +57,7 @@ The project was completed in three main phases:
   <tr>
     <td>
       <ul>
-        <li>Spring Boot v3.4.4</li>
+        <li><strong>Spring Boot</strong> v3.4.4</li>
         <li>Java 17 (openJDK 17)</li>
         <li>Maven v3.9.9 (Apache Maven Wrapper)</li>
         <li>PostgreSQL via Docket (postgis/postgis:17-3.4)</li>
@@ -70,7 +70,7 @@ The project was completed in three main phases:
     </td>
     <td>
       <ul>
-        <li>React v19.1.0</li>
+        <li><strong>React</strong> v19.1.0</li>
         <li>NodeJS v22.15.0</li>
         <li>JavaScript ES2024</li>
         <li>Webpack	5.98.0</li>
@@ -82,7 +82,7 @@ The project was completed in three main phases:
     </td>
     <td>
       <ul>
-        <li>Apache Kafka v3.9.0 <br>(kafka_2.12-3.9.0)</li>
+        <li>Apache <strong>Kafka</strong> v3.9.0 <br>(kafka_2.12-3.9.0)</li>
         <li>AIS Dataset <br>(6-month period)</li>
         <li>Python Producer:
           <ul>
