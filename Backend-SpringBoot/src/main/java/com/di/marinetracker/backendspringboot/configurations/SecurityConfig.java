@@ -107,6 +107,7 @@ public class SecurityConfig {
                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                // Allows unauthenticated access to authentication and websocket endpoints:
                .authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/**").permitAll())
+               .authorizeHttpRequests(auth -> auth.requestMatchers("/api/vessels/*/path").permitAll())
                .authorizeHttpRequests(auth -> auth.requestMatchers("/ws/**").permitAll())
                // Requires authentication for all other endpoints:
                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
