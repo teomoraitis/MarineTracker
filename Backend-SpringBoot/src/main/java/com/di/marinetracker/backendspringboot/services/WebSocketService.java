@@ -180,6 +180,10 @@ public class WebSocketService {
     // Register a new user session when they connect
     @Transactional
     public void registerUserSession(String sessionId, Principal principal) {
+        registerUserSession(sessionId, principal, true);
+    }
+    @Transactional
+    public void registerUserSession(String sessionId, Principal principal, boolean revalidateJwt) {
         try {
             if (principal == null) {
                 logger.warn("No principal found for session {}", sessionId);
@@ -189,7 +193,7 @@ public class WebSocketService {
             String userId = principal.getName();
 
             // Optional: if you want to re-validate the JWT for extra security:
-            if (principal instanceof JwtPrincipal jwtPrincipal) {
+            if (revalidateJwt && principal instanceof JwtPrincipal jwtPrincipal) {
                 String jwt = jwtPrincipal.getJwt();
                 if (!jwtUtils.validateJwtToken(jwt)) {
                     logger.warn("Invalid JWT for session {}", sessionId);
