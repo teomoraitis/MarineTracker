@@ -38,7 +38,7 @@ The project was completed in three main phases:
 2. **2nd Deliverable – System Modeling & UML**  
    📁 [`2nd Deliverable - System Modeling & UML`](./2nd%20Deliverable%20-%20System%20Modeling%20&%20UML)  
    Includes a presentation of:  
-   - System modeling of the implementation
+   - System modeling and design of the implementation
    - UML and architecture diagrams 
 
 3. **Final Deliverable – Full-Stack Implementation**  
