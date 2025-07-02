@@ -110,6 +110,7 @@ Key features include:
 ...
 
 ### Home Page - Guest
+Mock
 
 ### Home Page - Registered User
 
