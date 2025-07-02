@@ -35,6 +35,10 @@ public class NotificationService {
      */
     @Transactional
     public List<Notification> generateZoneNotifications(Vessel vessel, String userId, ZoneOfInterest zone) {
+        // Tests can pass a different time argument, to test the cooldown timer.
+        return generateZoneNotifications(vessel, userId, zone, LocalDateTime.now());
+    }
+    public List<Notification> generateZoneNotifications(Vessel vessel, String userId, ZoneOfInterest zone, LocalDateTime timeNow) {
         List<Notification> newNotifications = new ArrayList<>();
 
         if (zone == null || vessel == null) {
@@ -53,7 +57,7 @@ public class NotificationService {
         // Zone Entry Detection
         if (currentlyInZone && !wasInZone) {
             Notification notification = createZoneEntryNotification(vessel, userId, position);
-            if (shouldCreateNotification(userId, vesselMmsi, Notification.NotificationType.ZONE_ENTRY)) {
+            if (shouldCreateNotification(userId, vesselMmsi, Notification.NotificationType.ZONE_ENTRY, timeNow)) {
                 newNotifications.add(notificationRepository.save(notification));
                 logger.info("Created zone entry notification for vessel {} and user {}", vesselMmsi, userId);
             }
@@ -62,7 +66,7 @@ public class NotificationService {
         // Zone Exit Detection
         if (!currentlyInZone && wasInZone) {
             Notification notification = createZoneExitNotification(vessel, userId, position);
-            if (shouldCreateNotification(userId, vesselMmsi, Notification.NotificationType.ZONE_EXIT)) {
+            if (shouldCreateNotification(userId, vesselMmsi, Notification.NotificationType.ZONE_EXIT, timeNow)) {
                 newNotifications.add(notificationRepository.save(notification));
                 logger.info("Created zone exit notification for vessel {} and user {}", vesselMmsi, userId);
             }
@@ -73,7 +77,7 @@ public class NotificationService {
                 position.getSpeed() != null && position.getSpeed() > zone.getMaxVesselSpeed()) {
 
             Notification notification = createSpeedViolationNotification(vessel, userId, position, zone.getMaxVesselSpeed());
-            if (shouldCreateNotification(userId, vesselMmsi, Notification.NotificationType.SPEED_VIOLATION)) {
+            if (shouldCreateNotification(userId, vesselMmsi, Notification.NotificationType.SPEED_VIOLATION, timeNow)) {
                 newNotifications.add(notificationRepository.save(notification));
                 logger.info("Created speed violation notification for vessel {} and user {}", vesselMmsi, userId);
             }
@@ -133,8 +137,8 @@ public class NotificationService {
         return notification;
     }
 
-    private boolean shouldCreateNotification(String userId, String vesselMmsi, Notification.NotificationType type) {
-        LocalDateTime cutoff = LocalDateTime.now().minusMinutes(NOTIFICATION_COOLDOWN_MINUTES);
+    private boolean shouldCreateNotification(String userId, String vesselMmsi, Notification.NotificationType type, LocalDateTime timeNow) {
+        LocalDateTime cutoff = timeNow.minusMinutes(NOTIFICATION_COOLDOWN_MINUTES);
         return !notificationRepository.existsSimilarRecentNotification(userId, vesselMmsi, type, cutoff);
     }
 
