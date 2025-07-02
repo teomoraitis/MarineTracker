@@ -408,12 +408,8 @@ public class WebSocketService {
     }
 
     public void addVesselToUserSessionFleet(String userId, String mmsi) {
-        System.out.println(activeSessions);
         for (UserSession session : activeSessions.values()) {
-            System.out.println(session.getUserId());
-            System.out.println(userId);
             if (session.getUserId().equals(userId)) {
-                System.out.println("found user session");
                 if (!session.getFleetMmsis().contains(mmsi)) {
                     session.getFleetMmsis().add(mmsi);
                     logger.info("Added vessel {} to fleet in session {}", mmsi, session.getSessionId());
