@@ -103,18 +103,13 @@ public class VesselPositionsConsumer {
             Optional<VesselPosition[]> history = vesselPositionRepository.find2LatestByVesselMmsi(mmsi);
             if (history.isPresent()) {
                 VesselPosition[] historyPositions = history.get();
-                if (historyPositions.length > 2) {
+                // This code was modified without Pierro's permission, when writing the tests.
+                // It could be wrong now, though the tests showed there were issues before that would prevent delete().
+                if (historyPositions.length >= 2) {
                     VesselPosition latest = historyPositions[0];
-                    VesselPosition prev = historyPositions[1];
-                    Long timeStampLongLatest = Long.valueOf(latest.getTimestamp().toString());
-                    Long timeStampLongPrev = Long.valueOf(prev.getTimestamp().toString());
-
-                    Instant timestampLatest = Instant.ofEpochSecond(timeStampLongLatest);
-                    Instant timestampPrev = Instant.ofEpochSecond(timeStampLongPrev);
-
                     // If the timestamp we just received and the timestampPrev differ by less than 10 minutes,
                     // overwrite timestampPrev with the new one.
-                    if (timestamp.isBefore(timestampPrev.plusSeconds(600))) {
+                    if (timestamp.isBefore(latest.getTimestamp().plusSeconds(600))) {
                         vesselPositionRepository.delete(latest);
                     }
                 }
