@@ -99,6 +99,41 @@ The project was completed in three main phases:
 
 ---
 
+## Getting Started
+
+To run the complete MarineTracker platform, follow these steps in order:
+
+### 1. Start Kafka/ZooKeeper and Python Producer
+First, run Kafka/ZooKeeper and the Python producer by following the instructions in:
+📁 [`Kafka/README.md`](./Kafka/README.md)
+
+### 2. Start Spring Boot Backend
+Then run the Spring Boot backend by following these steps in:
+📁 [`Backend-SpringBoot/README.md`](./Backend-SpringBoot/README.md)
+
+### 3. Start React Frontend
+Finally, run the React frontend by following these steps in:
+📁 [`Frontend-React/README.md`](./Frontend-React/README.md)
+
+### 🚀 Quick Start Script of steps 1.& 2.(Optional)
+**Note:** You can automatically run Kafka and Spring Boot by running this script:
+
+```bash
+./start_backend.sh
+```
+
+This script will:
+- Start Kafka/ZooKeeper in separate terminal tabs
+- Launch the Python producer
+- Start the PostgreSQL Docker container
+- Prepare the Spring Boot backend environment
+
+**Prerequisites:** This script may need ...
+
+After running the script, you'll still need to manually start the React frontend as described in step 3 above.
+
+---
+
 ## The Platform
 MarineTracker is a web-based platform for real-time vessel tracking using AIS (Automatic Identification System) data. 
 
