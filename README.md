@@ -169,7 +169,7 @@ The platform supports three distinct user roles:
 
 **Administrators:**
 - All registered user privileges
-- Ability to modify static vessel data (vessel types, classifications)
+- Ability to modify static vessel data (vessel name & type)
 - Ability to export static data of all vessels.
 
 ### Technical Architecture
