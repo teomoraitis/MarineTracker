@@ -159,12 +159,12 @@ The platform supports three distinct user roles:
 **Guests:**
 - View live vessel positions on the map
 - Basic vessel information access
+- Historical trajectory viewing
 
 **Registered Users:**
 - Full access to all vessel tracking features
 - Fleet management and custom vessel lists
 - Zone of Interest creation with alert notifications
-- Historical trajectory viewing
 - Advanced filtering and search capabilities
 
 **Administrators:**
