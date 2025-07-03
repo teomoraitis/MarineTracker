@@ -172,7 +172,7 @@ The platform supports three distinct user roles:
 - Ability to modify static vessel data (vessel name & type)
 - Ability to export static data of all vessels.
 
-### Technical Architecture
+### Technology Stack
 The platform follows a modern architecture:
 - **Backend:** RESTful API built with Spring Boot, supporting real-time WebSocket connections
 - **Frontend:** Single Page Application (SPA) developed in React with interactive mapping via Leaflet.js
