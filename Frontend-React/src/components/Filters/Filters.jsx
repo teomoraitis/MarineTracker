@@ -14,11 +14,14 @@ const Filters = ({}) => {
   const [showTypesDropdownFilters, setShowTypesDropdownFilters] = useState(false);
   const [showTypesDropdownZoi, setShowTypesDropdownZoi] = useState(false);
 
+  // For consistency with backend type naming:
   const shipTypes = [
-    "Anti-pollution", "Cargo", "Cargo-hazarda(major)", "Cargo-hazardb", "Cargo-hazardc(minor)", "Cargo-hazardd(recognizable)",
-    "Divevessel", "Dredger", "Fishing", "High-speedcraft", "Lawenforce", "Localvessel", "Militaryops", "Other", "Passenger",
-    "Pilotvessel", "Pleasurecraft", "Sailingvessel", "Sar", "Specialcraft", "Tanker", "Tanker-hazarda(major)", "Tanker-hazardb",
-    "Tanker-hazardc(minor)", "Tanker-hazardd(recognizable)", "Tug", "Unknown", "Wingingrnd"
+    "anti-pollution", "cargo", "cargo-hazarda(major)", "cargo-hazardb",
+    "cargo-hazardc(minor)", "cargo-hazardd(recognizable)", "divevessel", "dredger",
+    "fishing", "high-speedcraft", "lawenforce", "localvessel", "militaryops",
+    "other", "passenger", "pilotvessel", "pleasurecraft", "sailingvessel",
+    "sar", "specialcraft", "tanker", "tanker-hazarda(major)", "tanker-hazardb",
+    "tanker-hazardc(minor)", "tanker-hazardd(recognizable)", "tug", "unknown", "wingingrnd"
   ];
 
   const toggleType = (type, list, setList) => {
