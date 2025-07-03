@@ -141,7 +141,8 @@ After running the script, you'll still need to manually start the React frontend
 ---
 
 ## The Platform
-MarineTracker is a web-based maritime surveillance platform designed for real-time vessel monitoring using AIS (Automatic Identification System) data streams, resembling commercial maritime tracking services like [marinetraffic.com](https://www.marinetraffic.com/).
+MarineTracker is a web-based maritime surveillance platform designed for real-time vessel monitoring using AIS (Automatic Identification System) data streams, 
+resembling a simplified version of commercial maritime tracking services like [marinetraffic.com](https://www.marinetraffic.com/).
 The platform simulates real-world maritime traffic by replaying a 6-month historical AIS dataset at real-time speed through Apache Kafka.
 
 ### Core Features
