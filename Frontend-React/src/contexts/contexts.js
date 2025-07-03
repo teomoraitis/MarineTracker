@@ -54,3 +54,10 @@ export const SelectedShipContext = createContext({
   setSelectedShipInfo: () => {},
   setPath: () => {},
 });
+
+export const NotificationContext = createContext({
+  notifications: [],
+  unreadNotificationsCount: 0,
+  setNotifications: () => {},
+  setUnreadNotificationsCount: () => {},
+});

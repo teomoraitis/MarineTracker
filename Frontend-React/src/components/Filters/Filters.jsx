@@ -133,7 +133,15 @@ const Filters = ({}) => {
                 }}
                 disabled={freeDrawOn && (zoi.area.length == 0 || zoi.restrictions.speed == 0 || zoi.restrictions.types.length == 0)}
               >
-                <h6 className='text-sm font-light text-left'>{freeDrawOn ? "✅ Save" : "🗺️ Edit"}</h6>
+                <h6 className='text-sm font-light text-left'>
+                  {
+                    freeDrawOn ? (
+                      zoi.area.length == 0 || zoi.restrictions.speed == 0 || zoi.restrictions.types.length == 0 ? 
+                      "Max speed, area and at least one vessel type are required to save the Zone of Interest!" : 
+                      "✅ Save"
+                    ) : "🗺️ Edit"
+                  }
+                </h6>
               </button>
             )
           }
@@ -144,7 +152,7 @@ const Filters = ({}) => {
             <>
               <h6 className='text-sm font-light italic'>Restrictions:</h6>
               <div className='flex flex-row gap-5 items-center'>
-                <h6 className='text-sm font-light'>🚤 Speed:
+                <h6 className='text-sm font-light'>🚤 Speed*:
                 <HoverInfo tooltip="Max permitted speed in knots">🛈</HoverInfo>
                 </h6>
                 <input
@@ -168,7 +176,7 @@ const Filters = ({}) => {
                   onClick={() => setShowTypesDropdownZoi(!showTypesDropdownZoi)}
                 >
                   <div className='flex flex-row items-center'>
-                    <h6 className='text-sm font-light text-left'>📋 Type:</h6>
+                    <h6 className='text-sm font-light text-left'>📋 Type*:</h6>
                     <HoverInfo tooltip="Types to be warned about">🛈</HoverInfo>
                   </div>
                   <span className='text-xs text-gray-500'>{zoi.show ? '▲' : '▼'}</span>

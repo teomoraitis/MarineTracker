@@ -1,11 +1,12 @@
 import React, { useContext, useState } from 'react';
 import ShipShipGoLogo from '../../assets/images/shipshipgo.png';
 import NavbarItem from './NavbarItem.jsx';
-import { AuthContext } from '../../contexts/contexts.js';
+import { AuthContext, NotificationContext } from '../../contexts/contexts.js';
 import { signup } from '../../api/userApi.js';
 import AdminExportButton from '../Admin/AdminExportButton.jsx';
 import NavyBell from '../../assets/images/navybell.png';
 import BlueCaptain from '../../assets/images/shipcaptain.png';
+import { dismissAllNotifications, getNotifications, getUnreadNotificationsCount } from '../../api/notificationsApi.js';
 
 const AuthModal = ({ title, onClose, onSubmit, setShowTermsModal, setShowForgotPasswordModal   }) => {
   const [username, setUsername] = useState('');
@@ -99,20 +100,44 @@ const Navbar = ({}) => {
   const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
   const [showUserInfo, setShowUserInfo] = useState(false);
 
-  const [notifications, setNotifications] = useState([
-    { id: 1, message: 'ZoI breach detection' },
-    { id: 2, message: 'ZoI max speed breach' },
-    { id: 3, message: 'Kraken spotted' },
-  ]);
+  // const [notifications, setNotifications] = useState([
+  //   { id: 1, message: 'ZoI breach detection' },
+  //   { id: 2, message: 'ZoI max speed breach' },
+  //   { id: 3, message: 'Kraken spotted' },
+  // ]);
+  const {
+    notifications,
+    unreadNotificationsCount,
+    setNotifications,
+    setUnreadNotificationsCount
+  } = useContext(NotificationContext);
 
   const [showNotifications, setShowNotifications] = useState(false);
 
-  const dismissNotification = (id) => {
-    setNotifications(prev => prev.filter(n => n.id !== id));
+  const reloadNotifications = async () => {
+    const notifications = await getNotifications();
+    setNotifications(notifications);
+    const unreadNotificationsCount = await getUnreadNotificationsCount();
+    setUnreadNotificationsCount(unreadNotificationsCount);
   };
 
-  const dismissAll = () => {
-    setNotifications([]);
+  const dismissNotification = async (id) => {
+    try {
+      await dismissNotification(id);
+      await reloadNotifications();
+    } catch (e) {
+      console.error("Could not dismiss notification", e);
+    }
+  };
+
+  const dismissAll = async () => {
+    try {
+      await dismissAllNotifications();
+      await reloadNotifications();
+    } catch (e) {
+      console.error("Could not dismiss notifications", e);
+    }
+    setShowNotifications(false);
   };
 
   return (
@@ -123,8 +148,8 @@ const Navbar = ({}) => {
           alt="logo"
           className="cursor-pointer"
           onClick={() => {
-          window.location.reload();
-        }}
+            window.location.reload();
+          }}
         />
         <NavbarItem
           label="Help"
@@ -145,9 +170,9 @@ const Navbar = ({}) => {
                 alt="Notifications"
                 className="w-6 h-6"
               />
-              {notifications.length > 0 && (
+              {unreadNotificationsCount > 0 && (
                 <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-semibold px-1.5 py-0.5 rounded-full">
-                  {notifications.length}
+                  {unreadNotificationsCount}
                 </span>
               )}
             </div>
