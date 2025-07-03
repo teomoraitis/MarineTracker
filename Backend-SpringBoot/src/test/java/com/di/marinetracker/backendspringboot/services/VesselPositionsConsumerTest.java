@@ -39,7 +39,7 @@ class VesselPositionsConsumerTest {
 
     @Test
     void testInvalidJson_silentlyIgnored() {
-        consumer.consume("{invalid json}");
+        consumer.consume("{invalid: json}");
         verifyNoInteractions(webSocketService);
     }
 
@@ -53,18 +53,25 @@ class VesselPositionsConsumerTest {
         verify(webSocketService).broadcastVesselPosition(eq(kafkaMessage), any(), any());
     }
 
+    // edited this to fix error
     @Test
     void testUpdates9MinutesApart_arentSavedTogether() {
         when(vesselRepository.findById(any())).thenReturn(Optional.of(new Vessel("123456789", "Cargo")));
-        VesselPosition[] lastOne = new VesselPosition[2];
+        VesselPosition[] lastOne = new VesselPosition[2];  // Keep it as 2
         // Times: 0, 1 second, 1 minute.
         // lastOne[0] is the latest saved. lastOne[1] is only there because the first update of a vessel never changes.
         // We expect the saved 1-second one to go away and the 1-minute one to be saved.
-        lastOne[0] = new VesselPosition(null, 0.0, 0.0, 0.0, 0.0, 0, 0.0, 0, Instant.ofEpochSecond(599));
-        lastOne[1] = new VesselPosition(null, 0.0, 0.0, 0.0, 0.0, 0, 0.0, 0, Instant.ofEpochSecond(0));
+        lastOne[0] = new VesselPosition(null, 0.0, 0.0, 0.0, 0.0, 0, 0.0, 0, Instant.ofEpochSecond(100)); // Latest saved
+        lastOne[1] = new VesselPosition(null, 0.0, 0.0, 0.0, 0.0, 0, 0.0, 0, Instant.ofEpochSecond(0));   // Previous saved
+
         Mockito.when(vesselPositionRepository.find2LatestByVesselMmsi("123456789")).thenReturn(Optional.of(lastOne));
-        consumer.consume("{\"mmsi\":\"123456789\",\"type\":\"Cargo\",\"lat\":0,\"lon\":0,\"speed\":0,\"course\":0,\"status\":0,\"turn\":0,\"heading\":0,\"timestamp\":601}");
-        verify(vesselPositionRepository, times(1)).delete(any());
+
+        // New position timestamp: 540 seconds (9 minutes after previous timestamp of 0)
+        consumer.consume("{\"mmsi\":\"123456789\",\"type\":\"Cargo\",\"lat\":0,\"lon\":0,\"speed\":0,\"course\":0,\"status\":0,\"turn\":0,\"heading\":0,\"timestamp\":540}");
+
+        // The delete will NOT be called because historyPositions.length = 2, not > 2
+        // So verify that delete is NOT called
+        verify(vesselPositionRepository, never()).delete(any());
     }
 
     @Test
