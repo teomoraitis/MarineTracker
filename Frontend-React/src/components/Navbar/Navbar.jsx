@@ -4,7 +4,7 @@ import NavbarItem from './NavbarItem.jsx';
 import { AuthContext } from '../../contexts/contexts.js';
 import { signup } from '../../api/userApi.js';
 import AdminExportButton from '../Admin/AdminExportButton.jsx';
-
+import NavyBell from '../../assets/images/navybell.png';
 
 const AuthModal = ({ title, onClose, onSubmit, setShowTermsModal, setShowForgotPasswordModal   }) => {
   const [username, setUsername] = useState('');
@@ -96,6 +96,23 @@ const Navbar = ({}) => {
   const [showHelpModal, setShowHelpModal] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
+
+  const [notifications, setNotifications] = useState([
+    { id: 1, message: 'ZoI breach detection' },
+    { id: 2, message: 'ZoI max speed breach' },
+    { id: 3, message: 'Kraken spotted' },
+  ]);
+
+  const [showNotifications, setShowNotifications] = useState(false);
+
+  const dismissNotification = (id) => {
+    setNotifications(prev => prev.filter(n => n.id !== id));
+  };
+
+  const dismissAll = () => {
+    setNotifications([]);
+  };
+
   return (
     <div className='h-[10vh] bg-[#E8E8E8] flex flex-row justify-between content-center px-3'>
       <div className='flex flex-row content-center h-2/3 my-auto'>
@@ -115,18 +132,28 @@ const Navbar = ({}) => {
       <div className='flex flex-row content-center h-2/3 my-auto'>
       {authContext.user ? (
         <>
+          <div className="flex flex-row items-center justify-between gap-4">
           {authContext.user.username === 'admin' && (
-            // <NavbarItem label="Admin" onClick={() => alert("Go to admin panel")} />
             <AdminExportButton />
           )}
-          <NavbarItem
-            label="Notifications"
-            onClick={() => alert("Place popup in here I think!")}
+          <div className="flex flex-row items-center justify-between gap-4"></div>
+          <div className="relative cursor-pointer" onClick={() => setShowNotifications(prev => !prev)}>
+          <img
+            src={NavyBell}
+            alt="Notifications"
+            className="w-6 h-6"
           />
+          {notifications.length > 0 && (
+            <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-semibold px-1.5 py-0.5 rounded-full">
+              {notifications.length}
+            </span>
+          )}
+        </div>
           <NavbarItem
             label="Logout"
             onClick={() => authContext.handleLogout()}
           />
+        </div>
         </>
       ) : (
         <>
@@ -139,6 +166,36 @@ const Navbar = ({}) => {
             onClick={() => setShowLoginModal(true)}
           />
         </>
+      )}
+      {showNotifications && (
+        <div className="absolute top-[10vh] right-2 w-80 bg-white shadow-lg rounded-lg border z-50">
+          <div className="p-4 border-b flex justify-between items-center">
+            <span className="font-semibold text-gray-800">Notifications</span>
+            <button
+              onClick={dismissAll}
+              className="text-xs text-blue-600 hover:underline"
+            >
+              Dismiss All
+            </button>
+          </div>
+          <ul className="max-h-60 overflow-y-auto">
+            {notifications.length === 0 ? (
+              <li className="p-4 text-sm text-gray-500">No notifications</li>
+            ) : (
+              notifications.map(n => (
+                <li key={n.id} className="px-4 py-3 flex justify-between items-center hover:bg-gray-50">
+                  <span className="text-sm text-gray-800">{n.message}</span>
+                  <button
+                    onClick={() => dismissNotification(n.id)}
+                    className="text-xs text-red-500 hover:underline ml-2"
+                  >
+                    Dismiss
+                  </button>
+                </li>
+              ))
+            )}
+          </ul>
+        </div>
       )}
       {showLoginModal && (
       <AuthModal
