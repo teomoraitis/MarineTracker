@@ -4,6 +4,16 @@ import Toggle from '../Toggle/Toggle.jsx';
 import { addToFleet, removeFromFleet } from '../../api/fleetApi.js';
 import { getVessel, updateVesselData } from '../../api/vesselsApi.js';
 
+// Define shipTypes array
+const shipTypes = [
+  "anti-pollution", "cargo", "cargo-hazarda(major)", "cargo-hazardb",
+  "cargo-hazardc(minor)", "cargo-hazardd(recognizable)", "divevessel", "dredger",
+  "fishing", "high-speedcraft", "lawenforce", "localvessel", "militaryops",
+  "other", "passenger", "pilotvessel", "pleasurecraft", "sailingvessel",
+  "sar", "specialcraft", "tanker", "tanker-hazarda(major)", "tanker-hazardb",
+  "tanker-hazardc(minor)", "tanker-hazardd(recognizable)", "tug", "unknown", "wingingrnd"
+];
+
 const ShipInfoPanel = () => {
   const {
     ship,
@@ -108,12 +118,17 @@ const ShipInfoPanel = () => {
             </div>
             <div className="mb-2">
               <strong>Type:</strong>
-              <input
-                  type="text"
+              <select
                   value={editType}
                   onChange={(e) => setEditType(e.target.value)}
                   className="w-full border border-gray-300 rounded px-2 py-1 mt-1"
-              />
+              >
+                {shipTypes.map((type, index) => (
+                    <option key={index} value={type}>
+                      {type}
+                    </option>
+                ))}
+              </select>
             </div>
           </>
       ) : (
