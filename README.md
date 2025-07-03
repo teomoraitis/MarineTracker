@@ -161,16 +161,22 @@ The platform supports three distinct user roles:
 - Basic vessel information access
 - Historical trajectory viewing
 
+![Guest Home Page](Frontend-React/src/assets/screenshots//guest.png)
+
 **Registered Users:**
 - Full access to all vessel tracking features
 - Fleet management and custom vessel lists
 - Zone of Interest creation with alert notifications
 - Advanced filtering and search capabilities
 
+![User Home Page](Frontend-React/src/assets/screenshots//user.png)
+
 **Administrators:**
 - All registered user privileges
 - Ability to modify static vessel data (vessel name & type)
 - Ability to export static data of all vessels.
+
+![Admin Home Page](Frontend-React/src/assets/screenshots//admin.png)
 
 ### Technology Stack
 The platform follows a modern architecture:
