@@ -21,7 +21,7 @@ const MapMarker = ({ label, isInZoi=false }) => {
 
   const speed = liveShip.speed ?? 0;
   const isStationary = speed < 0.3;
-  const image = isStationary ? (isSelected ? ShipDotRed : ShipDot) : (isSelected || isInZoi ? ShipArrowRed : ShipArrow);
+  const image = isStationary ? (isSelected || isInZoi ? ShipDotRed : ShipDot) : (isSelected || isInZoi ? ShipArrowRed : ShipArrow);
 
   const course = liveShip.course ?? 0;
   const heading = liveShip.heading ?? 511;
