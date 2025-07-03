@@ -35,7 +35,6 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
                         .findFirst()
                         .ifPresent(jwtCookie -> {
                             String jwt = jwtCookie.getValue();
-                            System.out.println(jwt);
                             String userName = jwtUtils.getUserNameFromJwtToken(jwt);
                             // Store in attributes as fallback
                             attributes.put("jwtToken", jwt);

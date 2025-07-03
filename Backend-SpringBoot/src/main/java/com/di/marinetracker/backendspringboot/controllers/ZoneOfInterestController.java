@@ -7,6 +7,7 @@ import com.di.marinetracker.backendspringboot.repositories.UserRepository;
 import com.di.marinetracker.backendspringboot.repositories.ZoneOfInterestRepository;
 import com.di.marinetracker.backendspringboot.services.UserDetailsImpl;
 
+import com.di.marinetracker.backendspringboot.services.WebSocketService;
 import org.locationtech.jts.io.WKTReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,10 @@ public class ZoneOfInterestController {
     // Injects the UserRepository for user data access
     @Autowired
     UserRepository userRepository;
+
+    // WebSocketService here so we can update the UserSession with changes to zone of interest
+    @Autowired
+    WebSocketService webSocketService;
 
     // POST endpoint to create or update a user's Zone of Interest
     @PostMapping
@@ -60,6 +65,8 @@ public class ZoneOfInterestController {
             // Save/Update user's reference to the zone
             user.setZoneOfInterest(zone);
             userRepository.save(user);
+
+            webSocketService.setUserSessionZoneOfInterest(user.getUserName(), zone);
 
             return ResponseEntity.ok("Zone of Interest saved successfully");
         } catch (Exception e) {
