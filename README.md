@@ -153,7 +153,7 @@ The platform simulates real-world maritime traffic by replaying a 6-month histor
 - **Zone of Interest (ZoI) functionality** where users can define geographical regions with custom movement restrictions and receive alerts when violations occur
 - **Administrative controls** for managing static vessel data
 
-### User Roles & Permissions
+### User Roles & Capabilities
 The platform supports three distinct user roles:
 
 **Guests:**
