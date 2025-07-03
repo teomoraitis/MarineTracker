@@ -5,13 +5,14 @@ import { AuthContext } from '../../contexts/contexts.js';
 import { signup } from '../../api/userApi.js';
 import AdminExportButton from '../Admin/AdminExportButton.jsx';
 import NavyBell from '../../assets/images/navybell.png';
+import BlueCaptain from '../../assets/images/shipcaptain.png';
 
 const AuthModal = ({ title, onClose, onSubmit, setShowTermsModal, setShowForgotPasswordModal   }) => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [acceptTerms, setAcceptTerms] = useState(false);
-
+  
   const isSignUp = title.toLowerCase().includes('sign');
 
   return (
@@ -96,6 +97,7 @@ const Navbar = ({}) => {
   const [showHelpModal, setShowHelpModal] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
+  const [showUserInfo, setShowUserInfo] = useState(false);
 
   const [notifications, setNotifications] = useState([
     { id: 1, message: 'ZoI breach detection' },
@@ -133,27 +135,35 @@ const Navbar = ({}) => {
       {authContext.user ? (
         <>
           <div className="flex flex-row items-center justify-between gap-4">
-          {authContext.user.username === 'admin' && (
-            <AdminExportButton />
-          )}
-          <div className="flex flex-row items-center justify-between gap-4"></div>
-          <div className="relative cursor-pointer" onClick={() => setShowNotifications(prev => !prev)}>
-          <img
-            src={NavyBell}
-            alt="Notifications"
-            className="w-6 h-6"
-          />
-          {notifications.length > 0 && (
-            <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-semibold px-1.5 py-0.5 rounded-full">
-              {notifications.length}
-            </span>
-          )}
-        </div>
-          <NavbarItem
-            label="Logout"
-            onClick={() => authContext.handleLogout()}
-          />
-        </div>
+            {authContext.user.username === 'admin' && (
+              <AdminExportButton />
+            )}
+            <div className="flex flex-row items-center justify-between gap-4"></div>
+            <div className="relative cursor-pointer" onClick={() => setShowNotifications(prev => !prev)}>
+              <img
+                src={NavyBell}
+                alt="Notifications"
+                className="w-6 h-6"
+              />
+              {notifications.length > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-semibold px-1.5 py-0.5 rounded-full">
+                  {notifications.length}
+                </span>
+              )}
+            </div>
+            <div className="flex flex-row items-center justify-between gap-4"></div>
+            <div className="relative cursor-pointer" onClick={() => setShowUserInfo(prev => !prev)}>
+              <img
+                src={BlueCaptain}
+                alt="User Info"
+                className="w-6 h-6"
+              />
+            </div>
+            <NavbarItem
+              label="Logout"
+              onClick={() => authContext.handleLogout()}
+            />
+          </div>
         </>
       ) : (
         <>
@@ -195,6 +205,24 @@ const Navbar = ({}) => {
               ))
             )}
           </ul>
+        </div>
+      )}
+      {showUserInfo && (
+        <div className="absolute top-[10vh] right-20 w-72 bg-white shadow-lg rounded-lg border z-50">
+          <div className="p-4 border-b flex justify-between items-center">
+            <span className="font-semibold text-gray-800">User Info</span>
+            <button
+              onClick={() => setShowUserInfo(false)}
+              className="text-xs text-blue-600 hover:underline"
+            >
+              Close
+            </button>
+          </div>
+          <div className="p-4 text-sm text-gray-700">
+            <p><strong>Username:</strong> {authContext.user.username}</p>
+            <p><strong>Email:</strong> {authContext.user.email}</p>
+            <p><strong>Role:</strong> {(authContext.user.username === 'admin' ? 'admin' : 'user')}</p>
+          </div>
         </div>
       )}
       {showLoginModal && (
