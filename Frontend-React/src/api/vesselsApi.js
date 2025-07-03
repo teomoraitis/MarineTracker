@@ -11,7 +11,7 @@ export const listVessels = (config) => {
   return api.get('vessels', mergedConfig).then(res => res.data);
 };
 
-export const getVesselsStaticData = (config) => {
+export const getVesselsStaticData = () => {
   return api.get('vessels/static-info').then(res => res.data);
 };
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Map from './components/Map/Map.jsx';
 import Navbar from './components/Navbar/Navbar.jsx';
-import { MapContext, FreeDrawContext, AuthContext, SelectedShipContext, FilterContext, ZoiContext } from './contexts/contexts.js';
+import { MapContext, FreeDrawContext, AuthContext, SelectedShipContext, FilterContext, ZoiContext, NotificationContext } from './contexts/contexts.js';
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 import './App.css';
@@ -11,6 +11,7 @@ import Footer from './components/Footer/Footer.jsx';
 import FreedrawTooltip from './components/FreedrawTooltip/FreedrawTooltip.jsx';
 import { getUser, login, logout } from './api/userApi.js';
 import { getVesselPath } from './api/vesselsApi.js';
+import { getNotifications, getUnreadNotificationsCount } from './api/notificationsApi.js';
 
 
 const App = () => {
@@ -35,6 +36,8 @@ const App = () => {
       types: [],
     },
   });
+  const [notifications, setNotifications] = useState([]);
+  const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
 
   const stompClientRef = useRef(null);
   const subscriptionRef = useRef(null);
@@ -66,11 +69,22 @@ const App = () => {
     const user = await getUser();
     if (user != null) {
       setUser(user);
+      return true;
+    }
+    return false;
+  };
+
+  const setup = async () => {
+    if (await checkIfUserIsLoggedIn()) {
+      const notifications = await getNotifications();
+      setNotifications(notifications);
+      const unreadNotificationsCount = await getUnreadNotificationsCount();
+      setUnreadNotificationsCount(unreadNotificationsCount);
     }
   };
 
   useEffect(() => {
-    checkIfUserIsLoggedIn();
+    setup();
   }, []);
 
   useEffect(() => {
@@ -104,6 +118,12 @@ const App = () => {
                 ...prevShips,
                 ...updateObject,
               }));
+            }
+
+            if (update.notifications && Array.isArray(update.notifications)) {
+              console.log(update.notifications);
+              const tempNotifications = notifications.concat(update.notifications);
+              setNotifications(tempNotifications);
             }
           } catch (error) {
             console.error("Error parsing WebSocket message:", error);
@@ -207,32 +227,41 @@ const App = () => {
               setHideShipInfo,
             }}
           >
-            <FilterContext.Provider
+            <NotificationContext.Provider
               value={{
-                filters: filters,
-                onFilterChange: setFilters
+                notifications,
+                unreadNotificationsCount,
+                setNotifications,
+                setUnreadNotificationsCount
               }}
             >
-              <ZoiContext.Provider
+              <FilterContext.Provider
                 value={{
-                  zoi: zoi,
-                  setZoi: setZoi,
+                  filters: filters,
+                  onFilterChange: setFilters
                 }}
               >
-                <div className='h-full'>
-                  <Navbar />
-                  <div className='h-[85vh] relative w-full flex flex-row'>
-                    { user && <Filters /> }
-                    <div className='relative w-full flex flex-row'>
-                      <Map ships={ships}/>
-                      <ShipInfoPanel />
-                      <FreedrawTooltip />
+                <ZoiContext.Provider
+                  value={{
+                    zoi: zoi,
+                    setZoi: setZoi,
+                  }}
+                >
+                  <div className='h-full'>
+                    <Navbar />
+                    <div className='h-[85vh] relative w-full flex flex-row'>
+                      { user && <Filters /> }
+                      <div className='relative w-full flex flex-row'>
+                        <Map ships={ships}/>
+                        <ShipInfoPanel />
+                        <FreedrawTooltip />
+                      </div>
                     </div>
+                    <Footer />
                   </div>
-                  <Footer />
-                </div>
-              </ZoiContext.Provider>
-            </FilterContext.Provider>
+                </ZoiContext.Provider>
+              </FilterContext.Provider>
+            </NotificationContext.Provider>
           </SelectedShipContext.Provider>
         </FreeDrawContext.Provider>
       </MapContext.Provider>
