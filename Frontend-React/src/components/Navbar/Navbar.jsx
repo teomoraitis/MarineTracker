@@ -6,7 +6,7 @@ import { signup } from '../../api/userApi.js';
 import AdminExportButton from '../Admin/AdminExportButton.jsx';
 import NavyBell from '../../assets/images/navybell.png';
 import BlueCaptain from '../../assets/images/shipcaptain.png';
-import { dismissAllNotifications, getNotifications, getUnreadNotificationsCount } from '../../api/notificationsApi.js';
+import { dismissAllNotifications, dismissNotification, getNotifications, getUnreadNotificationsCount } from '../../api/notificationsApi.js';
 
 const AuthModal = ({ title, onClose, onSubmit, setShowTermsModal, setShowForgotPasswordModal   }) => {
   const [username, setUsername] = useState('');
@@ -114,6 +114,13 @@ const Navbar = ({}) => {
 
   const [showNotifications, setShowNotifications] = useState(false);
 
+  const handleShowNotifications = async () => {
+    setShowNotifications(prev => !prev);
+    if (!showNotifications) {
+      await reloadNotifications();
+    }
+  }
+
   const reloadNotifications = async () => {
     const notifications = await getNotifications();
     setNotifications(notifications);
@@ -121,7 +128,7 @@ const Navbar = ({}) => {
     setUnreadNotificationsCount(unreadNotificationsCount);
   };
 
-  const dismissNotification = async (id) => {
+  const handleDismissNotification = async (id) => {
     try {
       await dismissNotification(id);
       await reloadNotifications();
@@ -139,6 +146,8 @@ const Navbar = ({}) => {
     }
     setShowNotifications(false);
   };
+  console.log(notifications);
+  console.log(unreadNotificationsCount);
 
   return (
     <div className='h-[10vh] bg-[#E8E8E8] flex flex-row justify-between content-center px-3'>
@@ -164,7 +173,7 @@ const Navbar = ({}) => {
               <AdminExportButton />
             )}
             <div className="flex flex-row items-center justify-between gap-4"></div>
-            <div className="relative cursor-pointer" onClick={() => setShowNotifications(prev => !prev)}>
+            <div className="relative cursor-pointer" onClick={handleShowNotifications}>
               <img
                 src={NavyBell}
                 alt="Notifications"
@@ -218,10 +227,10 @@ const Navbar = ({}) => {
               <li className="p-4 text-sm text-gray-500">No notifications</li>
             ) : (
               notifications.map(n => (
-                <li key={n.id} className="px-4 py-3 flex justify-between items-center hover:bg-gray-50">
+                <li key={n.id} className={`px-4 py-3 flex justify-between items-center hover:bg-gray-50 ${n.read ? 'bg-gray-100': ''}`}>
                   <span className="text-sm text-gray-800">{n.message}</span>
                   <button
-                    onClick={() => dismissNotification(n.id)}
+                    onClick={() => handleDismissNotification(n.id)}
                     className="text-xs text-red-500 hover:underline ml-2"
                   >
                     Dismiss

@@ -158,7 +158,7 @@ public class WebSocketService {
                 return notificationService.generateZoneNotifications(
                         vessel,
                         userSession.getUserId(),
-                        zoneRepository.findByUserIdWithVesselTypes(userSession.getUserId())
+                        userSession.zoneOfInterest
                 );
             }
             return Collections.emptyList();
@@ -178,10 +178,10 @@ public class WebSocketService {
                 return;
             }
 
-            String userId = principal.getName();
+            String userName = principal.getName();
 
             // Remove any existing session(s) for this user
-            activeSessions.entrySet().removeIf(entry -> entry.getValue().getUserId().equals(userId));
+            activeSessions.entrySet().removeIf(entry -> entry.getValue().getUserId().equals(userName));
 
             // Optional: if you want to re-validate the JWT for extra security:
             if (principal instanceof JwtPrincipal jwtPrincipal) {
@@ -192,24 +192,24 @@ public class WebSocketService {
                 }
             }
 
-            Optional<User> userOpt = userRepository.findByUserNameWithFleet(userId);
+            Optional<User> userOpt = userRepository.findByUserNameWithFleet(userName);
 
             if (userOpt.isPresent()) {
                 User user = userOpt.get();
                 UserSession session = new UserSession(
-                        userId,
+                        userName,
                         sessionId,
                         new ArrayList<>(user.getFleet().stream().map(Vessel::getMmsi).toList()),
                         new ArrayList<>(),
-                        zoneRepository.findByUserIdWithVesselTypes(userId)
+                        zoneRepository.findByUserIdWithVesselTypes(user.getId())
                 );
 
                 activeSessions.put(sessionId, session);
-                logger.info("Registered user session: {} for user: {}", sessionId, userId);
+                logger.info("Registered user session: {} for user: {}", sessionId, userName);
 
                 sendInitialDataToUser(session);
             } else {
-                logger.warn("User not found for session {} and userId {}", sessionId, userId);
+                logger.warn("User not found for session {} and userId {}", sessionId, userName);
             }
 
         } catch (Exception e) {
@@ -376,7 +376,7 @@ public class WebSocketService {
         private final String sessionId; // WebSocket session ID
         private List<String> fleetMmsis; // List of vessel MMSIs in user's fleet
         private ArrayList<String> vesselTypeFilters; // Vessel type filters
-        private final ZoneOfInterest zoneOfInterest; // User's zone of interest
+        private ZoneOfInterest zoneOfInterest; // User's zone of interest
         private boolean showOnlyFleetVessels = false;
 
         // Constructor
@@ -401,6 +401,9 @@ public class WebSocketService {
             this.vesselTypeFilters = vesselTypeFilters;
         }
         public ZoneOfInterest getZoneOfInterest() { return zoneOfInterest; }
+        public void setZoneOfInterest(ZoneOfInterest zoneOfInterest) {
+            this.zoneOfInterest = zoneOfInterest;
+        }
         public boolean isShowOnlyFleetVessels() { return showOnlyFleetVessels; }
         public void setShowOnlyFleetVessels(boolean showOnlyFleetVessels) {
             this.showOnlyFleetVessels = showOnlyFleetVessels;
@@ -414,6 +417,15 @@ public class WebSocketService {
                     session.getFleetMmsis().add(mmsi);
                     logger.info("Added vessel {} to fleet in session {}", mmsi, session.getSessionId());
                 }
+            }
+        }
+    }
+
+    public void setUserSessionZoneOfInterest(String userId, ZoneOfInterest zoneOfInterest) {
+        for (UserSession session : activeSessions.values()) {
+            if (session.getUserId().equals(userId)) {
+                session.setZoneOfInterest(zoneOfInterest);
+                logger.info("Updated zone of interest {} in session {}", zoneOfInterest, session.getSessionId());
             }
         }
     }
