@@ -42,6 +42,13 @@ const App = () => {
   const stompClientRef = useRef(null);
   const subscriptionRef = useRef(null);
   const pingIntervalRef = useRef(null);
+  
+  const reloadNotifications = async () => {
+    const notifications = await getNotifications();
+    setNotifications(notifications);
+    const unreadNotificationsCount = await getUnreadNotificationsCount();
+    setUnreadNotificationsCount(unreadNotificationsCount);
+  };
 
   const handleLogin = async (username = '', password = '') => {
     if (username.trim() == '' || password.trim() == '') return;
@@ -49,6 +56,7 @@ const App = () => {
     try {
       const user = await login({ username, password });
       setUser(user);
+      await reloadNotifications();
     } catch {
       console.error("Error during login");
     }
@@ -76,10 +84,7 @@ const App = () => {
 
   const setup = async () => {
     if (await checkIfUserIsLoggedIn()) {
-      const notifications = await getNotifications();
-      setNotifications(notifications);
-      const unreadNotificationsCount = await getUnreadNotificationsCount();
-      setUnreadNotificationsCount(unreadNotificationsCount);
+      await reloadNotifications();
     }
   };
 
@@ -120,10 +125,8 @@ const App = () => {
               }));
             }
 
-            if (update.notifications && Array.isArray(update.notifications)) {
-              console.log(update.notifications);
-              const tempNotifications = notifications.concat(update.notifications);
-              setNotifications(tempNotifications);
+            if (update.notifications && Array.isArray(update.notifications) && update.notifications.length > 0) {
+              reloadNotifications();
             }
           } catch (error) {
             console.error("Error parsing WebSocket message:", error);

@@ -16,8 +16,10 @@ export const getNotifications = async () => {
   return notifications;
 };
 
-export const getUnreadNotificationsCount = () => {
-  return api.get('notifications/count/unread').then(res => res.data);
+export const getUnreadNotificationsCount = async () => {
+  const res = await api.get('notifications/count/unread');
+  const count = res.data.unreadCount;
+  return count;
 }
 
 export const dismissNotification = (notificationId) => {

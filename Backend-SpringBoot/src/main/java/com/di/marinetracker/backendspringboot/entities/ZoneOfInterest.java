@@ -2,6 +2,7 @@ package com.di.marinetracker.backendspringboot.entities;
 
 import jakarta.persistence.*;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 
@@ -101,7 +102,19 @@ public class ZoneOfInterest {
         if (vesselPosition == null) return false;
 
         Point location = vesselPosition.getLocation();
-        return location != null && polygon.contains(location);
+        if (location == null) return false;
+
+        // Assuming location provides lat/lon as doubles
+        double x = location.getX();
+        double y = location.getY();
+
+        // Create a JTS Point
+        GeometryFactory gf = new GeometryFactory();
+        Point point = gf.createPoint(new Coordinate(x, y));
+        point.setSRID(4326);
+
+        // polygonJts is a JTS Polygon initialized elsewhere
+        return polygon.contains(point);
     }
 
     // Method to check if a vessel matches the conditions of this zone of interest
