@@ -139,7 +139,7 @@ class WebSocketServiceTest {
         User user = new User(name, "a@a", "password", Set.of());
         Optional<User> optionalUser = Optional.of(user);
         when(userRepository.findByUserNameWithFleet(name)).thenReturn(optionalUser);
-        webSocketService.registerUserSession("session-of-" + name, principal, false);
+        webSocketService.registerUserSession("session-of-" + name, principal);
     }
 
     private void broadcastSomething() {
