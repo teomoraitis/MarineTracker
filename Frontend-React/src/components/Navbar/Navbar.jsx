@@ -6,7 +6,7 @@ import { signup } from '../../api/userApi.js';
 import AdminExportButton from '../Admin/AdminExportButton.jsx';
 import NavyBell from '../../assets/images/navybell.png';
 import BlueCaptain from '../../assets/images/shipcaptain.png';
-import { dismissAllNotifications, getUnreadNotificationsCount } from '../../api/notificationsApi.js';
+import { dismissAllNotifications, getNotifications, getUnreadNotificationsCount } from '../../api/notificationsApi.js';
 
 const AuthModal = ({ title, onClose, onSubmit, setShowTermsModal, setShowForgotPasswordModal   }) => {
   const [username, setUsername] = useState('');
@@ -114,12 +114,17 @@ const Navbar = ({}) => {
 
   const [showNotifications, setShowNotifications] = useState(false);
 
+  const reloadNotifications = async () => {
+    const notifications = await getNotifications();
+    setNotifications(notifications);
+    const unreadNotificationsCount = await getUnreadNotificationsCount();
+    setUnreadNotificationsCount(unreadNotificationsCount);
+  };
+
   const dismissNotification = async (id) => {
     try {
       await dismissNotification(id);
-      setNotifications(prev => prev.filter(n => n.id !== id));
-      const unreadNotificationsCount = await getUnreadNotificationsCount();
-      setUnreadNotificationsCount(unreadNotificationsCount);
+      await reloadNotifications();
     } catch (e) {
       console.error("Could not dismiss notification", e);
     }
@@ -128,9 +133,7 @@ const Navbar = ({}) => {
   const dismissAll = async () => {
     try {
       await dismissAllNotifications();
-      setNotifications([]);
-      const unreadNotificationsCount = await getUnreadNotificationsCount();
-      setUnreadNotificationsCount(unreadNotificationsCount);
+      await reloadNotifications();
     } catch (e) {
       console.error("Could not dismiss notifications", e);
     }
