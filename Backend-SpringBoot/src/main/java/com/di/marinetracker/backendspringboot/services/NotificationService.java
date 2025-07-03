@@ -54,8 +54,10 @@ public class NotificationService {
         boolean currentlyInZone = zone.matchesConditions(vessel);
         boolean wasInZone = wasVesselInZone(userId, vesselMmsi);
 
+        System.out.println("before if");
         // Zone Entry Detection
         if (currentlyInZone && !wasInZone) {
+            System.out.println("first check passed");
             Notification notification = createZoneEntryNotification(vessel, userId, position);
             if (shouldCreateNotification(userId, vesselMmsi, Notification.NotificationType.ZONE_ENTRY, timeNow)) {
                 newNotifications.add(notificationRepository.save(notification));
