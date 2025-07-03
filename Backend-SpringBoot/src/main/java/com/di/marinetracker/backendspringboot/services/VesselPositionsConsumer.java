@@ -7,7 +7,6 @@ import com.di.marinetracker.backendspringboot.repositories.VesselPositionReposit
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.config.KafkaListenerEndpointRegistry;
 import org.springframework.stereotype.Service;
@@ -103,14 +102,13 @@ public class VesselPositionsConsumer {
             Optional<VesselPosition[]> history = vesselPositionRepository.find2LatestByVesselMmsi(mmsi);
             if (history.isPresent()) {
                 VesselPosition[] historyPositions = history.get();
-                // This code was modified without Pierro's permission, when writing the tests.
-                // It could be wrong now, though the tests showed there were issues before that would prevent delete().
                 if (historyPositions.length >= 2) {
-                    VesselPosition latest = historyPositions[0];
-                    // If the timestamp we just received and the timestampPrev differ by less than 10 minutes,
-                    // overwrite timestampPrev with the new one.
-                    if (timestamp.isBefore(latest.getTimestamp().plusSeconds(600))) {
-                        vesselPositionRepository.delete(latest);
+                    Instant lastSave = historyPositions[0].getTimestamp();
+                    Instant secondLast = historyPositions[1].getTimestamp();
+
+                    // The saved timestamps shouldn't be less than 10 minutes apart
+                    if (lastSave.isBefore(secondLast.plusSeconds(600))) {
+                        vesselPositionRepository.delete(historyPositions[0]);
                     }
                 }
             }
